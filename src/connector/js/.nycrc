@@ -1,0 +1,16 @@
+{
+  "include": [
+    "src/**/*.js"
+  ],
+  "require": [
+    "babel-register"
+  ],
+  "reporter": [
+    "text",
+    "json",
+    "html",
+    "cobertura"
+  ],
+  "sourceMap": false,
+  "instrument": false
+}

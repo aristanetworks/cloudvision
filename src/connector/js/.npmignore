@@ -1,0 +1,11 @@
+test/
+docs/
+src/
+dist-dev/
+.eslintignore
+.gitignore
+.nycrc
+.babelrc
+documentation.yml
+rollup.config.js
+index.html

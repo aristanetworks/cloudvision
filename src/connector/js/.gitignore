@@ -1,0 +1,8 @@
+.jest-cache/
+*.log
+coverage
+dist
+docs
+es
+lib
+node_modules
