@@ -2,18 +2,13 @@ import babel from 'rollup-plugin-babel';
 import commonjs from 'rollup-plugin-commonjs';
 import nodeResolve from 'rollup-plugin-node-resolve';
 import replace from 'rollup-plugin-replace';
-import { uglify } from 'rollup-plugin-uglify';
+import { terser } from "rollup-plugin-terser";
 
 const env = process.env.NODE_ENV;
 
 const external = [
   'imurmurhash',
   'json-bignumber',
-];
-
-const babelPlugins = [
-  'external-helpers',
-  'transform-object-rest-spread',
 ];
 
 const globals = {
@@ -37,7 +32,7 @@ if (env === 'es' || env === 'cjs') {
   };
   config.plugins.push(
     babel({
-      plugins: babelPlugins,
+      externalHelpers: true,
     }),
     commonjs(),
   );
@@ -61,7 +56,7 @@ if (env === 'development' || env === 'production' || env === 'try') {
     }),
     babel({
       exclude: 'node_modules/**',
-      plugins: babelPlugins,
+      externalHelpers: true,
     }),
     replace({
       'process.env.NODE_ENV': JSON.stringify(env),
@@ -71,14 +66,7 @@ if (env === 'development' || env === 'production' || env === 'try') {
 }
 
 if (env === 'production') {
-  config.plugins.push(uglify({
-    compress: {
-      pure_getters: true,
-      unsafe: true,
-      unsafe_comps: true,
-      warnings: false,
-    },
-  }));
+  config.plugins.push(terser());
 }
 
 export default config;
