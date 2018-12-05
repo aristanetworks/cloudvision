@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.2.9](http://gerrit:29418/web-components/compare/cloudvision-connector@2.2.8...cloudvision-connector@2.2.9) (2018-12-05)
+
+
+### Bug Fixes
+
+* **various:** upgrade to Babel 7 ([15076a5](http://gerrit:29418/web-components/commits/15076a5))
+
+
+
+
+
 ## [2.2.8](http://gerrit:29418/web-components/compare/cloudvision-connector@2.2.7...cloudvision-connector@2.2.8) (2018-11-26)
 
 **Note:** Version bump only for package cloudvision-connector
