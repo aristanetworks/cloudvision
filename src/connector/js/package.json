@@ -1,6 +1,6 @@
 {
   "name": "cloudvision-connector",
-  "version": "2.2.10",
+  "version": "2.2.11",
   "description": "A module to communicate with the CloudVision API server",
   "author": "extensions@arista.com",
   "homepage": "http://www.arista.com",
@@ -65,7 +65,7 @@
     "cross-env": "5.2.0",
     "documentation": "8.1.2",
     "eslint": "5.10.0",
-    "eslint-config-arista": "0.1.6",
+    "eslint-config-arista": "0.1.7",
     "eslint-plugin-babel": "5.3.0",
     "eslint-plugin-import": "2.14.0",
     "eslint-plugin-jsx-a11y": "6.1.2",
