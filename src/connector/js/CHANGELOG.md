@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.2.11](http://gerrit:29418/web-components/compare/cloudvision-connector@2.2.10...cloudvision-connector@2.2.11) (2018-12-19)
+
+**Note:** Version bump only for package cloudvision-connector
+
+
+
+
+
 ## [2.2.10](http://gerrit:29418/web-components/compare/cloudvision-connector@2.2.9...cloudvision-connector@2.2.10) (2018-12-10)
 
 **Note:** Version bump only for package cloudvision-connector
