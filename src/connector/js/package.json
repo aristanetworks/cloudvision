@@ -1,6 +1,6 @@
 {
   "name": "cloudvision-connector",
-  "version": "2.2.12",
+  "version": "2.2.13",
   "description": "A module to communicate with the CloudVision API server",
   "author": "extensions@arista.com",
   "homepage": "http://www.arista.com",
@@ -52,11 +52,11 @@
     "json-bignumber": "1.0.1"
   },
   "devDependencies": {
-    "@babel/cli": "7.2.0",
-    "@babel/core": "7.2.0",
+    "@babel/cli": "7.2.3",
+    "@babel/core": "7.2.2",
     "@babel/plugin-external-helpers": "7.2.0",
     "@babel/plugin-proposal-object-rest-spread": "7.2.0",
-    "@babel/preset-env": "7.2.0",
+    "@babel/preset-env": "7.2.3",
     "@babel/preset-flow": "7.0.0",
     "babel-core": "7.0.0-bridge.0",
     "babel-eslint": "10.0.1",
