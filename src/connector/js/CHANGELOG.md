@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.3.0](http://gerrit:29418/web-components/compare/cloudvision-connector@2.2.15...cloudvision-connector@2.3.0) (2019-01-11)
+
+
+### Features
+
+* **cloudvision-connector:** Implement Aeris Services logic. ([1f97c8f](http://gerrit:29418/web-components/commits/1f97c8f))
+
+
+
+
+
 ## [2.2.15](http://gerrit:29418/web-components/compare/cloudvision-connector@2.2.14...cloudvision-connector@2.2.15) (2019-01-08)
 
 **Note:** Version bump only for package cloudvision-connector

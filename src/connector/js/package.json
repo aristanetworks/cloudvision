@@ -1,6 +1,6 @@
 {
   "name": "cloudvision-connector",
-  "version": "2.2.15",
+  "version": "2.3.0",
   "description": "A module to communicate with the CloudVision API server",
   "author": "extensions@arista.com",
   "homepage": "http://www.arista.com",
