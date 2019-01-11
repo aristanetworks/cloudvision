@@ -50,6 +50,8 @@ import type {
   QueryParms,
   SearchOptions,
   SearchParms,
+  ServiceCallback,
+  ServiceRequest,
   SubscriptionIdentifier,
 } from './utils';
 import WRPC from './wrpc';
@@ -262,6 +264,13 @@ class Connector extends WRPC {
     } else {
       callback('invalid command for `getWithOptions`');
     }
+  }
+
+  runService(
+    request: ServiceRequest,
+    callback: ServiceCallback,
+  ) {
+    this.requestService('serviceRequest', request, callback);
   }
 
   searchWithOptions(

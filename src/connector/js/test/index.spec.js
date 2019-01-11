@@ -359,6 +359,29 @@ describe('writeSync', () => {
   });
 });
 
+describe('runService', () => {
+  test('should call runService with proper params', () => {
+    const request = {
+      service: 'A',
+      method: 'B',
+      body: {
+        param1: 'param1',
+        param2: 'param2',
+      },
+    };
+
+    const conn = new Connector();
+    jest.spyOn(conn, 'requestService');
+    const spyCallback = jest.fn();
+
+    conn.runService(request, spyCallback);
+    expect(conn.requestService).toHaveBeenCalledTimes(1);
+    expect(conn.requestService)
+      .toHaveBeenCalledWith('serviceRequest', request, expect.any(Function));
+    expect(spyCallback).toHaveBeenCalledTimes(1);
+  });
+});
+
 describe('searchWithOptions', () => {
   const dataset = 'dataset';
   const path1 = 'path1';

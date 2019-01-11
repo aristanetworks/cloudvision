@@ -1604,3 +1604,130 @@ describe('enableOptions', () => {
     expect(wrpc.pause).not.toHaveBeenCalled();
   });
 });
+
+describe('requestService', () => {
+  let wrpc;
+
+  beforeEach(() => {
+    wrpc = new WRPC();
+  });
+
+  test('should not run if the socket is not running', () => {
+    const callbackSpy = jest.fn();
+    wrpc.requestService('serviceRequest', {}, callbackSpy);
+
+    expect(wrpc.isRunning).toBe(false);
+    expect(callbackSpy).toHaveBeenCalledTimes(1);
+    expect(callbackSpy).toHaveBeenCalledWith('Connection is down', undefined, {});
+  });
+
+  test('should callback error if sendMessage fails', () => {
+    const callbackSpy = jest.fn();
+    const error = 'error';
+    jest.spyOn(wrpc, 'sendMessage').mockImplementation(() => {
+      throw error;
+    });
+    wrpc.isRunning = true;
+    wrpc.requestService('serviceRequest', {}, callbackSpy);
+
+    expect(wrpc.isRunning).toBe(true);
+    expect(callbackSpy).toHaveBeenCalledTimes(1);
+    expect(callbackSpy).toHaveBeenCalledWith(error, undefined, {});
+  });
+
+  test('should sendMessage when called', () => {
+    const callbackSpy = jest.fn();
+    const sendMessageStub = jest.spyOn(wrpc, 'sendMessage').mockImplementation(() => {});
+    wrpc.isRunning = true;
+    wrpc.requestService('serviceRequest', {}, callbackSpy);
+
+    expect(wrpc.isRunning).toBe(true);
+    expect(callbackSpy).not.toHaveBeenCalled();
+    expect(sendMessageStub).toHaveBeenCalledTimes(1);
+  });
+
+  test(
+    'should bind callback to eventsEmitter when requestService is called',
+    () => {
+      const eventEmitterSpy = jest.spyOn(wrpc.eventsEmitter, 'bind');
+      const callbackSpy = jest.fn();
+      const sendMessageSpy = jest.spyOn(wrpc, 'sendMessage').mockImplementation(() => {});
+      wrpc.isRunning = true;
+      wrpc.requestService('serviceRequest', {}, callbackSpy);
+      const token = makeToken('serviceRequest', {});
+
+      expect(callbackSpy).not.toHaveBeenCalled();
+      expect(eventEmitterSpy).toHaveBeenCalledTimes(1);
+      expect(eventEmitterSpy).toHaveBeenCalledWith(token, expect.any(Function));
+      expect(sendMessageSpy).toHaveBeenCalledTimes(1);
+      expect(wrpc.isRunning).toBe(true);
+    },
+  );
+
+  test('should call callback and unbind on any error', () => {
+    const ws = {
+      send: jest.fn(),
+    };
+    const callbackSpy = jest.fn();
+
+    wrpc.runWithWs(ws);
+    wrpc.isRunning = true;
+    wrpc.requestService('serviceRequest', {}, callbackSpy);
+    const token = makeToken('serviceRequest', {});
+    const emitterUnBindSpy = jest.spyOn(wrpc.eventsEmitter, 'unbind');
+    expect(emitterUnBindSpy).not.toHaveBeenCalled();
+
+    const msg = { token, error: 'something', status: { code: 1 } };
+    wrpc.ws.onmessage({ data: JSON.stringify(msg) });
+    expect(callbackSpy).toHaveBeenCalledTimes(1);
+    expect(callbackSpy).toHaveBeenCalledWith('something', undefined, { code: 1 });
+    expect(emitterUnBindSpy).toHaveBeenCalledTimes(1);
+  });
+
+  test('should unbind but not call callback on EOF', () => {
+    const ws = {
+      send: jest.fn(),
+    };
+    const callbackSpy = jest.fn();
+
+    wrpc.runWithWs(ws);
+    wrpc.isRunning = true;
+    wrpc.requestService('serviceRequest', {}, callbackSpy);
+    const token = makeToken('serviceRequest', {});
+    const emitterUnBindSpy = jest.spyOn(wrpc.eventsEmitter, 'unbind');
+    expect(emitterUnBindSpy).not.toHaveBeenCalled();
+
+    const msg = { token, error: 'something', status: { code: 1001 } };
+    wrpc.ws.onmessage({ data: JSON.stringify(msg) });
+    expect(callbackSpy).not.toHaveBeenCalled();
+    expect(emitterUnBindSpy).toHaveBeenCalledTimes(1);
+  });
+
+  test(
+    'should call callback and not unbind on result without error',
+    () => {
+      const ws = {
+        send: jest.fn(),
+      };
+      const callbackSpy = jest.fn();
+
+      wrpc.runWithWs(ws);
+      wrpc.isRunning = true;
+      wrpc.requestService('requestService', {}, callbackSpy);
+      const token = makeToken('requestService', {});
+      const emitterUnBindSpy = jest.spyOn(wrpc.eventsEmitter, 'unbind');
+      expect(emitterUnBindSpy).not.toHaveBeenCalled();
+
+      const msg = {
+        error: null,
+        result: {},
+        status: {},
+        token,
+      };
+      wrpc.ws.onmessage({ data: JSON.stringify(msg) });
+      expect(callbackSpy).toHaveBeenCalledTimes(1);
+      expect(callbackSpy).toHaveBeenCalledWith(null, {}, {});
+      expect(emitterUnBindSpy).not.toHaveBeenCalled();
+    },
+  );
+});

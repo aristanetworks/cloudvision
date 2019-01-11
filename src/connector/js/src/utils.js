@@ -31,7 +31,7 @@ import type {
 } from './emitter';
 
 export type WsCommand = 'get' | 'subscribe' | 'close' | 'getDatasets'
-  | 'publish' | 'alpha/search' | 'alpha/searchSubscribe' | 'pause' | 'resume';
+  | 'publish' | 'alpha/search' | 'alpha/searchSubscribe' | 'pause' | 'resume' | 'serviceRequest';
 
 export type PathTypes = 'EXACT' | 'REGEXP';
 
@@ -170,8 +170,14 @@ export type ResumeParams = {
   token: string,
 };
 
+export type ServiceRequest = {
+  service: string,
+  method: string,
+  body: {}
+};
+
 export type CloudVisionParams = QueryParms | CloseParams | SearchParms
-  | CloudVisionPublishParams | PauseParams | ResumeParams;
+  | CloudVisionPublishParams | PauseParams | ResumeParams | ServiceRequest;
 
 export type CloudVisionMessage = {
   token: string,
@@ -230,6 +236,8 @@ export type NotifCallback = (
 ) => void;
 
 export type PublishCallback = (success: boolean, err: ?string) => void;
+
+export type ServiceCallback = (err: ?string, result: mixed, status: {}) => void;
 
 /**
  * The epoch timestamp in (milliseconds)
@@ -568,11 +576,6 @@ export function validateResponse(
   }
 
   /* eslint-disable no-console */
-  if (!response.dataset && !response.datasets) {
-    console.error(`No key 'dataset' or 'datasets' found in response for token ${token}`);
-    return;
-  }
-
   if (response.dataset && !response.dataset.name) {
     console.error(`No key 'name' found in dataset for token ${token}`);
     return;

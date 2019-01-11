@@ -684,13 +684,6 @@ describe('validateResponse', () => {
     expect(console.error).toHaveBeenCalledWith(`No key 'name' found in dataset for token ${token}`);
   });
 
-  it('should log an error for a response without dataset or datasets', () => {
-    validateResponse({}, {}, token);
-    expect(console.error).toHaveBeenCalledWith(
-      `No key 'dataset' or 'datasets' found in response for token ${token}`,
-    );
-  });
-
   it('should not log an error for a status response', () => {
     validateResponse({}, { code: 1101 });
     expect(console.error).not.toHaveBeenCalledWith();

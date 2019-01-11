@@ -49,6 +49,8 @@ import type {
   RawNotifCallback,
   RawPublishCallback,
   ResumeParams,
+  ServiceCallback,
+  ServiceRequest,
   SubscriptionIdentifier,
   WsCommand,
 } from './utils';
@@ -285,6 +287,40 @@ class WRPC {
       if (streamArgs) {
         this.reSubscribeStream(streamArgs[0], closeToken);
       }
+    }
+  }
+
+  /**
+   * Send a service request command to the CloudVision API
+   */
+  requestService(
+    command: WsCommand,
+    request: ServiceRequest,
+    callback: ServiceCallback,
+  ) {
+    if (!this.isRunning) {
+      callback('Connection is down', undefined, {});
+      return;
+    }
+    const token = makeToken(command, request);
+    const callbackWithUnbind: EventCallback = (err, result, status) => {
+      if (err) {
+        // Unbind callback when any error is received
+        this.eventsEmitter.unbind(token, callbackWithUnbind);
+      }
+      if (status && status.code === EOF_CODE) {
+        return;
+      }
+      callback(err, result, status);
+    };
+    this.eventsEmitter.bind(token, callbackWithUnbind);
+
+    try {
+      this.sendMessage(token, command, request);
+    } catch (err) {
+      console.error(err);
+      this.eventsEmitter.unbind(token, callbackWithUnbind);
+      callback(err, undefined, {});
     }
   }
 
