@@ -1,0 +1,26 @@
+{
+  "name": "eslint-config-arista",
+  "version": "0.2.23",
+  "description": "Arista's eslint config, based on Airbnb's rules, plus some changes",
+  "author": "extensions@arista.com",
+  "homepage": "http://www.arista.com",
+  "license": "MIT",
+  "main": "index.js",
+  "scripts": {
+    "lint": "eslint -c index.js index.js"
+  },
+  "keywords": [
+    "eslint",
+    "eslintconfig",
+    "config",
+    "arista",
+    "javascript",
+    "styleguide"
+  ],
+  "devDependencies": {
+    "eslint-config-airbnb": "17.1.1",
+    "eslint-config-arista-base-js": "1.1.0",
+    "eslint-plugin-jsx-a11y": "6.2.3",
+    "eslint-plugin-react": "7.14.2"
+  }
+}

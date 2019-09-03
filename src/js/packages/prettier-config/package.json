@@ -1,0 +1,17 @@
+{
+  "name": "@arista/prettier-config",
+  "version": "1.1.0",
+  "description": "Prettier config for Arista",
+  "author": "extensions@arista.com",
+  "homepage": "http://www.arista.com",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "main": "index.json",
+  "keywords": [
+    "prettier",
+    "styleguide",
+    "config"
+  ]
+}

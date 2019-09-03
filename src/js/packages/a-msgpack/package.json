@@ -1,0 +1,60 @@
+{
+  "name": "a-msgpack",
+  "version": "0.1.42",
+  "description": "A minimalistic MessagePack encoder and decoder for JavaScript.",
+  "main": "lib/MsgPack.js",
+  "unpkg": "dist/MsgPack.js",
+  "module": "es/MsgPack.js",
+  "scripts": {
+    "build:commonjs": "cross-env NODE_ENV=cjs rollup -c -o lib/MsgPack.js",
+    "build:es": "cross-env BABEL_ENV=es NODE_ENV=es rollup -c -o es/MsgPack.js",
+    "build:umd:min": "cross-env BABEL_ENV=es NODE_ENV=production rollup -c -o dist/MsgPack.min.js",
+    "build:umd": "cross-env BABEL_ENV=es NODE_ENV=development rollup -c -o dist/MsgPack.js",
+    "build": "yarn run clean && yarn run build:es && yarn run build:commonjs && yarn run build:umd && yarn run build:umd:min",
+    "check": "yarn run lint && yarn run test",
+    "clean": "rimraf dist lib es",
+    "lint": "eslint *.js src/** test/**",
+    "prepare": "yarn run lint && yarn run test:cov && yarn run build",
+    "test:clean": "rimraf .jest-cache",
+    "test:cov": "rimraf coverage && yarn run test --coverage",
+    "test:watch": "yarn run test --watch",
+    "test": "jest"
+  },
+  "keywords": [
+    "binary",
+    "json",
+    "msgpack",
+    "messagepack",
+    "serialize",
+    "encode",
+    "decode"
+  ],
+  "author": "Stephane Rufer <stephane@arista.com>",
+  "license": "MIT",
+  "dependencies": {
+    "int64-buffer": "0.99.1007",
+    "jsbi": "2.0.5"
+  },
+  "devDependencies": {
+    "@babel/cli": "7.5.0",
+    "@babel/core": "7.4.5",
+    "@babel/preset-env": "7.4.5",
+    "babel-core": "7.0.0-bridge.0",
+    "babel-eslint": "10.0.2",
+    "babel-jest": "24.8.0",
+    "benchmark": "2.1.4",
+    "cli-color": "1.4.0",
+    "cross-env": "5.2.0",
+    "eslint": "5.16.0",
+    "eslint-config-arista": "0.2.23",
+    "eslint-plugin-babel": "5.3.0",
+    "jest": "24.8.0",
+    "msgpack": "1.0.2",
+    "msgpack-lite": "0.1.26",
+    "rimraf": "2.6.3",
+    "rollup": "1.12.4",
+    "rollup-plugin-commonjs": "10.0.1",
+    "rollup-plugin-node-resolve": "5.2.0",
+    "rollup-plugin-terser": "5.1.1"
+  }
+}
