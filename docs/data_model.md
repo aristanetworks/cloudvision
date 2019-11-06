@@ -15,7 +15,7 @@ A notification object contains a timestamp, path, collection of updates, and col
 
 The `<timestamp>` is a Unix nanosecond value which indicates the creation time of the notification.
 
-The `<path>` is a string that designates the notification's position within a dataset.
+The `<path>` is an array of path elements that designates the notification's position within a dataset. A path element can be a string, number, or complex value.
 
 Each `<update>` is a named key-value pair:
 
@@ -51,11 +51,11 @@ The value of `<relative>` is a descendant path name relative to the path of the
 notification, and the value of `<absolute>` is the name of this path relative to `/`.
 Here are some examples to demonstrate this:
 
-| `<path>`   | `<relative>`   | `<absolute>`   |
-| ---------- | -------------- | -------------- |
-| `"/"`      | `"A"`          | `"/A"`         |
-| `"/A"`     | `"b"`          | `"/A/b"`       |
-| `"/A/b"`   | `"d"`          | `"/A/b/c/d"`   |
+| `<path>`     | `<relative>`   | `<absolute>`   |
+| ------------ | -------------- | -------------- |
+| `[]`         | `"A"`          | `["A"]`        |
+| `["A"]`      | `"b"`          | `["A", "b"]`   |
+| `["A", "b"]` | `{"foo": "bar"}` | `["A", "b", {"foo": "bar"}]`   |
 
 Each `<delete>` is a named key that has been removed from the path:
 
@@ -90,7 +90,7 @@ A query is an array of objects, where each object has the following shape:
 ```
 {
   "dataset": <dataset>,
-  "paths": [<path>],
+  "paths": [<path>, ...],
 }
 ```
 
@@ -107,7 +107,7 @@ The `<path>` is an object:
 ```
 {
   "type": <type>
-  "path": <path string>,
+  "path": <path>,
 }
 ```
 where `<type>` is **EXACT** or **REGEX** and `<path string>` is a string that designates the notification's position within a dataset.
