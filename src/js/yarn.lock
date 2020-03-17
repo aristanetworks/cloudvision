@@ -3742,10 +3742,10 @@ error@^7.0.0:
     string-template "~0.2.1"
     xtend "~4.0.0"
 
-es-abstract@^1.11.0, es-abstract@^1.12.0, es-abstract@^1.5.1, es-abstract@^1.7.0:
-  version "1.14.0"
-  resolved "https://registry.npmjs.org/es-abstract/-/es-abstract-1.14.0.tgz#f59d9d44278ea8f90c8ff3de1552537c2fd739b4"
-  integrity sha512-lri42nNq1tIohUuwFBYEM3wKwcrcJa78jukGDdWsuaNxTtxBFGFkKUQ15nc9J+ipje4mhbQR6JwABb4VvawR3A==
+es-abstract@1.14.1, es-abstract@^1.11.0, es-abstract@^1.12.0, es-abstract@^1.5.1, es-abstract@^1.7.0:
+  version "1.14.1"
+  resolved "https://registry.npmjs.org/es-abstract/-/es-abstract-1.14.1.tgz#6e8d84b445ec9c610781e74a6d52cc31aac5b4ca"
+  integrity sha512-cp/Tb1oA/rh2X7vqeSOvM+TSo3UkJLX70eNihgVEvnzwAgikjkTFr/QVgRCaxjm0knCNQzNoxxxcw2zO2LJdZA==
   dependencies:
     es-to-primitive "^1.2.0"
     function-bind "^1.1.1"
@@ -6594,12 +6594,12 @@ msgpack-lite@0.1.26:
     int64-buffer "^0.1.9"
     isarray "^1.0.0"
 
-msgpack@1.0.2:
-  version "1.0.2"
-  resolved "https://registry.npmjs.org/msgpack/-/msgpack-1.0.2.tgz#923e2c5cffa65c8418e9b228d1124793969c429c"
-  integrity sha1-kj4sXP+mXIQY6bIo0RJHk5acQpw=
+msgpack@1.0.2, msgpack@1.0.3:
+  version "1.0.3"
+  resolved "https://registry.npmjs.org/msgpack/-/msgpack-1.0.3.tgz#4106369ef1691a23884098c6217c4c07b95aa2f9"
+  integrity sha512-FX88+Pexuh+UItdqg68WhNPGPhqs57RlXAYyXNZ8eTQC/Tx5lzeIoxTxA2qAd7qU5a/crON5F0ADf4l6k2b7Jw==
   dependencies:
-    nan "^2.0.9"
+    nan "^2.14.0"
 
 multimatch@^2.1.0:
   version "2.1.0"
@@ -6621,7 +6621,7 @@ mute-stream@~0.0.4:
   resolved "https://registry.npmjs.org/mute-stream/-/mute-stream-0.0.8.tgz#1630c42b2251ff81e2a283de96a5497ea92e5e0d"
   integrity sha512-nnbWWOkoWyUsTjKrhgD0dcz22mdkSnpYqbEjIm2nhwhuxlSkpywJmBo8h0ZqJdkp73mb90SssHkN4rsRaBAfAA==
 
-nan@^2.0.9, nan@^2.12.1:
+nan@^2.12.1, nan@^2.14.0:
   version "2.14.0"
   resolved "https://registry.npmjs.org/nan/-/nan-2.14.0.tgz#7818f722027b2459a86f0295d434d1fc2336c52c"
   integrity sha512-INOFj37C7k3AfaNTtX8RhsTw7qRy7eLET14cROi9+5HAVbbHuIWUHEauBv5qT4Av2tWasiTY1Jw6puUNqRJXQg==

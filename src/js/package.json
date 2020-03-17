@@ -34,7 +34,9 @@
     "lodash": "4.17.14"
   },
   "resolutions": {
-    "lodash.merge": "4.6.2"
+    "lodash.merge": "4.6.2",
+    "es-abstract": "1.14.1",
+    "msgpack": "1.0.3"
   },
   "workspaces": {
     "packages": [
