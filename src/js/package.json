@@ -1,6 +1,6 @@
 {
   "name": "cloudvision",
-  "private": false,
+  "private": true,
   "scripts": {
     "bootstrap": "lerna bootstrap -- --ignore-scripts && yarn run init-flow",
     "build": "lerna run build",
