@@ -1,8 +1,0 @@
-{
-  "extends": "arista-base-js",
-  "rules": {
-    "no-plusplus": "off",
-    "no-bitwise": "off",
-    "no-underscore-dangle": "off",
-  }
-}

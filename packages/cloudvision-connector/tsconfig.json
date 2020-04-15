@@ -1,0 +1,15 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "target": "ES6"
+  },
+  "typedocOptions": {
+    "exclude": "test/**",
+    "excludeExternals": true,
+    "hideGenerator": true,
+    "ignoreCompilerErrors": true,
+    "mode": "modules",
+    "out": "docs",
+    "readme": "./README.md"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "out": "docs",
+  "exclude": ["test/**", "benchmark-msgpack/**"],
+  "ignoreCompilerErrors": true,
+  "disableOutputCheck": true,
+  "excludeExternals": true,
+  "excludePrivate": true,
+  "hideGenerator": true,
+  "excludeNotExported": true
+}

@@ -1,0 +1,4 @@
+build
+node_modules
+lerna-*.log
+npm-*.log

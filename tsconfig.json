@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "allowSyntheticDefaultImports": true,
+    "alwaysStrict": true,
+    // "declaration": true,
+    // "declarationDir": "./typings",
+    "esModuleInterop": true,
+    "importHelpers": true,
+    "module": "commonjs",
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitReturns": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    // "outDir": "lib",
+    "sourceMap": true,
+    "strict": true,
+    "target": "esnext"
+    // "typeRoots": [
+    //   "./types",
+    //   "./node_modules/@types",
+    //   "../../node_modules/@types",
+    // ]
+  }
+}

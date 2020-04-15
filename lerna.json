@@ -1,0 +1,19 @@
+{
+  "command": {
+    "publish": {
+      "allowBranch": "master",
+      "ignoreChanges": [
+        "**/.eslintrc",
+        "**/.gitignore",
+        "**/*.md",
+        "**/test/**"
+      ]
+    },
+    "version": {
+      "message": "chore(release): publish packages"
+    }
+  },
+  "npmClient": "npm",
+  "packages": ["packages/*"],
+  "version": "4.0.0"
+}

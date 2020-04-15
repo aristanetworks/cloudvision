@@ -1,0 +1,34 @@
+
+> benchmark-msgpack@4.0.0 bench /Users/stephane/code/cloudvision/packages/a-msgpack/benchmark-msgpack
+> npm run bench:lib && npm run bench:string:encode && npm run bench:string:encode && npm run bench:string:encode
+
+
+> benchmark-msgpack@4.0.0 bench:lib /Users/stephane/code/cloudvision/packages/a-msgpack/benchmark-msgpack
+> ts-node msgpack-benchmark.ts
+
+
+**./sample-large.json:** (7598 bytes in JSON)
+
+```
+(encode) a-msgpack x 4,361 ops/sec ±1.85% (82 runs sampled)
+(encode) @msgpack/msgpack x 19,335 ops/sec ±2.80% (85 runs sampled)
+(encode) msgpack-lite x 14,430 ops/sec ±2.64% (84 runs sampled)
+(encode) msgpack-js-v5 x 1,783 ops/sec ±94.11% (86 runs sampled)
+(encode) msgpack-js x 5,734 ops/sec ±1.39% (92 runs sampled)
+(encode) notepack.io x 17,060 ops/sec ±2.16% (88 runs sampled)
+(encode) JSON x 46,151 ops/sec ±1.82% (86 runs sampled)
+```
+
+```
+(decode) a-msgpack x 15,818 ops/sec ±1.74% (87 runs sampled)
+(decode) @msgpack/msgpack x 15,803 ops/sec ±1.97% (86 runs sampled)
+(decode) msgpack-lite x 8,314 ops/sec ±1.38% (93 runs sampled)
+(decode) msgpack-js-v5 x 13,903 ops/sec ±1.63% (90 runs sampled)
+(decode) msgpack-js x 13,962 ops/sec ±1.64% (92 runs sampled)
+(decode) notepack.io x 13,091 ops/sec ±1.45% (92 runs sampled)
+(decode) JSON x 53,210 ops/sec ±1.21% (90 runs sampled)
+```
+
+> benchmark-msgpack@4.0.0 bench:string:encode /Users/stephane/code/cloudvision/packages/a-msgpack/benchmark-msgpack
+> ts-node encode-string.ts
+

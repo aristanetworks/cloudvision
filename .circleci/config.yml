@@ -1,41 +1,18 @@
-# Javascript Node CircleCI 2.0 configuration file
-#
-# Check https://circleci.com/docs/2.0/language-javascript/ for more details
-#
-version: 2
+version: 2.1
+orbs:
+  node: circleci/node@1.1.6
 jobs:
-  build:
-    docker:
-      # specify the version you desire here
-      - image: circleci/node:10.16
-
-    working_directory: ~/cloudvision/src/js
-
+  build-and-test:
+    executor:
+      name: node/default
     steps:
-      - checkout:
-          path: ~/cloudvision
-
-      - run:
-          name: Set registry URL
-          command: |
-            npm set registry https://registry.npmjs.org/
-            yarn config set registry https://registry.npmjs.org/
-
-      # Download and cache dependencies
-      - restore_cache:
-          keys:
-            - v1-dependencies-{{ checksum "package.json" }}
-            # fallback to using the latest cache if no exact match is found
-            - v1-dependencies-
-
-      - run: |
-          yarn run clean-install
-          yarn run bootstrap
-
-      - save_cache:
-          paths:
-            - node_modules
-          key: v1-dependencies-{{ checksum "package.json" }}
-
-      # run tests!
-      - run: yarn run ci
+      - checkout
+      - node/with-cache:
+          steps:
+            - run: npm install
+            - run: npm run ci
+workflows:
+  version: 2
+  build-and-test:
+    jobs:
+      - build-and-test

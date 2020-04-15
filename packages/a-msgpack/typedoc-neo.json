@@ -1,0 +1,27 @@
+{
+  "out": "docs",
+  "exclude": ["test/**", "benchmark-msgpack/**"],
+  "ignoreCompilerErrors": true,
+  "disableOutputCheck": true,
+  "excludeExternals": true,
+  "excludePrivate": true,
+  "hideGenerator": true,
+  "excludeNotExported": true,
+  "outline": [
+    {
+      "Serde Interface": {
+        "encode": "modules/_src_encode_",
+        "decode": "modules/_src_decode_"
+      },
+      "Serde Implementation": {
+        "Encoder": "modules/_src_encoder_",
+        "Decoder": "modules/_src_decoder_"
+      },
+      "NEAT": {
+        "NeatTypes": "modules/_src_neat_neattypes_",
+        "utils": "modules/_src_neat_utils_",
+        "JSBI": "modules/_src_utils_data_"
+      }
+    }
+  ]
+}
