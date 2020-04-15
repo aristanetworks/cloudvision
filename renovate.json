@@ -1,0 +1,10 @@
+{
+  "extends": [
+    "config:base",
+    ":semanticCommits",
+    ":semanticCommitTypeAll(chore)",
+    "schedule:earlyMondays"
+  ],
+  "assignees": ["rufman"],
+  "labels": ["dependencies"]
+}
