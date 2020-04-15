@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 4.0.1 (2020-04-15)
+
+**Note:** Version bump only for package cloudvision-connector
+
+
+
+
+
 ## [3.9.8](http://gerrit.corp.arista.io:29418/web-components/compare/cloudvision-connector@3.9.7...cloudvision-connector@3.9.8) (2020-04-06)
 
 **Note:** Version bump only for package cloudvision-connector
