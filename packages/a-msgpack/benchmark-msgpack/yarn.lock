@@ -2,28 +2,25 @@
 # yarn lockfile v1
 
 
-"@msgpack/msgpack@^1.11.0":
+"@arista/prettier-config@1.1.3":
+  version "1.1.3"
+  resolved "https://registry.yarnpkg.com/@arista/prettier-config/-/prettier-config-1.1.3.tgz#1e4f6d4c68dbd919941e76847661f79b43610e44"
+  integrity sha512-oyjS5UYx/zfmvouhaeRCZKT7hlYP1BQb9TFnSDI3PhEiJtOjlWcQ434TwzspfwFyyTLxhPOMx75ZcWW5yvaYBw==
+
+"@msgpack/msgpack@1.11.0":
   version "1.11.0"
-  resolved "https://npm.corp.arista.io/@msgpack%2fmsgpack/-/msgpack-1.11.0.tgz#72658d3e8c0b3ef87cc0ba5a284fcdaddcea326b"
+  resolved "https://registry.yarnpkg.com/@msgpack/msgpack/-/msgpack-1.11.0.tgz#72658d3e8c0b3ef87cc0ba5a284fcdaddcea326b"
   integrity sha512-gR/NgUeQGARNabGVAjS59lagyxsCgD0zd4F5oKf9uKt8XNLu4awFBNO/Nstr2q1Iu1UPC5EeJeLZSNdP30m7zQ==
 
-"@types/benchmark@^1.0.31":
+"@types/benchmark@1.0.31":
   version "1.0.31"
-  resolved "https://npm.corp.arista.io/@types%2fbenchmark/-/benchmark-1.0.31.tgz#2dd3514e93396f362ba5551a7c9ff0da405c1d38"
+  resolved "https://registry.yarnpkg.com/@types/benchmark/-/benchmark-1.0.31.tgz#2dd3514e93396f362ba5551a7c9ff0da405c1d38"
   integrity sha512-F6fVNOkGEkSdo/19yWYOwVKGvzbTeWkR/XQYBKtGBQ9oGRjBN9f/L4aJI4sDcVPJO58Y1CJZN8va9V2BhrZapA==
 
-"@types/lodash@^4.14.149":
+"@types/lodash@4.14.149":
   version "4.14.149"
-  resolved "https://npm.corp.arista.io/@types%2flodash/-/lodash-4.14.149.tgz#1342d63d948c6062838fbf961012f74d4e638440"
+  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.149.tgz#1342d63d948c6062838fbf961012f74d4e638440"
   integrity sha512-ijGqzZt/b7BfzcK9vTrS6MFljQRPn5BFWOx8oE0GYxribu6uV+aA9zZuXI1zc/etK9E8nrgdoF2+LgUw7+9tJQ==
-
-a-msgpack@^0.3.4:
-  version "0.3.5"
-  resolved "https://npm.corp.arista.io/a-msgpack/-/a-msgpack-0.3.5.tgz#024ded4b404aee713190e7d9879e6ea499111e61"
-  integrity sha512-Ew2KON/NOTtd9qCtoCYigAqEK0ATddcpd9KZ+Hes0TaxPh5VjFdoRZeA80jcxyGp9QLLFkBUUWQdqFEhU40q/Q==
-  dependencies:
-    int64-buffer "0.99.1007"
-    jsbi "3.1.1"
 
 arg@^4.1.0:
   version "4.1.2"
@@ -35,9 +32,9 @@ base64-js@0.0.2:
   resolved "https://npm.corp.arista.io/base64-js/-/base64-js-0.0.2.tgz#024f0f72afa25b75f9c0ee73cd4f55ec1bed9784"
   integrity sha1-Ak8Pcq+iW3X5wO5zzU9V7Bvtl4Q=
 
-benchmark@^2.1.4:
+benchmark@2.1.4:
   version "2.1.4"
-  resolved "https://npm.corp.arista.io/benchmark/-/benchmark-2.1.4.tgz#09f3de31c916425d498cc2ee565a0ebf3c2a5629"
+  resolved "https://registry.yarnpkg.com/benchmark/-/benchmark-2.1.4.tgz#09f3de31c916425d498cc2ee565a0ebf3c2a5629"
   integrity sha1-CfPeMckWQl1JjMLuVloOvzwqVik=
   dependencies:
     lodash "^4.17.4"
@@ -106,11 +103,6 @@ inherits@^2.0.3, inherits@~2.0.3:
   resolved "https://npm.corp.arista.io/inherits/-/inherits-2.0.4.tgz#0fa2c64f932917c3433a0ded55363aae37416b7c"
   integrity sha512-k/vGaX4/Yla3WzyMCvTQOXYeIHvqOKtnqBduzTHpzpQZzAskKMhZ2K+EnBiSM9zGSoIFeMpXKxa4dYeZIQqewQ==
 
-int64-buffer@0.99.1007:
-  version "0.99.1007"
-  resolved "https://npm.corp.arista.io/int64-buffer/-/int64-buffer-0.99.1007.tgz#211ea089a2fdb960070a2e77cd6d17dc456a5220"
-  integrity sha512-XDBEu44oSTqlvCSiOZ/0FoUkpWu/vwjJLGSKDabNISPQNZ5wub1FodGHBljRsrR0IXRPq7SslshZYMuA55CgTQ==
-
 int64-buffer@^0.1.9:
   version "0.1.10"
   resolved "https://npm.corp.arista.io/int64-buffer/-/int64-buffer-0.1.10.tgz#277b228a87d95ad777d07c13832022406a473423"
@@ -121,12 +113,7 @@ isarray@^1.0.0, isarray@~1.0.0:
   resolved "https://npm.corp.arista.io/isarray/-/isarray-1.0.0.tgz#bb935d48582cba168c06834957a54a3e07124f11"
   integrity sha1-u5NdSFgsuhaMBoNJV6VKPgcSTxE=
 
-jsbi@3.1.1:
-  version "3.1.1"
-  resolved "https://npm.corp.arista.io/jsbi/-/jsbi-3.1.1.tgz#8ea18b3e08d102c6cc09acaa9a099921d775f4fa"
-  integrity sha512-+HQESPaV0mRiH614z4JPVPAftcRC2p53x92lySPzUzFwJbJTMpzHz8OYUkcXPN3fOcHUe0NdVcHnCtX/1+eCrA==
-
-lodash@^4.17.15, lodash@^4.17.4:
+lodash@4.17.15, lodash@^4.17.4:
   version "4.17.15"
   resolved "https://npm.corp.arista.io/lodash/-/lodash-4.17.15.tgz#b447f6670a0455bbfeedd11392eff330ea097548"
   integrity sha512-8xOcRHvCjnocdS5cpwXQXVzmmh5e5+saE2QGoeQmbKmRS6J3VQppPOIt0MnmE+4xlZoumy0GPG0D0MVIQbNA1A==
@@ -136,23 +123,23 @@ make-error@^1.1.1:
   resolved "https://npm.corp.arista.io/make-error/-/make-error-1.3.5.tgz#efe4e81f6db28cadd605c70f29c831b58ef776c8"
   integrity sha512-c3sIjNUow0+8swNwVpqoH4YCShKNFkMaw6oH1mNS2haDZQqkeZFlHS3dhoeEbKKmJB4vXpJucU6oH75aDYeE9g==
 
-msgpack-js-v5@^0.3.0-v5:
+msgpack-js-v5@0.3.0-v5:
   version "0.3.0-v5"
-  resolved "https://npm.corp.arista.io/msgpack-js-v5/-/msgpack-js-v5-0.3.0-v5.tgz#2a172d79809f2afbea5de3e57e4e4992ad92ff95"
+  resolved "https://registry.yarnpkg.com/msgpack-js-v5/-/msgpack-js-v5-0.3.0-v5.tgz#2a172d79809f2afbea5de3e57e4e4992ad92ff95"
   integrity sha1-KhcteYCfKvvqXePlfk5Jkq2S/5U=
   dependencies:
     bops "~0.0.6"
 
-msgpack-js@^0.3.0:
+msgpack-js@0.3.0:
   version "0.3.0"
-  resolved "https://npm.corp.arista.io/msgpack-js/-/msgpack-js-0.3.0.tgz#030ec08c5956f9ca7d17d40a572d5396fec10923"
+  resolved "https://registry.yarnpkg.com/msgpack-js/-/msgpack-js-0.3.0.tgz#030ec08c5956f9ca7d17d40a572d5396fec10923"
   integrity sha1-Aw7AjFlW+cp9F9QKVy1Tlv7BCSM=
   dependencies:
     bops "~0.0.6"
 
-msgpack-lite@^0.1.26:
+msgpack-lite@0.1.26:
   version "0.1.26"
-  resolved "https://npm.corp.arista.io/msgpack-lite/-/msgpack-lite-0.1.26.tgz#dd3c50b26f059f25e7edee3644418358e2a9ad89"
+  resolved "https://registry.yarnpkg.com/msgpack-lite/-/msgpack-lite-0.1.26.tgz#dd3c50b26f059f25e7edee3644418358e2a9ad89"
   integrity sha1-3TxQsm8FnyXn7e42REGDWOKprYk=
   dependencies:
     event-lite "^0.1.1"
@@ -160,18 +147,18 @@ msgpack-lite@^0.1.26:
     int64-buffer "^0.1.9"
     isarray "^1.0.0"
 
-msgpack-unpack@^2.1.1:
+msgpack-unpack@2.1.1:
   version "2.1.1"
-  resolved "https://npm.corp.arista.io/msgpack-unpack/-/msgpack-unpack-2.1.1.tgz#abba5fc4354fe7e8f7c37bb10154daa652a01ffd"
+  resolved "https://registry.yarnpkg.com/msgpack-unpack/-/msgpack-unpack-2.1.1.tgz#abba5fc4354fe7e8f7c37bb10154daa652a01ffd"
   integrity sha1-q7pfxDVP5+j3w3uxAVTaplKgH/0=
   dependencies:
     binary-parse-fn "^1.0.0"
     binary-types "^2.1.0"
     has-generators "^1.0.1"
 
-msgpack5@^4.2.1:
+msgpack5@4.2.1:
   version "4.2.1"
-  resolved "https://npm.corp.arista.io/msgpack5/-/msgpack5-4.2.1.tgz#007233691af34c4168cea9477cb3236aae854f03"
+  resolved "https://registry.yarnpkg.com/msgpack5/-/msgpack5-4.2.1.tgz#007233691af34c4168cea9477cb3236aae854f03"
   integrity sha512-Xo7nE9ZfBVonQi1rSopNAqPdts/QHyuSEUwIEzAkB+V2FtmkkLUbP6MyVqVVQxsZYI65FpvW3Bb8Z9ZWEjbgHQ==
   dependencies:
     bl "^2.0.1"
@@ -179,21 +166,9 @@ msgpack5@^4.2.1:
     readable-stream "^2.3.6"
     safe-buffer "^5.1.2"
 
-msgpack@^1.0.3:
-  version "1.0.3"
-  resolved "https://npm.corp.arista.io/msgpack/-/msgpack-1.0.3.tgz#4106369ef1691a23884098c6217c4c07b95aa2f9"
-  integrity sha512-FX88+Pexuh+UItdqg68WhNPGPhqs57RlXAYyXNZ8eTQC/Tx5lzeIoxTxA2qAd7qU5a/crON5F0ADf4l6k2b7Jw==
-  dependencies:
-    nan "^2.14.0"
-
-nan@^2.14.0:
-  version "2.14.0"
-  resolved "https://npm.corp.arista.io/nan/-/nan-2.14.0.tgz#7818f722027b2459a86f0295d434d1fc2336c52c"
-  integrity sha512-INOFj37C7k3AfaNTtX8RhsTw7qRy7eLET14cROi9+5HAVbbHuIWUHEauBv5qT4Av2tWasiTY1Jw6puUNqRJXQg==
-
-notepack.io@^2.2.0:
+notepack.io@2.2.0:
   version "2.2.0"
-  resolved "https://npm.corp.arista.io/notepack.io/-/notepack.io-2.2.0.tgz#d7ea71d1cb90094f88c6f3c8d84277c2d0cd101c"
+  resolved "https://registry.yarnpkg.com/notepack.io/-/notepack.io-2.2.0.tgz#d7ea71d1cb90094f88c6f3c8d84277c2d0cd101c"
   integrity sha512-9b5w3t5VSH6ZPosoYnyDONnUTF8o0UkBw7JLA6eBlYJWyGT1Q3vQa8Hmuj1/X6RYvHjjygBDgw6fJhe0JEojfw==
 
 platform@^1.3.3:
@@ -259,9 +234,9 @@ to-utf8@0.0.1:
   resolved "https://npm.corp.arista.io/to-utf8/-/to-utf8-0.0.1.tgz#d17aea72ff2fba39b9e43601be7b3ff72e089852"
   integrity sha1-0Xrqcv8vujm55DYBvns/9y4ImFI=
 
-ts-node@^8.6.2:
+ts-node@8.6.2:
   version "8.6.2"
-  resolved "https://npm.corp.arista.io/ts-node/-/ts-node-8.6.2.tgz#7419a01391a818fbafa6f826a33c1a13e9464e35"
+  resolved "https://registry.yarnpkg.com/ts-node/-/ts-node-8.6.2.tgz#7419a01391a818fbafa6f826a33c1a13e9464e35"
   integrity sha512-4mZEbofxGqLL2RImpe3zMJukvEvcO1XP8bj8ozBPySdCUXEcU5cIRwR0aM3R+VoZq7iXc8N86NC0FspGRqP4gg==
   dependencies:
     arg "^4.1.0"
@@ -270,14 +245,14 @@ ts-node@^8.6.2:
     source-map-support "^0.5.6"
     yn "3.1.1"
 
-tslib@^1.10.0:
+tslib@1.10.0:
   version "1.10.0"
-  resolved "https://npm.corp.arista.io/tslib/-/tslib-1.10.0.tgz#c3c19f95973fb0a62973fb09d90d961ee43e5c8a"
+  resolved "https://registry.yarnpkg.com/tslib/-/tslib-1.10.0.tgz#c3c19f95973fb0a62973fb09d90d961ee43e5c8a"
   integrity sha512-qOebF53frne81cf0S9B41ByenJ3/IuH8yJKngAX35CmiZySA0khhkovshKK+jGCaMnVomla7gVlIcc3EvKPbTQ==
 
-typescript@^3.7.5:
+typescript@3.7.5:
   version "3.7.5"
-  resolved "https://npm.corp.arista.io/typescript/-/typescript-3.7.5.tgz#0692e21f65fd4108b9330238aac11dd2e177a1ae"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.7.5.tgz#0692e21f65fd4108b9330238aac11dd2e177a1ae"
   integrity sha512-/P5lkRXkWHNAbcJIiHPfRoKqyd7bsyCma1hZNUGfn20qm64T6ZBlrzprymeu918H+mB/0rIg2gGK/BXkhhYgBw==
 
 util-deprecate@~1.0.1:
