@@ -82,8 +82,8 @@ jobs:
           name: Install dependencies
           command: npm install
       - run:
-          name: Bootstrap, lint and test
-          command: npm run ci
+          name: Bootstrap
+          command: npm run bootstrap
       - run:
           name: Publish to NPM
           command: |
