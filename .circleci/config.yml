@@ -24,6 +24,9 @@ parameters:
   deploy_version:
     type: boolean
     default: false
+  is_build:
+    type: boolean
+    default: true
 executors:
   cloudvision-builder:
     docker:
@@ -38,6 +41,7 @@ jobs:
       - node/with-cache:
           steps:
             - run: npm install
+            - run: npm run bootstrap
             - run: npm run ci
   open-branch:
     docker:
@@ -51,7 +55,7 @@ jobs:
     steps:
       - protect-branch:
           enforce: true
-  install-and-bootstrap:
+  version-packages:
     executor:
       name: cloudvision-builder
     steps:
@@ -61,18 +65,8 @@ jobs:
           name: Install dependencies
           command: npm install
       - run:
-          name: Bootstrap, lint and test
-          command: npm run ci
-      - persist_to_workspace:
-          root: "."
-          paths: "*"
-  version-packages:
-    executor:
-      name: cloudvision-builder
-    steps:
-      - attach_workspace:
-          at: /home/circleci/build-dir
-      - configure
+          name: Bootstrap
+          command: npm run bootstrap
       - run:
           name: Version packages and create commit
           command: npm run lerna-version
@@ -98,15 +92,13 @@ jobs:
 workflows:
   version: 2
   build-and-test:
+    when: << pipeline.parameters.is_build >>
     jobs:
       - build-and-test
   version-and-push:
     when: << pipeline.parameters.deploy_version >>
     jobs:
-      - install-and-bootstrap
-      - open-branch:
-          requires:
-            - install-and-bootstrap
+      - open-branch
       - version-packages:
           requires:
             - open-branch
