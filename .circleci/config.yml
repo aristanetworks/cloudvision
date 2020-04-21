@@ -1,21 +1,9 @@
 version: 2.1
 orbs:
   node: circleci/node@1.1.6
-jobs:
-  build-and-test:
-    executor:
-      name: node/default
+commands:
+  configure:
     steps:
-      - checkout
-      - node/with-cache:
-          steps:
-            - run: npm install
-            - run: npm run ci
-  version-packages:
-    executor:
-      name: node/default
-    steps:
-      - checkout
       - run:
           name: Git config email
           command: git config --global user.email "arastra.bot@gmail.com"
@@ -25,12 +13,66 @@ jobs:
       - run:
           name: Git config tag push
           command: git config --global push.followTags true
+  protect-branch:
+    parameters:
+      enforce:
+        type: boolean
+        default: true
+    steps:
+      - run: run.py --access-token $GITHUB_TOKEN --branch master --owner aristanetworks --repo cloudvision --enforce_admins << parameters.enforce >>
+parameters:
+  deploy_version:
+    type: boolean
+    default: false
+executors:
+  cloudvision-builder:
+    docker:
+      - image: circleci/node:lts
+    working_directory: /home/circleci/build-dir
+jobs:
+  build-and-test:
+    executor:
+      name: cloudvision-builder
+    steps:
+      - checkout
+      - node/with-cache:
+          steps:
+            - run: npm install
+            - run: npm run ci
+  open-branch:
+    docker:
+      - image: rufman/branch-protection-bot:release-v1.0.0
+    steps:
+      - protect-branch:
+          enforce: false
+  protect-branch:
+    docker:
+      - image: rufman/branch-protection-bot:release-v1.0.0
+    steps:
+      - protect-branch:
+          enforce: true
+  install-and-bootstrap:
+    executor:
+      name: cloudvision-builder
+    steps:
+      - checkout
+      - configure
       - run:
           name: Install dependencies
           command: npm install
       - run:
           name: Bootstrap, lint and test
           command: npm run ci
+      - persist_to_workspace:
+          root: "."
+          paths: "*"
+  version-packages:
+    executor:
+      name: cloudvision-builder
+    steps:
+      - attach_workspace:
+          at: /home/circleci/build-dir
+      - configure
       - run:
           name: Version packages and create commit
           command: npm run lerna-version
@@ -39,7 +81,7 @@ jobs:
           command: git push origin
   publish:
     executor:
-      name: node/default
+      name: cloudvision-builder
     steps:
       - checkout
       - run:
@@ -58,6 +100,19 @@ workflows:
   build-and-test:
     jobs:
       - build-and-test
+  version-and-push:
+    when: << pipeline.parameters.deploy_version >>
+    jobs:
+      - install-and-bootstrap
+      - open-branch:
+          requires:
+            - install-and-bootstrap
+      - version-packages:
+          requires:
+            - open-branch
+      - protect-branch:
+          requires:
+            - version-packages
   tagged-deploy:
     jobs:
       - publish:
