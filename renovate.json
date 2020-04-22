@@ -2,9 +2,9 @@
   "extends": [
     "config:base",
     ":semanticCommits",
-    ":semanticCommitTypeAll(chore)",
-    "schedule:earlyMondays"
+    ":semanticCommitTypeAll(chore)"
   ],
   "assignees": ["rufman"],
-  "labels": ["dependencies"]
+  "labels": ["dependencies"],
+  "schedule": ["after 10pm and before 5am on every weekday", "every weekend"]
 }
