@@ -32,6 +32,6 @@
   },
   "devDependencies": {
     "@types/benchmark": "1.0.31",
-    "@types/lodash": "4.14.149"
+    "@types/lodash": "4.14.150"
   }
 }
