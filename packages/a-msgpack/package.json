@@ -65,7 +65,7 @@
     "cross-env": "7.0.2",
     "eslint": "6.8.0",
     "eslint-config-airbnb-base": "14.1.0",
-    "eslint-config-arista-js": "1.1.22",
+    "eslint-config-arista-js": "1.1.23",
     "eslint-config-arista-ts": "1.1.5",
     "eslint-plugin-arista": "0.1.31",
     "eslint-plugin-import": "2.20.2",
