@@ -81,6 +81,8 @@ const ERROR_STATUS = {
   messages: ERROR_MESSAGE,
 };
 
+jest.spyOn(console, 'groupCollapsed').mockImplementation();
+
 describe('getCommandToken', () => {
   test('should return the proper token', () => {
     const conn = new Connector();
