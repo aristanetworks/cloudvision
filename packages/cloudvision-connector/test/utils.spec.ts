@@ -20,13 +20,15 @@
 import {
   APP_DATASET_TYPE,
   DEVICE_DATASET_TYPE,
-  EOF_CODE,
   EOF,
+  EOF_CODE,
+  ERROR,
   SEARCH_TYPE_ANY,
   SEARCH_TYPE_IP,
   SEARCH_TYPE_MAC,
 } from '../src/constants';
 import Emitter from '../src/emitter';
+import { log } from '../src/logger';
 import {
   createCloseParams,
   hashObject,
@@ -48,6 +50,11 @@ import { Query } from '../types/params';
 const EOF_STATUS = {
   code: EOF_CODE,
 };
+
+jest.mock('../src/logger', () => {
+  return { log: jest.fn() };
+});
+jest.spyOn(console, 'groupCollapsed').mockImplementation();
 
 describe('invalidParamMsg', () => {
   test('should generate a proper error message given parameters', () => {
@@ -492,10 +499,9 @@ describe('validateResponse', () => {
   const token = 'some token';
 
   beforeEach(() => {
-    jest.spyOn(console, 'error');
+    jest.resetAllMocks();
   });
 
-  /* eslint-disable no-console */
   it('should not log an error for a valid response', () => {
     const notifResponse: CloudVisionNotifs = {
       dataset: { name: 'Max', type: APP_DATASET_TYPE },
@@ -508,7 +514,7 @@ describe('validateResponse', () => {
     validateResponse(notifResponse, {}, token, false);
     validateResponse(datasetResponse, {}, token, false);
 
-    expect(console.error).not.toHaveBeenCalled();
+    expect(log).not.toHaveBeenCalled();
   });
 
   it('should log an error for a response with a non array type for notifications', () => {
@@ -519,8 +525,11 @@ describe('validateResponse', () => {
       notifications: { lastName: 'Muncy' },
     };
     validateResponse(response, {}, token, false);
-    expect(console.error).toHaveBeenCalledWith(
-      `Key 'notifications' is not an array for token ${token}`,
+    expect(log).toHaveBeenCalledWith(
+      ERROR,
+      "Key 'notifications' is not an array",
+      undefined,
+      token,
     );
   });
 
@@ -528,8 +537,11 @@ describe('validateResponse', () => {
     // @ts-ignore
     const response: CloudVisionNotifs = { dataset: { name: 'Max', type: 'beast' } };
     validateResponse(response, {}, token, false);
-    expect(console.error).toHaveBeenCalledWith(
-      `No key 'notifications' found in response for token ${token}`,
+    expect(log).toHaveBeenCalledWith(
+      ERROR,
+      "No key 'notifications' found in response",
+      undefined,
+      token,
     );
   });
 
@@ -537,21 +549,21 @@ describe('validateResponse', () => {
     // @ts-ignore
     const response: CloudVisionNotifs = { dataset: { name: 'Max' } };
     validateResponse(response, {}, token, false);
-    expect(console.error).toHaveBeenCalledWith(`No key 'type' found in dataset for token ${token}`);
+    expect(log).toHaveBeenCalledWith(ERROR, "No key 'type' found in dataset", undefined, token);
   });
 
   it('should log an error for a response without name for dataset', () => {
     // @ts-ignore
     const response: CloudVisionNotifs = { dataset: {} };
     validateResponse(response, {}, token, false);
-    expect(console.error).toHaveBeenCalledWith(`No key 'name' found in dataset for token ${token}`);
+    expect(log).toHaveBeenCalledWith(ERROR, "No key 'name' found in dataset", undefined, token);
   });
 
   it('should not log an error for a status response', () => {
     // @ts-ignore
     const response: CloudVisionNotifs = {};
     validateResponse(response, { code: 1101 }, token, false);
-    expect(console.error).not.toHaveBeenCalledWith();
+    expect(log).not.toHaveBeenCalledWith();
   });
   /* eslint-enable no-console */
 });

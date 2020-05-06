@@ -1,5 +1,3 @@
-/* eslint-disable no-use-before-define */
-
 // Copyright (c) 2018, Arista Networks, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software
@@ -41,8 +39,9 @@ import {
 } from '../types/params';
 import { Options, CloudVisionPublishRequest, ServiceRequest } from '../types/query';
 
-import { ALL_SEARCH_TYPES, EOF_CODE, SEARCH_TYPE_ANY } from './constants';
+import { ALL_SEARCH_TYPES, ERROR, EOF_CODE, SEARCH_TYPE_ANY } from './constants';
 import Emitter from './emitter';
+import { log } from './logger';
 
 interface ExplicitSearchOptions extends SearchOptions {
   searchType: SearchType;
@@ -322,22 +321,22 @@ export function validateResponse(
   const notifResponse = response as CloudVisionNotifs;
   /* eslint-disable no-console */
   if (notifResponse.dataset && !notifResponse.dataset.name) {
-    console.error(`No key 'name' found in dataset for token ${token}`);
+    log(ERROR, "No key 'name' found in dataset", undefined, token);
     return;
   }
 
   if (notifResponse.dataset && !notifResponse.dataset.type) {
-    console.error(`No key 'type' found in dataset for token ${token}`);
+    log(ERROR, "No key 'type' found in dataset", undefined, token);
     return;
   }
 
   if (notifResponse.dataset && !notifResponse.notifications) {
-    console.error(`No key 'notifications' found in response for token ${token}`);
+    log(ERROR, "No key 'notifications' found in response", undefined, token);
     return;
   }
 
   if (!batch && notifResponse.dataset && !Array.isArray(notifResponse.notifications)) {
-    console.error(`Key 'notifications' is not an array for token ${token}`);
+    log(ERROR, "Key 'notifications' is not an array", undefined, token);
   }
   /* eslint-enable no-console */
 }

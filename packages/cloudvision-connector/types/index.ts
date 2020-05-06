@@ -46,6 +46,11 @@ export type NotifCallback = (
   token?: string,
 ) => void;
 
+export type ERROR = 'ERROR';
+export type INFO = 'INFO';
+export type WARN = 'WARN';
+export type LogLevels = WARN | ERROR | INFO;
+
 export {
   CloudVisionDatapoint,
   CloudVisionDelete,

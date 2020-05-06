@@ -1,5 +1,3 @@
-/* eslint-disable no-console */
-
 // Copyright (c) 2018, Arista Networks, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software
@@ -42,15 +40,17 @@ import {
   CONNECTED,
   DISCONNECTED,
   EOF_CODE,
+  ERROR,
   ID,
   PAUSE,
   PAUSED_CODE,
-  RESUME,
   PUBLISH,
-  SERVICE_REQUEST,
+  RESUME,
   SEARCH,
+  SERVICE_REQUEST,
 } from './constants';
 import Emitter from './emitter';
+import { log } from './logger';
 import Parser from './parser';
 import { createCloseParams, makeToken, validateResponse } from './utils';
 
@@ -221,7 +221,7 @@ class WRPC {
     try {
       this.sendMessage(closeToken, CLOSE, closeParams);
     } catch (err) {
-      console.error(err);
+      log(ERROR, err);
       this.removeStreamClosingState(streams, closeToken);
       callback(err, undefined, undefined, closeToken);
     }
@@ -411,7 +411,7 @@ class WRPC {
         this.enableOptions((err, _res, status, token): void => {
           // We're good to go
           if (status && status.code !== EOF_CODE) {
-            console.error(err, status, token);
+            log(ERROR, err, status, token);
           }
           this.connectionEvents.emit('connection', WRPC.CONNECTED, event);
         });
@@ -443,12 +443,12 @@ class WRPC {
           );
         }
       } catch (err) {
-        console.error(err);
+        log(ERROR, err);
         return;
       }
 
       if (!msg || !msg.token) {
-        console.error('No message body or message token');
+        log(ERROR, 'No message body or message token');
         return;
       }
 
@@ -469,7 +469,7 @@ class WRPC {
           resumeStatus?: CloudVisionStatus,
         ): void => {
           if (err) {
-            console.error(err, resumeStatus);
+            log(ERROR, err, resumeStatus);
           }
         };
         this.resume({ token }, cb);
@@ -525,7 +525,7 @@ class WRPC {
     try {
       this.sendMessage(token, command, params);
     } catch (err) {
-      console.error(err);
+      log(ERROR, err);
       notifAndUnBindCallback(err, undefined, undefined, token);
     }
   }

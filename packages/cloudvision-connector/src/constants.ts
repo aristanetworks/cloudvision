@@ -24,6 +24,10 @@ import {
   WsCommand,
 } from '../types/params';
 
+export const ERROR = 'ERROR';
+export const INFO = 'INFO';
+export const WARN = 'WARN';
+
 export const EOF = 'EOF';
 /**
  * Status code for EOF (End Of File).

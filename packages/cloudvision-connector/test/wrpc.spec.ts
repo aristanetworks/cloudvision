@@ -22,6 +22,7 @@ import {
   CLOSE,
   EOF,
   EOF_CODE,
+  ERROR,
   GET,
   GET_DATASETS,
   ID,
@@ -34,6 +35,7 @@ import {
   SERVICE_REQUEST,
   SUBSCRIBE,
 } from '../src/constants';
+import { log } from '../src/logger';
 import Parser from '../src/parser';
 import { makeToken } from '../src/utils';
 import WRPC from '../src/wrpc';
@@ -48,10 +50,13 @@ jest.mock('../src/parser', () => ({
   stringify: (msg: CloudVisionQueryMessage) => JSON.stringify(msg),
 }));
 
-const stringifyMessage = (msg: object) => JSON.stringify(msg);
+jest.mock('../src/logger', () => {
+  return { log: jest.fn() };
+});
 
-const NOW = Date.now();
-Date.now = jest.fn(() => NOW);
+jest.spyOn(console, 'groupCollapsed').mockImplementation();
+
+const stringifyMessage = (msg: object) => JSON.stringify(msg);
 
 describe('open/close/connection', () => {
   let wrpc: WRPC;
@@ -194,7 +199,6 @@ describe.each([
   let wrpc: WRPC;
   let ws: WebSocket;
   let sendSpy: jest.SpyInstance;
-  let consoleError: jest.SpyInstance;
   let eventsEmitterSpy: jest.SpyInstance;
   let eventsEmitterUnbindSpy: jest.SpyInstance;
   let eventsEmitterBindSpy: jest.SpyInstance;
@@ -213,6 +217,7 @@ describe.each([
   const RESULT = { dataset: 'Dodgers' };
 
   beforeEach(() => {
+    jest.resetAllMocks();
     wrpc = new WRPC();
     // @ts-ignore
     commandFn = wrpc[fn];
@@ -224,12 +229,10 @@ describe.each([
     eventsEmitterSpy = jest.spyOn(wrpc.eventsEmitter, 'emit');
     eventsEmitterBindSpy = jest.spyOn(wrpc.eventsEmitter, 'bind');
     eventsEmitterUnbindSpy = jest.spyOn(wrpc.eventsEmitter, 'unbind');
-    consoleError = jest.spyOn(console, 'error');
   });
 
   afterEach(() => {
     sendSpy.mockClear();
-    consoleError.mockClear();
     eventsEmitterSpy.mockClear();
     eventsEmitterBindSpy.mockClear();
     eventsEmitterUnbindSpy.mockClear();
@@ -292,7 +295,7 @@ describe.each([
       token = commandFn.call(wrpc, {}, callbackSpy);
     }
     if (token) {
-      expect(consoleError).toHaveBeenCalledTimes(1);
+      expect(log).toHaveBeenCalledTimes(1);
       expect(sendSpy).toHaveBeenCalledTimes(1);
       expect(sendSpy).toHaveBeenCalledWith(
         Parser.stringify({
@@ -459,7 +462,7 @@ describe.each([
     if (token) {
       ws.dispatchEvent(new MessageEvent('message', { data: result }));
 
-      expect(consoleError).toHaveBeenCalledTimes(1);
+      expect(log).toHaveBeenCalledTimes(1);
       expect(callbackSpy).not.toHaveBeenCalled();
       expect(eventsEmitterSpy).not.toHaveBeenCalled();
       expect(eventsEmitterBindSpy).toHaveBeenCalledTimes(1);
@@ -482,11 +485,11 @@ describe.each([
   [PAUSE, 'pause', false],
 ])('Call Commands in debug mode', (command, fn, polymorphic) => {
   const wsCommand = command as WsCommand;
+  let NOW = 0;
   let wrpc: WRPC;
   let ws: WebSocket;
   let sendSpy: jest.SpyInstance;
   let postMessageSpy: jest.SpyInstance;
-  let consoleError: jest.SpyInstance;
   let eventsEmitterSpy: jest.SpyInstance;
   let eventsEmitterUnbindSpy: jest.SpyInstance;
   let eventsEmitterBindSpy: jest.SpyInstance;
@@ -505,6 +508,9 @@ describe.each([
   const RESULT = { dataset: 'Dodgers' };
 
   beforeEach(() => {
+    jest.resetAllMocks();
+    NOW = Date.now();
+    Date.now = jest.fn(() => NOW);
     wrpc = new WRPC({
       pauseStreams: false,
       batchResults: true,
@@ -521,13 +527,11 @@ describe.each([
     eventsEmitterSpy = jest.spyOn(wrpc.eventsEmitter, 'emit');
     eventsEmitterBindSpy = jest.spyOn(wrpc.eventsEmitter, 'bind');
     eventsEmitterUnbindSpy = jest.spyOn(wrpc.eventsEmitter, 'unbind');
-    consoleError = jest.spyOn(console, 'error');
   });
 
   afterEach(() => {
     sendSpy.mockClear();
     postMessageSpy.mockClear();
-    consoleError.mockClear();
     eventsEmitterSpy.mockClear();
     eventsEmitterBindSpy.mockClear();
     eventsEmitterUnbindSpy.mockClear();
@@ -820,7 +824,6 @@ describe.each([
   let wrpc: WRPC;
   let ws: WebSocket;
   let sendSpy: jest.SpyInstance;
-  let consoleError: jest.SpyInstance;
   let eventsEmitterSpy: jest.SpyInstance;
   let eventsEmitterUnbindSpy: jest.SpyInstance;
   let eventsEmitterBindSpy: jest.SpyInstance;
@@ -839,6 +842,7 @@ describe.each([
   const RESULT = { dataset: 'Dodgers' };
 
   beforeEach(() => {
+    jest.resetAllMocks();
     wrpc = new WRPC();
     // @ts-ignore
     commandFn = wrpc[fn];
@@ -848,12 +852,10 @@ describe.each([
     eventsEmitterSpy = jest.spyOn(wrpc.eventsEmitter, 'emit');
     eventsEmitterBindSpy = jest.spyOn(wrpc.eventsEmitter, 'bind');
     eventsEmitterUnbindSpy = jest.spyOn(wrpc.eventsEmitter, 'unbind');
-    consoleError = jest.spyOn(console, 'error');
   });
 
   afterEach(() => {
     sendSpy.mockClear();
-    consoleError.mockClear();
     eventsEmitterSpy.mockClear();
     eventsEmitterBindSpy.mockClear();
     eventsEmitterUnbindSpy.mockClear();
@@ -1015,7 +1017,7 @@ describe.each([
     const subscriptionId = commandFn.call(wrpc, wsCommand, query, callbackSpy);
     if (subscriptionId && subscriptionId.token) {
       const token = subscriptionId.token;
-      expect(consoleError).toHaveBeenCalledTimes(1);
+      expect(log).toHaveBeenCalledTimes(1);
       expect(sendSpy).toHaveBeenCalledTimes(1);
       expect(sendSpy).toHaveBeenCalledWith(
         Parser.stringify({
@@ -1158,7 +1160,7 @@ describe.each([
       const token = subscriptionId.token;
       ws.dispatchEvent(new MessageEvent('message', { data: result }));
 
-      expect(consoleError).toHaveBeenCalledTimes(1);
+      expect(log).toHaveBeenCalledTimes(1);
       expect(callbackSpy).not.toHaveBeenCalled();
       expect(eventsEmitterSpy).not.toHaveBeenCalled();
       expect(eventsEmitterBindSpy).toHaveBeenCalledTimes(1);
@@ -1182,7 +1184,6 @@ describe.each([
   let subscriptionId: SubscriptionIdentifier;
   let subscriptionIdTwo: SubscriptionIdentifier;
   let sendSpy: jest.SpyInstance;
-  let consoleError: jest.SpyInstance;
   let eventsEmitterSpy: jest.SpyInstance;
   let eventsEmitterUnbindSpy: jest.SpyInstance;
   let eventsEmitterBindSpy: jest.SpyInstance;
@@ -1204,6 +1205,7 @@ describe.each([
   const RESULT = { dataset: 'Dodgers' };
 
   beforeEach(() => {
+    jest.resetAllMocks();
     wrpc = new WRPC();
     // @ts-ignore
     commandFn = wrpc[fn];
@@ -1231,14 +1233,12 @@ describe.each([
     eventsEmitterSpy = jest.spyOn(wrpc.eventsEmitter, 'emit');
     eventsEmitterBindSpy = jest.spyOn(wrpc.eventsEmitter, 'bind');
     eventsEmitterUnbindSpy = jest.spyOn(wrpc.eventsEmitter, 'unbind');
-    consoleError = jest.spyOn(console, 'error');
     callbackSpy.mockClear();
     callbackSpyTwo.mockClear();
   });
 
   afterEach(() => {
     sendSpy.mockClear();
-    consoleError.mockClear();
     eventsEmitterSpy.mockClear();
     eventsEmitterBindSpy.mockClear();
     eventsEmitterUnbindSpy.mockClear();
@@ -1278,7 +1278,7 @@ describe.each([
         expect(closeCallback).toHaveBeenCalledTimes(1);
         expect(closeCallback).toHaveBeenCalledWith(ERROR_MESSAGE, undefined, undefined, token);
         expect(callbackSpy).not.toHaveBeenCalled();
-        expect(consoleError).toHaveBeenCalledTimes(1);
+        expect(log).toHaveBeenCalledTimes(1);
         expect(eventsEmitterSpy).not.toHaveBeenCalled();
         expect(eventsEmitterUnbindSpy).toHaveBeenCalledTimes(1);
         expect(eventsEmitterUnbindSpy).toHaveBeenCalledWith(
@@ -1489,7 +1489,7 @@ describe.each([
 
       if (token) {
         expect(closeCallback).toHaveBeenCalledTimes(1);
-        expect(consoleError).toHaveBeenCalledTimes(1);
+        expect(log).toHaveBeenCalledTimes(1);
         expect(callbackSpy).not.toHaveBeenCalled();
         expect(callbackSpyTwo).not.toHaveBeenCalled();
         expect(eventsEmitterSpy).not.toHaveBeenCalled();
@@ -1698,7 +1698,6 @@ describe('enableOptions', () => {
   let wrpc: WRPC;
   let ws: WebSocket;
   let sendSpy: jest.SpyInstance;
-  let consoleError: jest.SpyInstance;
   let eventsEmitterSpy: jest.SpyInstance;
   const ERROR_MESSAGE = 'error';
   const ERROR_STATUS = {
@@ -1710,6 +1709,7 @@ describe('enableOptions', () => {
   };
 
   beforeEach(() => {
+    jest.resetAllMocks();
     wrpc = new WRPC({
       pauseStreams: true,
       batchResults: true,
@@ -1720,12 +1720,10 @@ describe('enableOptions', () => {
     ws = wrpc.websocket;
     sendSpy = jest.spyOn(ws, 'send');
     eventsEmitterSpy = jest.spyOn(wrpc.eventsEmitter, 'emit');
-    consoleError = jest.spyOn(console, 'error');
   });
 
   afterEach(() => {
     sendSpy.mockClear();
-    consoleError.mockClear();
     eventsEmitterSpy.mockClear();
   });
 
@@ -1753,8 +1751,8 @@ describe('enableOptions', () => {
       }),
     );
 
-    expect(consoleError).toHaveBeenCalledTimes(1);
-    expect(consoleError).toHaveBeenCalledWith(ERROR_MESSAGE, ERROR_STATUS, token);
+    expect(log).toHaveBeenCalledTimes(1);
+    expect(log).toHaveBeenCalledWith(ERROR, ERROR_MESSAGE, ERROR_STATUS, token);
   });
 
   test('should resume as soon as server sends back pause status', () => {
@@ -1767,7 +1765,7 @@ describe('enableOptions', () => {
       }),
     );
 
-    expect(consoleError).not.toHaveBeenCalled();
+    expect(log).not.toHaveBeenCalled();
     expect(eventsEmitterSpy).not.toHaveBeenCalled();
   });
 
@@ -1788,7 +1786,7 @@ describe('enableOptions', () => {
       }),
     );
 
-    expect(consoleError).not.toHaveBeenCalled();
+    expect(log).not.toHaveBeenCalled();
     expect(eventsEmitterSpy).toHaveBeenCalledTimes(1);
     expect(eventsEmitterSpy).toHaveBeenCalledWith(resumeToken, null, {}, undefined);
 
@@ -1799,8 +1797,8 @@ describe('enableOptions', () => {
       }),
     );
 
-    expect(consoleError).toHaveBeenCalledTimes(1);
-    expect(consoleError).toHaveBeenCalledWith(ERROR_MESSAGE, ERROR_STATUS);
+    expect(log).toHaveBeenCalledTimes(1);
+    expect(log).toHaveBeenCalledWith(ERROR, ERROR_MESSAGE, ERROR_STATUS);
     expect(eventsEmitterSpy).toHaveBeenCalledTimes(1);
     expect(eventsEmitterSpy).toHaveBeenCalledWith(
       resumeToken,
