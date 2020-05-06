@@ -1,6 +1,6 @@
 {
   "name": "cloudvision-connector",
-  "version": "4.0.4",
+  "version": "4.0.5",
   "description": "A module to communicate with the CloudVision API server",
   "author": "extensions@arista.com",
   "homepage": "http://www.arista.com",
@@ -50,7 +50,7 @@
     "switch"
   ],
   "dependencies": {
-    "a-msgpack": "4.0.4",
+    "a-msgpack": "4.0.5",
     "base64-js": "1.3.1",
     "imurmurhash": "0.1.4",
     "jsbi": "3.1.2"
