@@ -15,7 +15,13 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import { ConnectionCallback, NotifCallback, SubscriptionIdentifier, EventCallback } from '../types';
+import {
+  ConnectionCallback,
+  NotifCallback,
+  SubscriptionIdentifier,
+  EventCallback,
+  RequestArgs,
+} from '../types';
 import {
   CloudVisionBatchedResult,
   CloudVisionMessage,
@@ -172,15 +178,16 @@ class WRPC {
       return null;
     }
     const token: string = makeToken(command, params);
+    const requestArgs = { command };
     if (!this.activeRequests.has(token)) {
       // only execute request if not already getting data
       this.activeRequests.add(token);
       const callbackWithUnbind = this.makeCallbackWithUnbind(token, callback);
-      this.events.bind(token, callbackWithUnbind);
-      this.sendMessageOrError(token, command, params, callbackWithUnbind);
+      this.events.bind(token, requestArgs, callbackWithUnbind);
+      this.sendMessageOrError(token, command, params);
     } else {
       const queuedCallbackWithUnbind = this.makeQueuedCallbackWithUnbind(token, callback);
-      this.events.bind(token, queuedCallbackWithUnbind);
+      this.events.bind(token, requestArgs, queuedCallbackWithUnbind);
     }
 
     return token;
@@ -255,10 +262,17 @@ class WRPC {
    * The callback can receive either `WRPC.CONNECTED or `WRPC.DISCONNECTED`.
    */
   public connection(callback: ConnectionCallback): () => void {
-    this.connectionEvents.bind('connection', callback);
+    const connectionCallback = (
+      _requestArgs: RequestArgs | undefined,
+      connEvent: string,
+      wsEvent: Event,
+    ): void => {
+      callback(connEvent, wsEvent);
+    };
+    this.connectionEvents.bind('connection', { command: 'connection' }, connectionCallback);
 
     return (): void => {
-      this.connectionEvents.unbind('connection', callback);
+      this.connectionEvents.unbind('connection', connectionCallback);
     };
   }
 
@@ -287,6 +301,7 @@ class WRPC {
 
   private makeCallbackWithUnbind(token: string, callback: NotifCallback): EventCallback {
     const callbackWithUnbind = (
+      requestArgs: RequestArgs | undefined,
       err: string | null,
       result?: CloudVisionBatchedResult | CloudVisionResult,
       status?: CloudVisionStatus,
@@ -296,7 +311,7 @@ class WRPC {
         this.activeRequests.delete(token);
         this.events.unbind(token, callbackWithUnbind);
       }
-      callback(err, result, status, token);
+      callback(err, result, status, token, requestArgs);
     };
 
     return callbackWithUnbind;
@@ -304,6 +319,7 @@ class WRPC {
 
   private makeQueuedCallbackWithUnbind(token: string, callback: NotifCallback): EventCallback {
     const callbackWithUnbind = (
+      requestArgs: RequestArgs | undefined,
       err: string | null,
       result?: CloudVisionBatchedResult | CloudVisionResult,
       status?: CloudVisionStatus,
@@ -311,7 +327,7 @@ class WRPC {
       if (err) {
         // Unbind callback and invoke callback only when any error message is received
         this.events.unbind(token, callbackWithUnbind);
-        callback(err, result, status, token);
+        callback(err, result, status, token, requestArgs);
       }
     };
 
@@ -520,13 +536,13 @@ class WRPC {
     token: string,
     command: WsCommand,
     params: CloudVisionParams | CloudVisionPublishRequest | ServiceRequest,
-    notifAndUnBindCallback: EventCallback,
   ): void {
     try {
       this.sendMessage(token, command, params);
     } catch (err) {
       log(ERROR, err);
-      notifAndUnBindCallback(err, undefined, undefined, token);
+      // notifAndUnBindCallback(err, undefined, undefined, token);
+      this.events.emit(token, err, undefined, undefined);
     }
   }
 
@@ -541,12 +557,13 @@ class WRPC {
     callback: NotifCallback,
   ): void {
     const closeCallback = (
+      requestArgs: RequestArgs | undefined,
       err: string | null,
       result?: CloudVisionBatchedResult | CloudVisionResult,
       status?: CloudVisionStatus,
     ): void => {
       this.removeStreamClosingState(streams, closeToken);
-      callback(err, result, status, closeToken);
+      callback(err, result, status, closeToken, requestArgs);
     };
 
     if (Array.isArray(streams)) {
@@ -561,7 +578,7 @@ class WRPC {
       this.closingStreams.set(streams.token, closeToken);
     }
 
-    this.events.bind(closeToken, closeCallback);
+    this.events.bind(closeToken, { command: CLOSE }, closeCallback);
   }
 
   /**
@@ -582,7 +599,9 @@ class WRPC {
       return null;
     }
     const token = makeToken(command, params);
+    const callerRequestArgs = { command };
     const callbackWithUnbind: EventCallback = (
+      requestArgs: RequestArgs | undefined,
       err: string | null,
       result?: CloudVisionBatchedResult | CloudVisionResult,
       status?: CloudVisionStatus,
@@ -595,9 +614,9 @@ class WRPC {
       if (status && status.code === ACTIVE_CODE) {
         this.activeStreams.add(token);
       }
-      callback(err, result, status, token);
+      callback(err, result, status, token, requestArgs);
     };
-    const numCallbacks = this.events.bind(token, callbackWithUnbind);
+    const numCallbacks = this.events.bind(token, callerRequestArgs, callbackWithUnbind);
     if (numCallbacks === 1) {
       // Only execute the request on the first callback.
       // If there are open request to the same data, just attach the callback
@@ -606,11 +625,11 @@ class WRPC {
         // The stream is still closing, so wait for it to close before re requesting
         this.addWaitingStream(closingStreamToken, token, command, params);
       } else {
-        this.sendMessageOrError(token, command, params, callbackWithUnbind);
+        this.sendMessageOrError(token, command, params);
       }
     } else if (this.activeStreams.has(token)) {
       // The stream is already open immediately call get
-      callback(null, undefined, { code: ACTIVE_CODE }, token);
+      callback(null, undefined, { code: ACTIVE_CODE }, token, callerRequestArgs);
     }
 
     return { token, callback: callbackWithUnbind };

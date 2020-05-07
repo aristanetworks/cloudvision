@@ -15,8 +15,8 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import { EventCallback } from '../types';
-import { EmitterEvents } from '../types/emitter';
+import { EventCallback, RequestArgs } from '../types';
+import { EmitterEvents, EmitterRequestArgs } from '../types/emitter';
 
 /**
  * A class that tracks event callbacks by event type.
@@ -26,8 +26,11 @@ import { EmitterEvents } from '../types/emitter';
 class Emitter {
   private events: EmitterEvents;
 
+  private requestArgs: EmitterRequestArgs;
+
   public constructor() {
     this.events = new Map();
+    this.requestArgs = new Map();
   }
 
   /**
@@ -35,6 +38,13 @@ class Emitter {
    */
   public getEventsMap(): EmitterEvents {
     return this.events;
+  }
+
+  /**
+   * Returns the `Map` of requestArgs
+   */
+  public getRequestArgsMap(): EmitterRequestArgs {
+    return this.requestArgs;
   }
 
   /**
@@ -49,13 +59,14 @@ class Emitter {
    *
    * @returns The number of callbacks subscribed to the event type
    */
-  public bind(eventType: string, callback: EventCallback): number {
+  public bind(eventType: string, requestArgs: RequestArgs, callback: EventCallback): number {
     let callbacksForEvent = this.events.get(eventType);
     if (callbacksForEvent) {
       callbacksForEvent.push(callback);
     } else {
       callbacksForEvent = [callback];
       this.events.set(eventType, callbacksForEvent);
+      this.requestArgs.set(eventType, requestArgs);
     }
 
     return callbacksForEvent.length;
@@ -85,6 +96,7 @@ class Emitter {
 
     if (callbacksForEventLen === 0) {
       this.events.delete(eventType);
+      this.requestArgs.delete(eventType);
     }
 
     return callbacksForEventLen;
@@ -96,6 +108,7 @@ class Emitter {
    */
   public unbindAll(eventType: string): void {
     this.events.delete(eventType);
+    this.requestArgs.delete(eventType);
   }
 
   /**
@@ -110,7 +123,7 @@ class Emitter {
 
     // iterate in reverse order in case callback calls unbind on the eventType
     for (let i = callbacksForEvent.length - 1; i >= 0; i -= 1) {
-      callbacksForEvent[i](...args);
+      callbacksForEvent[i](this.requestArgs.get(eventType), ...args);
     }
   }
 
@@ -120,6 +133,7 @@ class Emitter {
    */
   public close(): void {
     this.events.clear();
+    this.requestArgs.clear();
   }
 }
 

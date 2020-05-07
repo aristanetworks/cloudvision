@@ -19,7 +19,13 @@ import { encode, decode, Codec } from 'a-msgpack';
 import { fromByteArray, toByteArray } from 'base64-js';
 import MurmurHash3 from 'imurmurhash';
 
-import { NotifCallback, PlainObject, SubscriptionIdentifier, PublishCallback } from '../types';
+import {
+  NotifCallback,
+  PlainObject,
+  SubscriptionIdentifier,
+  PublishCallback,
+  RequestArgs,
+} from '../types';
 import {
   CloudVisionBatchedNotifications,
   CloudVisionBatchedResult,
@@ -206,33 +212,40 @@ export function makeNotifCallback(callback: NotifCallback, options: Options = {}
     result?: CloudVisionResult | CloudVisionBatchedResult | CloudVisionServiceResult,
     status?: CloudVisionStatus,
     token?: string,
+    requestArgs?: RequestArgs,
   ): void => {
     if (status && status.code === EOF_CODE) {
-      callback(null, undefined, status, token);
+      callback(null, undefined, status, token, requestArgs);
       return;
     }
     if (err) {
-      callback(`Error: ${err}\nOptions: ${JSON.stringify(options)}`, undefined, status, token);
+      callback(
+        `Error: ${err}\nOptions: ${JSON.stringify(options)}`,
+        undefined,
+        status,
+        token,
+        requestArgs,
+      );
       // Send an extra EOF response to mark notification as complete.
-      callback(null, undefined, { code: EOF_CODE }, token);
+      callback(null, undefined, { code: EOF_CODE }, token, requestArgs);
       return;
     }
 
     const datasets = result as CloudVisionDatasets;
     if (datasets && datasets.datasets) {
-      callback(null, datasets, status, token);
+      callback(null, datasets, status, token, requestArgs);
       return;
     }
 
     const notifs = result as CloudVisionNotifs | CloudVisionBatchedNotifications;
     if (notifs && notifs.dataset) {
-      callback(null, notifs, status, token);
+      callback(null, notifs, status, token, requestArgs);
       return;
     }
 
     // if none of the cases above apply, then it's a service request
     if (notifs) {
-      callback(null, notifs, status, token);
+      callback(null, notifs, status, token, requestArgs);
     }
   };
 
