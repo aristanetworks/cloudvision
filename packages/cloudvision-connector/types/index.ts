@@ -4,6 +4,7 @@ import {
   CloudVisionServiceResult,
   CloudVisionStatus,
 } from './notifications';
+import { WsCommand } from './params';
 
 export { BaseType, Element, NeatType, NeatTypeClass, PathElements, Timestamp } from 'a-msgpack';
 
@@ -12,7 +13,10 @@ export interface PlainObject<T> {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type EventCallback = (...args: any[]) => void;
+export type EventCallback = (requestArgs: RequestArgs | undefined, ...args: any[]) => void;
+export interface RequestArgs {
+  command: WsCommand | 'connection';
+}
 
 export type ConnectionCallback = (connEvent: string, wsEvent: Event) => void;
 
@@ -44,6 +48,7 @@ export type NotifCallback = (
   result?: CloudVisionBatchedResult | CloudVisionResult | CloudVisionServiceResult,
   status?: CloudVisionStatus,
   token?: string,
+  requestArgs?: RequestArgs,
 ) => void;
 
 export type ERROR = 'ERROR';

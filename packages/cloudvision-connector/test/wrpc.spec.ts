@@ -39,7 +39,7 @@ import { log } from '../src/logger';
 import Parser from '../src/parser';
 import { makeToken } from '../src/utils';
 import WRPC from '../src/wrpc';
-import { NotifCallback, SubscriptionIdentifier } from '../types';
+import { NotifCallback, SubscriptionIdentifier, RequestArgs } from '../types';
 import { WsCommand, CloudVisionParams } from '../types/params';
 import { CloudVisionQueryMessage } from '../types/query';
 
@@ -198,6 +198,7 @@ describe.each([
   const wsCommand = command as WsCommand;
   let wrpc: WRPC;
   let ws: WebSocket;
+  let requestArgs: RequestArgs;
   let sendSpy: jest.SpyInstance;
   let eventsEmitterSpy: jest.SpyInstance;
   let eventsEmitterUnbindSpy: jest.SpyInstance;
@@ -221,6 +222,7 @@ describe.each([
     wrpc = new WRPC();
     // @ts-ignore
     commandFn = wrpc[fn];
+    requestArgs = { command };
     // @ts-ignore
     polymorphicCommandFn = wrpc[fn];
     wrpc.run('ws://localhost:8080');
@@ -268,7 +270,7 @@ describe.each([
       expect(eventsEmitterSpy).not.toHaveBeenCalled();
       expect(eventsEmitterUnbindSpy).not.toHaveBeenCalled();
       expect(eventsEmitterBindSpy).toHaveBeenCalledTimes(1);
-      expect(eventsEmitterBindSpy).toHaveBeenCalledWith(token, expect.any(Function));
+      expect(eventsEmitterBindSpy).toHaveBeenCalledWith(token, requestArgs, expect.any(Function));
       expect(sendSpy).toHaveBeenCalledTimes(1);
       expect(sendSpy).toHaveBeenCalledWith(
         Parser.stringify({
@@ -305,10 +307,16 @@ describe.each([
         }),
       );
       expect(callbackSpy).toHaveBeenCalledTimes(1);
-      expect(callbackSpy).toHaveBeenCalledWith(ERROR_MESSAGE, undefined, undefined, token);
-      expect(eventsEmitterSpy).not.toHaveBeenCalled();
+      expect(callbackSpy).toHaveBeenCalledWith(
+        ERROR_MESSAGE,
+        undefined,
+        undefined,
+        token,
+        requestArgs,
+      );
+      expect(eventsEmitterSpy).toHaveBeenCalledTimes(1);
       expect(eventsEmitterBindSpy).toHaveBeenCalledTimes(1);
-      expect(eventsEmitterBindSpy).toHaveBeenCalledWith(token, expect.any(Function));
+      expect(eventsEmitterBindSpy).toHaveBeenCalledWith(token, requestArgs, expect.any(Function));
       expect(eventsEmitterUnbindSpy).toHaveBeenCalledTimes(1);
       expect(token).not.toBeNull();
     }
@@ -332,11 +340,17 @@ describe.each([
       );
 
       expect(callbackSpy).toHaveBeenCalledTimes(1);
-      expect(callbackSpy).toHaveBeenCalledWith(ERROR_MESSAGE, undefined, ERROR_STATUS, token);
+      expect(callbackSpy).toHaveBeenCalledWith(
+        ERROR_MESSAGE,
+        undefined,
+        ERROR_STATUS,
+        token,
+        requestArgs,
+      );
       expect(eventsEmitterSpy).toHaveBeenCalledTimes(1);
       expect(eventsEmitterSpy).toHaveBeenCalledWith(token, ERROR_MESSAGE, undefined, ERROR_STATUS);
       expect(eventsEmitterBindSpy).toHaveBeenCalledTimes(1);
-      expect(eventsEmitterBindSpy).toHaveBeenCalledWith(token, expect.any(Function));
+      expect(eventsEmitterBindSpy).toHaveBeenCalledWith(token, requestArgs, expect.any(Function));
       expect(eventsEmitterUnbindSpy).toHaveBeenCalledTimes(1);
       expect(eventsEmitterUnbindSpy).toHaveBeenCalledWith(token, expect.any(Function));
       expect(sendSpy).toHaveBeenCalledTimes(1);
@@ -363,11 +377,11 @@ describe.each([
       );
 
       expect(callbackSpy).toHaveBeenCalledTimes(1);
-      expect(callbackSpy).toHaveBeenCalledWith(EOF, undefined, EOF_STATUS, token);
+      expect(callbackSpy).toHaveBeenCalledWith(EOF, undefined, EOF_STATUS, token, requestArgs);
       expect(eventsEmitterSpy).toHaveBeenCalledTimes(1);
       expect(eventsEmitterSpy).toHaveBeenCalledWith(token, EOF, undefined, EOF_STATUS);
       expect(eventsEmitterBindSpy).toHaveBeenCalledTimes(1);
-      expect(eventsEmitterBindSpy).toHaveBeenCalledWith(token, expect.any(Function));
+      expect(eventsEmitterBindSpy).toHaveBeenCalledWith(token, requestArgs, expect.any(Function));
       expect(eventsEmitterUnbindSpy).toHaveBeenCalledTimes(1);
       expect(eventsEmitterUnbindSpy).toHaveBeenCalledWith(token, expect.any(Function));
       expect(sendSpy).toHaveBeenCalledTimes(1);
@@ -391,11 +405,11 @@ describe.each([
       );
 
       expect(callbackSpy).toHaveBeenCalledTimes(1);
-      expect(callbackSpy).toHaveBeenCalledWith(null, RESULT, undefined, token);
+      expect(callbackSpy).toHaveBeenCalledWith(null, RESULT, undefined, token, requestArgs);
       expect(eventsEmitterSpy).toHaveBeenCalledTimes(1);
       expect(eventsEmitterSpy).toHaveBeenCalledWith(token, null, RESULT, undefined);
       expect(eventsEmitterBindSpy).toHaveBeenCalledTimes(1);
-      expect(eventsEmitterBindSpy).toHaveBeenCalledWith(token, expect.any(Function));
+      expect(eventsEmitterBindSpy).toHaveBeenCalledWith(token, requestArgs, expect.any(Function));
       expect(eventsEmitterUnbindSpy).not.toHaveBeenCalled();
       expect(sendSpy).toHaveBeenCalledTimes(1);
       expect(token).not.toBeNull();
@@ -418,7 +432,7 @@ describe.each([
       expect(callbackSpy).not.toHaveBeenCalled();
       expect(eventsEmitterSpy).not.toHaveBeenCalled();
       expect(eventsEmitterBindSpy).toHaveBeenCalledTimes(1);
-      expect(eventsEmitterBindSpy).toHaveBeenCalledWith(token, expect.any(Function));
+      expect(eventsEmitterBindSpy).toHaveBeenCalledWith(token, requestArgs, expect.any(Function));
       expect(eventsEmitterUnbindSpy).not.toHaveBeenCalled();
       expect(sendSpy).toHaveBeenCalledTimes(1);
       expect(token).not.toBeNull();
@@ -441,7 +455,7 @@ describe.each([
       expect(callbackSpy).not.toHaveBeenCalled();
       expect(eventsEmitterSpy).not.toHaveBeenCalled();
       expect(eventsEmitterBindSpy).toHaveBeenCalledTimes(1);
-      expect(eventsEmitterBindSpy).toHaveBeenCalledWith(token, expect.any(Function));
+      expect(eventsEmitterBindSpy).toHaveBeenCalledWith(token, requestArgs, expect.any(Function));
       expect(eventsEmitterUnbindSpy).not.toHaveBeenCalled();
       expect(sendSpy).toHaveBeenCalledTimes(1);
       expect(token).not.toBeNull();
@@ -466,7 +480,7 @@ describe.each([
       expect(callbackSpy).not.toHaveBeenCalled();
       expect(eventsEmitterSpy).not.toHaveBeenCalled();
       expect(eventsEmitterBindSpy).toHaveBeenCalledTimes(1);
-      expect(eventsEmitterBindSpy).toHaveBeenCalledWith(token, expect.any(Function));
+      expect(eventsEmitterBindSpy).toHaveBeenCalledWith(token, requestArgs, expect.any(Function));
       expect(eventsEmitterUnbindSpy).not.toHaveBeenCalled();
       expect(sendSpy).toHaveBeenCalledTimes(1);
       expect(token).not.toBeNull();
@@ -488,6 +502,7 @@ describe.each([
   let NOW = 0;
   let wrpc: WRPC;
   let ws: WebSocket;
+  let requestArgs: RequestArgs;
   let sendSpy: jest.SpyInstance;
   let postMessageSpy: jest.SpyInstance;
   let eventsEmitterSpy: jest.SpyInstance;
@@ -518,6 +533,7 @@ describe.each([
     });
     // @ts-ignore
     commandFn = wrpc[fn];
+    requestArgs = { command };
     // @ts-ignore
     polymorphicCommandFn = wrpc[fn];
     wrpc.run('ws://localhost:8080');
@@ -561,7 +577,7 @@ describe.each([
       expect(eventsEmitterSpy).not.toHaveBeenCalled();
       expect(eventsEmitterUnbindSpy).not.toHaveBeenCalled();
       expect(eventsEmitterBindSpy).toHaveBeenCalledTimes(1);
-      expect(eventsEmitterBindSpy).toHaveBeenCalledWith(token, expect.any(Function));
+      expect(eventsEmitterBindSpy).toHaveBeenCalledWith(token, requestArgs, expect.any(Function));
       expect(sendSpy).toHaveBeenCalledTimes(1);
       expect(sendSpy).toHaveBeenCalledWith(
         Parser.stringify({
@@ -600,11 +616,11 @@ describe.each([
       expect(postMessageSpy).toHaveBeenCalledTimes(1);
       expect(postMessageSpy).toHaveBeenCalledWith(expectedPostedMessage, '*');
       expect(callbackSpy).toHaveBeenCalledTimes(1);
-      expect(callbackSpy).toHaveBeenCalledWith(null, RESULT, undefined, token);
+      expect(callbackSpy).toHaveBeenCalledWith(null, RESULT, undefined, token, requestArgs);
       expect(eventsEmitterSpy).toHaveBeenCalledTimes(1);
       expect(eventsEmitterUnbindSpy).not.toHaveBeenCalled();
       expect(eventsEmitterBindSpy).toHaveBeenCalledTimes(1);
-      expect(eventsEmitterBindSpy).toHaveBeenCalledWith(token, expect.any(Function));
+      expect(eventsEmitterBindSpy).toHaveBeenCalledWith(token, requestArgs, expect.any(Function));
       expect(token).not.toBeNull();
     }
     expect(token).not.toBeNull();
@@ -685,7 +701,7 @@ describe.each([
       expect(postMessageSpy).toHaveBeenCalledTimes(1);
       expect(postMessageSpy).toHaveBeenCalledWith(expectedPostedMessage, '*');
       expect(callbackSpy).toHaveBeenCalledTimes(1);
-      expect(callbackSpy).toHaveBeenCalledWith(null, RESULT, undefined, token);
+      expect(callbackSpy).toHaveBeenCalledWith(null, RESULT, undefined, token, requestArgs);
       expect(eventsEmitterSpy).toHaveBeenCalledTimes(1);
       expect(eventsEmitterUnbindSpy).not.toHaveBeenCalled();
       expect(eventsEmitterBindSpy).toHaveBeenCalledTimes(2);
@@ -721,12 +737,18 @@ describe.each([
       expect(postMessageSpy).toHaveBeenCalledTimes(1);
       expect(postMessageSpy).toHaveBeenCalledWith(expectedPostedMessage, '*');
       expect(callbackSpy).toHaveBeenCalledTimes(1);
-      expect(callbackSpy).toHaveBeenCalledWith(ERROR_MESSAGE, undefined, ERROR_STATUS, token);
+      expect(callbackSpy).toHaveBeenCalledWith(
+        ERROR_MESSAGE,
+        undefined,
+        ERROR_STATUS,
+        token,
+        requestArgs,
+      );
       expect(eventsEmitterSpy).toHaveBeenCalledTimes(1);
       expect(eventsEmitterUnbindSpy).toHaveBeenCalledTimes(1);
       expect(eventsEmitterUnbindSpy).toHaveBeenCalledWith(token, expect.any(Function));
       expect(eventsEmitterBindSpy).toHaveBeenCalledTimes(1);
-      expect(eventsEmitterBindSpy).toHaveBeenCalledWith(token, expect.any(Function));
+      expect(eventsEmitterBindSpy).toHaveBeenCalledWith(token, requestArgs, expect.any(Function));
       expect(token).not.toBeNull();
     }
     expect(token).not.toBeNull();
@@ -766,7 +788,13 @@ describe.each([
       expect(postMessageSpy).toHaveBeenCalledTimes(1);
       expect(postMessageSpy).toHaveBeenCalledWith(expectedPostedMessage, '*');
       expect(callbackSpy).toHaveBeenCalledTimes(2);
-      expect(callbackSpy).toHaveBeenCalledWith(ERROR_MESSAGE, undefined, ERROR_STATUS, token);
+      expect(callbackSpy).toHaveBeenCalledWith(
+        ERROR_MESSAGE,
+        undefined,
+        ERROR_STATUS,
+        token,
+        requestArgs,
+      );
       expect(eventsEmitterSpy).toHaveBeenCalledTimes(1);
       expect(eventsEmitterUnbindSpy).toHaveBeenCalledTimes(2);
       expect(eventsEmitterBindSpy).toHaveBeenCalledTimes(2);
@@ -803,12 +831,12 @@ describe.each([
       expect(postMessageSpy).toHaveBeenCalledTimes(1);
       expect(postMessageSpy).toHaveBeenCalledWith(expectedPostedMessage, '*');
       expect(callbackSpy).toHaveBeenCalledTimes(1);
-      expect(callbackSpy).toHaveBeenCalledWith(EOF, undefined, EOF_STATUS, token);
+      expect(callbackSpy).toHaveBeenCalledWith(EOF, undefined, EOF_STATUS, token, requestArgs);
       expect(eventsEmitterSpy).toHaveBeenCalledTimes(1);
       expect(eventsEmitterUnbindSpy).toHaveBeenCalledTimes(1);
       expect(eventsEmitterUnbindSpy).toHaveBeenCalledWith(token, expect.any(Function));
       expect(eventsEmitterBindSpy).toHaveBeenCalledTimes(1);
-      expect(eventsEmitterBindSpy).toHaveBeenCalledWith(token, expect.any(Function));
+      expect(eventsEmitterBindSpy).toHaveBeenCalledWith(token, requestArgs, expect.any(Function));
       expect(token).not.toBeNull();
     }
     expect(token).not.toBeNull();
@@ -823,6 +851,7 @@ describe.each([
   const wsCommand = command as WsCommand;
   let wrpc: WRPC;
   let ws: WebSocket;
+  let requestArgs: RequestArgs;
   let sendSpy: jest.SpyInstance;
   let eventsEmitterSpy: jest.SpyInstance;
   let eventsEmitterUnbindSpy: jest.SpyInstance;
@@ -846,6 +875,7 @@ describe.each([
     wrpc = new WRPC();
     // @ts-ignore
     commandFn = wrpc[fn];
+    requestArgs = { command };
     wrpc.run('ws://localhost:8080');
     ws = wrpc.websocket;
     sendSpy = jest.spyOn(ws, 'send');
@@ -883,7 +913,7 @@ describe.each([
       expect(eventsEmitterSpy).not.toHaveBeenCalled();
       expect(eventsEmitterUnbindSpy).not.toHaveBeenCalled();
       expect(eventsEmitterBindSpy).toHaveBeenCalledTimes(1);
-      expect(eventsEmitterBindSpy).toHaveBeenCalledWith(token, expect.any(Function));
+      expect(eventsEmitterBindSpy).toHaveBeenCalledWith(token, requestArgs, expect.any(Function));
       expect(sendSpy).toHaveBeenCalledTimes(1);
       expect(sendSpy).toHaveBeenCalledWith(
         Parser.stringify({
@@ -918,11 +948,11 @@ describe.each([
       );
       expect(wrpc.streams).toContain(token);
       expect(callbackSpy).toHaveBeenCalledTimes(1);
-      expect(callbackSpy).toHaveBeenCalledWith(null, undefined, ACTIVE_STATUS, token);
+      expect(callbackSpy).toHaveBeenCalledWith(null, undefined, ACTIVE_STATUS, token, requestArgs);
       expect(eventsEmitterSpy).toHaveBeenCalledTimes(1);
       expect(eventsEmitterSpy).toHaveBeenCalledWith(token, null, undefined, ACTIVE_STATUS);
       expect(eventsEmitterBindSpy).toHaveBeenCalledTimes(1);
-      expect(eventsEmitterBindSpy).toHaveBeenCalledWith(token, expect.any(Function));
+      expect(eventsEmitterBindSpy).toHaveBeenCalledWith(token, requestArgs, expect.any(Function));
       expect(eventsEmitterUnbindSpy).not.toHaveBeenCalled();
       expect(token).not.toBeNull();
     }
@@ -951,7 +981,7 @@ describe.each([
         expect(eventsEmitterSpy).toHaveBeenCalledTimes(1);
         expect(eventsEmitterUnbindSpy).not.toHaveBeenCalled();
         expect(eventsEmitterBindSpy).toHaveBeenCalledTimes(2);
-        expect(eventsEmitterBindSpy).toHaveBeenCalledWith(token, expect.any(Function));
+        expect(eventsEmitterBindSpy).toHaveBeenCalledWith(token, requestArgs, expect.any(Function));
         expect(sendSpy).toHaveBeenCalledTimes(1);
         expect(sendSpy).toHaveBeenCalledWith(
           Parser.stringify({
@@ -991,7 +1021,7 @@ describe.each([
       expect(eventsEmitterSpy).toHaveBeenCalledTimes(1);
       expect(eventsEmitterUnbindSpy).not.toHaveBeenCalled();
       expect(eventsEmitterBindSpy).toHaveBeenCalledTimes(2);
-      expect(eventsEmitterBindSpy).toHaveBeenCalledWith(token, expect.any(Function));
+      expect(eventsEmitterBindSpy).toHaveBeenCalledWith(token, requestArgs, expect.any(Function));
       expect(sendSpy).toHaveBeenCalledTimes(1);
       expect(sendSpy).toHaveBeenCalledWith(
         Parser.stringify({
@@ -1027,10 +1057,16 @@ describe.each([
         }),
       );
       expect(callbackSpy).toHaveBeenCalledTimes(1);
-      expect(callbackSpy).toHaveBeenCalledWith(ERROR_MESSAGE, undefined, undefined, token);
-      expect(eventsEmitterSpy).not.toHaveBeenCalled();
+      expect(callbackSpy).toHaveBeenCalledWith(
+        ERROR_MESSAGE,
+        undefined,
+        undefined,
+        token,
+        requestArgs,
+      );
+      expect(eventsEmitterSpy).toHaveBeenCalledTimes(1);
       expect(eventsEmitterBindSpy).toHaveBeenCalledTimes(1);
-      expect(eventsEmitterBindSpy).toHaveBeenCalledWith(token, expect.any(Function));
+      expect(eventsEmitterBindSpy).toHaveBeenCalledWith(token, requestArgs, expect.any(Function));
       expect(eventsEmitterUnbindSpy).toHaveBeenCalledTimes(1);
       expect(token).not.toBeNull();
     }
@@ -1050,11 +1086,17 @@ describe.each([
       );
 
       expect(callbackSpy).toHaveBeenCalledTimes(1);
-      expect(callbackSpy).toHaveBeenCalledWith(ERROR_MESSAGE, undefined, ERROR_STATUS, token);
+      expect(callbackSpy).toHaveBeenCalledWith(
+        ERROR_MESSAGE,
+        undefined,
+        ERROR_STATUS,
+        token,
+        requestArgs,
+      );
       expect(eventsEmitterSpy).toHaveBeenCalledTimes(1);
       expect(eventsEmitterSpy).toHaveBeenCalledWith(token, ERROR_MESSAGE, undefined, ERROR_STATUS);
       expect(eventsEmitterBindSpy).toHaveBeenCalledTimes(1);
-      expect(eventsEmitterBindSpy).toHaveBeenCalledWith(token, expect.any(Function));
+      expect(eventsEmitterBindSpy).toHaveBeenCalledWith(token, requestArgs, expect.any(Function));
       expect(eventsEmitterUnbindSpy).toHaveBeenCalledTimes(1);
       expect(eventsEmitterUnbindSpy).toHaveBeenCalledWith(token, expect.any(Function));
       expect(sendSpy).toHaveBeenCalledTimes(1);
@@ -1077,11 +1119,11 @@ describe.each([
       );
 
       expect(callbackSpy).toHaveBeenCalledTimes(1);
-      expect(callbackSpy).toHaveBeenCalledWith(EOF, undefined, EOF_STATUS, token);
+      expect(callbackSpy).toHaveBeenCalledWith(EOF, undefined, EOF_STATUS, token, requestArgs);
       expect(eventsEmitterSpy).toHaveBeenCalledTimes(1);
       expect(eventsEmitterSpy).toHaveBeenCalledWith(token, EOF, undefined, EOF_STATUS);
       expect(eventsEmitterBindSpy).toHaveBeenCalledTimes(1);
-      expect(eventsEmitterBindSpy).toHaveBeenCalledWith(token, expect.any(Function));
+      expect(eventsEmitterBindSpy).toHaveBeenCalledWith(token, requestArgs, expect.any(Function));
       expect(eventsEmitterUnbindSpy).toHaveBeenCalledTimes(1);
       expect(eventsEmitterUnbindSpy).toHaveBeenCalledWith(token, expect.any(Function));
       expect(sendSpy).toHaveBeenCalledTimes(1);
@@ -1101,11 +1143,11 @@ describe.each([
       );
 
       expect(callbackSpy).toHaveBeenCalledTimes(1);
-      expect(callbackSpy).toHaveBeenCalledWith(null, RESULT, undefined, token);
+      expect(callbackSpy).toHaveBeenCalledWith(null, RESULT, undefined, token, requestArgs);
       expect(eventsEmitterSpy).toHaveBeenCalledTimes(1);
       expect(eventsEmitterSpy).toHaveBeenCalledWith(token, null, RESULT, undefined);
       expect(eventsEmitterBindSpy).toHaveBeenCalledTimes(1);
-      expect(eventsEmitterBindSpy).toHaveBeenCalledWith(token, expect.any(Function));
+      expect(eventsEmitterBindSpy).toHaveBeenCalledWith(token, requestArgs, expect.any(Function));
       expect(eventsEmitterUnbindSpy).not.toHaveBeenCalled();
       expect(sendSpy).toHaveBeenCalledTimes(1);
       expect(token).not.toBeNull();
@@ -1124,7 +1166,7 @@ describe.each([
       expect(callbackSpy).not.toHaveBeenCalled();
       expect(eventsEmitterSpy).not.toHaveBeenCalled();
       expect(eventsEmitterBindSpy).toHaveBeenCalledTimes(1);
-      expect(eventsEmitterBindSpy).toHaveBeenCalledWith(token, expect.any(Function));
+      expect(eventsEmitterBindSpy).toHaveBeenCalledWith(token, requestArgs, expect.any(Function));
       expect(eventsEmitterUnbindSpy).not.toHaveBeenCalled();
       expect(sendSpy).toHaveBeenCalledTimes(1);
       expect(token).not.toBeNull();
@@ -1143,7 +1185,7 @@ describe.each([
       expect(callbackSpy).not.toHaveBeenCalled();
       expect(eventsEmitterSpy).not.toHaveBeenCalled();
       expect(eventsEmitterBindSpy).toHaveBeenCalledTimes(1);
-      expect(eventsEmitterBindSpy).toHaveBeenCalledWith(token, expect.any(Function));
+      expect(eventsEmitterBindSpy).toHaveBeenCalledWith(token, requestArgs, expect.any(Function));
       expect(eventsEmitterUnbindSpy).not.toHaveBeenCalled();
       expect(sendSpy).toHaveBeenCalledTimes(1);
       expect(token).not.toBeNull();
@@ -1164,7 +1206,7 @@ describe.each([
       expect(callbackSpy).not.toHaveBeenCalled();
       expect(eventsEmitterSpy).not.toHaveBeenCalled();
       expect(eventsEmitterBindSpy).toHaveBeenCalledTimes(1);
-      expect(eventsEmitterBindSpy).toHaveBeenCalledWith(token, expect.any(Function));
+      expect(eventsEmitterBindSpy).toHaveBeenCalledWith(token, requestArgs, expect.any(Function));
       expect(eventsEmitterUnbindSpy).not.toHaveBeenCalled();
       expect(sendSpy).toHaveBeenCalledTimes(1);
       expect(token).not.toBeNull();
@@ -1181,6 +1223,7 @@ describe.each([
   const wsCommand = command as WsCommand;
   let wrpc: WRPC;
   let ws: WebSocket;
+  let requestArgs: RequestArgs;
   let subscriptionId: SubscriptionIdentifier;
   let subscriptionIdTwo: SubscriptionIdentifier;
   let sendSpy: jest.SpyInstance;
@@ -1307,6 +1350,7 @@ describe.each([
 
     test(`'${fn} + ${wsCommand}' should remove stream from closing map when EOF is received`, () => {
       const token = wrpc.closeStream(subscriptionId, closeCallback);
+      requestArgs = { command: CLOSE };
 
       if (token) {
         expect(wrpc.streamInClosingState.get(subscriptionId.token)).toEqual(token);
@@ -1318,7 +1362,7 @@ describe.each([
 
         expect(wrpc.streamInClosingState).not.toContain(token);
         expect(closeCallback).toHaveBeenCalledTimes(1);
-        expect(closeCallback).toHaveBeenCalledWith(EOF, undefined, EOF_STATUS, token);
+        expect(closeCallback).toHaveBeenCalledWith(EOF, undefined, EOF_STATUS, token, requestArgs);
         expect(callbackSpy).not.toHaveBeenCalled();
         expect(eventsEmitterSpy).toHaveBeenCalledTimes(1);
         expect(eventsEmitterSpy).toHaveBeenCalledWith(token, EOF, undefined, EOF_STATUS);
@@ -1328,13 +1372,14 @@ describe.each([
           subscriptionId.callback,
         );
         expect(eventsEmitterBindSpy).toHaveBeenCalledTimes(1);
-        expect(eventsEmitterBindSpy).toHaveBeenCalledWith(token, expect.any(Function));
+        expect(eventsEmitterBindSpy).toHaveBeenCalledWith(token, requestArgs, expect.any(Function));
       }
       expect(token).not.toBeNull();
     });
 
     test(`'${fn} + ${wsCommand}' should remove stream from closing map when any error is received`, () => {
       const token = wrpc.closeStream(subscriptionId, closeCallback);
+      requestArgs = { command: CLOSE };
 
       if (token) {
         expect(wrpc.streamInClosingState.get(subscriptionId.token)).toEqual(token);
@@ -1346,7 +1391,13 @@ describe.each([
 
         expect(wrpc.streamInClosingState).not.toContain(token);
         expect(closeCallback).toHaveBeenCalledTimes(1);
-        expect(closeCallback).toHaveBeenCalledWith(ERROR_MESSAGE, undefined, ERROR_STATUS, token);
+        expect(closeCallback).toHaveBeenCalledWith(
+          ERROR_MESSAGE,
+          undefined,
+          ERROR_STATUS,
+          token,
+          requestArgs,
+        );
         expect(callbackSpy).not.toHaveBeenCalled();
         expect(eventsEmitterSpy).toHaveBeenCalledTimes(1);
         expect(eventsEmitterSpy).toHaveBeenCalledWith(
@@ -1361,7 +1412,7 @@ describe.each([
           subscriptionId.callback,
         );
         expect(eventsEmitterBindSpy).toHaveBeenCalledTimes(1);
-        expect(eventsEmitterBindSpy).toHaveBeenCalledWith(token, expect.any(Function));
+        expect(eventsEmitterBindSpy).toHaveBeenCalledWith(token, requestArgs, expect.any(Function));
       }
       expect(token).not.toBeNull();
     });
@@ -1417,6 +1468,7 @@ describe.each([
           undefined,
           ACTIVE_STATUS,
           subscriptionIdNew.token,
+          { command },
         );
 
         eventsEmitterSpy.mockClear();
@@ -1437,6 +1489,7 @@ describe.each([
           RESULT,
           undefined,
           subscriptionIdNew.token,
+          { command },
         );
       }
       expect(token).not.toBeNull();
@@ -1448,6 +1501,7 @@ describe.each([
     test(`'${fn} + ${wsCommand}' should send close message`, () => {
       const streams = [subscriptionId, subscriptionIdTwo];
       const token = wrpc.closeStreams(streams, closeCallback);
+      requestArgs = { command: CLOSE };
 
       if (token) {
         expect(closeCallback).not.toHaveBeenCalled();
@@ -1466,7 +1520,7 @@ describe.each([
           subscriptionIdTwo.callback,
         );
         expect(eventsEmitterBindSpy).toHaveBeenCalledTimes(1);
-        expect(eventsEmitterBindSpy).toHaveBeenCalledWith(token, expect.any(Function));
+        expect(eventsEmitterBindSpy).toHaveBeenCalledWith(token, requestArgs, expect.any(Function));
         expect(sendSpy).toHaveBeenCalledTimes(1);
         expect(sendSpy).toHaveBeenCalledWith(
           Parser.stringify({
@@ -1486,6 +1540,7 @@ describe.each([
 
       const streams = [subscriptionId, subscriptionIdTwo];
       const token = wrpc.closeStreams(streams, closeCallback);
+      requestArgs = { command: CLOSE };
 
       if (token) {
         expect(closeCallback).toHaveBeenCalledTimes(1);
@@ -1505,7 +1560,7 @@ describe.each([
           subscriptionIdTwo.callback,
         );
         expect(eventsEmitterBindSpy).toHaveBeenCalledTimes(1);
-        expect(eventsEmitterBindSpy).toHaveBeenCalledWith(token, expect.any(Function));
+        expect(eventsEmitterBindSpy).toHaveBeenCalledWith(token, requestArgs, expect.any(Function));
         expect(sendSpy).toHaveBeenCalledTimes(1);
         expect(sendSpy).toHaveBeenCalledWith(
           Parser.stringify({
@@ -1536,6 +1591,7 @@ describe.each([
     test(`'${fn} + ${wsCommand}' should remove stream from closing map when EOF is received`, () => {
       const streams = [subscriptionId, subscriptionIdTwo];
       const token = wrpc.closeStreams(streams, closeCallback);
+      requestArgs = { command: CLOSE };
 
       if (token) {
         expect(wrpc.streamInClosingState.get(subscriptionId.token)).toEqual(token);
@@ -1547,7 +1603,7 @@ describe.each([
 
         expect(wrpc.streamInClosingState).not.toContain(token);
         expect(closeCallback).toHaveBeenCalledTimes(1);
-        expect(closeCallback).toHaveBeenCalledWith(EOF, undefined, EOF_STATUS, token);
+        expect(closeCallback).toHaveBeenCalledWith(EOF, undefined, EOF_STATUS, token, requestArgs);
         expect(callbackSpy).not.toHaveBeenCalled();
         expect(eventsEmitterSpy).toHaveBeenCalledTimes(1);
         expect(eventsEmitterSpy).toHaveBeenCalledWith(token, EOF, undefined, EOF_STATUS);
@@ -1563,7 +1619,7 @@ describe.each([
           subscriptionIdTwo.callback,
         );
         expect(eventsEmitterBindSpy).toHaveBeenCalledTimes(1);
-        expect(eventsEmitterBindSpy).toHaveBeenCalledWith(token, expect.any(Function));
+        expect(eventsEmitterBindSpy).toHaveBeenCalledWith(token, requestArgs, expect.any(Function));
       }
       expect(token).not.toBeNull();
     });
@@ -1571,6 +1627,7 @@ describe.each([
     test(`'${fn} + ${wsCommand}' should remove stream from closing map when any error is received`, () => {
       const streams = [subscriptionId, subscriptionIdTwo];
       const token = wrpc.closeStreams(streams, closeCallback);
+      requestArgs = { command: CLOSE };
 
       if (token) {
         expect(wrpc.streamInClosingState.get(subscriptionId.token)).toEqual(token);
@@ -1582,7 +1639,13 @@ describe.each([
 
         expect(wrpc.streamInClosingState).not.toContain(token);
         expect(closeCallback).toHaveBeenCalledTimes(1);
-        expect(closeCallback).toHaveBeenCalledWith(ERROR_MESSAGE, undefined, ERROR_STATUS, token);
+        expect(closeCallback).toHaveBeenCalledWith(
+          ERROR_MESSAGE,
+          undefined,
+          ERROR_STATUS,
+          token,
+          requestArgs,
+        );
         expect(callbackSpy).not.toHaveBeenCalled();
         expect(eventsEmitterSpy).toHaveBeenCalledTimes(1);
         expect(eventsEmitterSpy).toHaveBeenCalledWith(
@@ -1603,7 +1666,7 @@ describe.each([
           subscriptionIdTwo.callback,
         );
         expect(eventsEmitterBindSpy).toHaveBeenCalledTimes(1);
-        expect(eventsEmitterBindSpy).toHaveBeenCalledWith(token, expect.any(Function));
+        expect(eventsEmitterBindSpy).toHaveBeenCalledWith(token, requestArgs, expect.any(Function));
       }
       expect(token).not.toBeNull();
     });
@@ -1666,6 +1729,7 @@ describe.each([
           undefined,
           ACTIVE_STATUS,
           subscriptionIdNew.token,
+          { command },
         );
 
         eventsEmitterSpy.mockClear();
@@ -1686,6 +1750,7 @@ describe.each([
           RESULT,
           undefined,
           subscriptionIdNew.token,
+          { command },
         );
       }
       expect(token).not.toBeNull();

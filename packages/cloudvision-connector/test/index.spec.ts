@@ -375,6 +375,7 @@ describe('getAndSubscribe', () => {
         RESULT,
         undefined,
         subscriptionId.subscribe.token,
+        { command: SUBSCRIBE },
       );
     }
 
@@ -408,6 +409,7 @@ describe('getAndSubscribe', () => {
         undefined,
         ERROR_STATUS,
         subscriptionId.subscribe.token,
+        { command: SUBSCRIBE },
       );
     }
 
@@ -545,7 +547,7 @@ describe.each([
         }),
       );
 
-      expect(callback).toHaveBeenCalledWith(null, RESULT, undefined, token);
+      expect(callback).toHaveBeenCalledWith(null, RESULT, undefined, token, { command });
     }
 
     expect(token).not.toBeNull();
@@ -571,6 +573,7 @@ describe.each([
         undefined,
         ERROR_STATUS,
         token,
+        { command },
       );
     }
 
@@ -715,7 +718,9 @@ describe.each([
         }),
       );
 
-      expect(callback).toHaveBeenCalledWith(null, RESULT, undefined, subscriptionId.token);
+      expect(callback).toHaveBeenCalledWith(null, RESULT, undefined, subscriptionId.token, {
+        command,
+      });
     }
 
     expect(subscriptionId).not.toBeNull();
@@ -741,6 +746,7 @@ describe.each([
         undefined,
         ERROR_STATUS,
         subscriptionId.token,
+        { command },
       );
     }
 

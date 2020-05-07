@@ -193,7 +193,7 @@ class Connector extends WRPC {
       if (status && status.code === ACTIVE_CODE) {
         this.getWithOptions(query, callback, sanitizedOptions);
       } else {
-        subscribeNotifCallback(err, result, status, token);
+        subscribeNotifCallback(err, result, status, token, { command: SUBSCRIBE });
       }
     };
 
