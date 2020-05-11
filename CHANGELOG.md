@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.1.0](https://github.com/aristanetworks/cloudvision/compare/v4.0.5...v4.1.0) (2020-05-11)
+
+
+### Bug Fixes
+
+* **logging:** add more context to logging ([892282b](https://github.com/aristanetworks/cloudvision/commit/892282b10f85ec9de19ee6d143654bcebb0070e1))
+
+
+### Features
+
+* **callback:** add request context ([fbe23a5](https://github.com/aristanetworks/cloudvision/commit/fbe23a5113e49161669233aa3b7f954f2dc339df))
+
+
+
+
+
 ## [4.0.5](https://github.com/aristanetworks/cloudvision/compare/v4.0.4...v4.0.5) (2020-05-06)
 
 **Note:** Version bump only for package root
