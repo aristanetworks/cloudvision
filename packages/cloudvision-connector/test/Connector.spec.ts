@@ -17,40 +17,48 @@
 
 import { PathElements } from 'a-msgpack';
 
-import Connector from '../src';
+import Connector from '../src/Connector';
 import {
   ACTIVE_CODE,
   APP_DATASET_TYPE,
   DEVICE_DATASET_TYPE,
-  GET_DATASETS,
+  DEVICES_DATASET_ID,
   GET,
+  GET_DATASETS,
   SEARCH_SUBSCRIBE,
   SEARCH_TYPE_ANY,
-  SUBSCRIBE,
-  SERVICE_REQUEST,
   SEARCH,
-  DEVICES_DATASET_ID,
+  SERVICE_REQUEST,
+  SUBSCRIBE,
 } from '../src/constants';
 import { makeToken } from '../src/utils';
-import { NotifCallback, SubscriptionIdentifier } from '../types';
-import { Query, SearchOptions } from '../types/params';
-import { Options, ServiceRequest } from '../types/query';
+import {
+  CloudVisionParams,
+  CloudVisionStatus,
+  NotifCallback,
+  Options,
+  PublishRequest,
+  Query,
+  SearchOptions,
+  ServiceRequest,
+  SubscriptionIdentifier,
+} from '../types';
 
 const dataset = 'deviceFoo';
 const rootPath: PathElements = [];
-const rootQuery = [
+const rootQuery: Query = [
   {
     dataset: { type: DEVICE_DATASET_TYPE, name: dataset },
     paths: [{ path_elements: rootPath }],
   },
 ];
-const singlePathQuery = [
+const singlePathQuery: Query = [
   {
     dataset: { type: DEVICE_DATASET_TYPE, name: dataset },
     paths: [{ path_elements: ['this', 'is', 'the', 'first', 'path'] }],
   },
 ];
-const serviceQuery = {
+const serviceQuery: ServiceRequest = {
   service: 'A',
   method: 'B',
   body: {
@@ -58,7 +66,7 @@ const serviceQuery = {
     param2: 'param2',
   },
 };
-const multiplePathQuery = [
+const multiplePathQuery: Query = [
   {
     dataset: { type: DEVICE_DATASET_TYPE, name: dataset },
     paths: [
@@ -67,18 +75,18 @@ const multiplePathQuery = [
     ],
   },
 ];
-const SEARCH_OPTIONS = {
+const SEARCH_OPTIONS: SearchOptions = {
   search: '',
   searchType: SEARCH_TYPE_ANY,
 };
-const ACTIVE_STATUS = {
+const ACTIVE_STATUS: CloudVisionStatus = {
   code: ACTIVE_CODE,
-  messages: 'Active',
+  message: 'Active',
 };
 const ERROR_MESSAGE = 'error';
-const ERROR_STATUS = {
+const ERROR_STATUS: CloudVisionStatus = {
   code: 3,
-  messages: ERROR_MESSAGE,
+  message: ERROR_MESSAGE,
 };
 
 jest.spyOn(console, 'groupCollapsed').mockImplementation();
@@ -86,8 +94,8 @@ jest.spyOn(console, 'groupCollapsed').mockImplementation();
 describe('getCommandToken', () => {
   test('should return the proper token', () => {
     const conn = new Connector();
-    const command = 'get';
-    const params = {
+    const command = GET;
+    const params: CloudVisionParams = {
       hello: true,
     };
 
@@ -122,7 +130,7 @@ describe('closeSubscriptions', () => {
 
 describe('writeSync', () => {
   test('should call writeSync with proper params', () => {
-    const publishRequest = {
+    const publishRequest: PublishRequest = {
       dataset: { name: 'analytics', type: APP_DATASET_TYPE },
       notifications: [
         {
@@ -178,8 +186,8 @@ describe('runStreamingService', () => {
 
     const streamIdentifier = conn.runStreamingService(request, spyCallback);
     if (streamIdentifier !== null) {
-      expect(streamIdentifier.token).toEqual('582204119');
-      expect(typeof streamIdentifier.callback).toEqual('function');
+      expect(streamIdentifier.token).toBe('582204119');
+      expect(typeof streamIdentifier.callback).toBe('function');
     }
     expect(conn.runStreamingService).toHaveBeenCalledTimes(1);
     expect(conn.runStreamingService).toHaveBeenCalledWith(request, expect.any(Function));

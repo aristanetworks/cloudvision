@@ -17,10 +17,10 @@
 
 import { GET } from '../src/constants';
 import Emitter from '../src/emitter';
-import { RequestArgs } from '../types';
+import { EventCallback, RequestArgs } from '../types';
 
 describe('Emitter', () => {
-  const requestArgs = { command: GET };
+  const requestArgs: RequestArgs = { command: GET };
 
   test('should remove itself from callback during emit', () => {
     const emitter = new Emitter();
@@ -29,7 +29,7 @@ describe('Emitter', () => {
     const fakeCallback1 = jest.fn();
     const fakeCallback2 = jest.fn();
     const fakeCallbackInner = jest.fn();
-    const callbackWithUnbind = (_rq: RequestArgs | undefined, d: string | null) => {
+    const callbackWithUnbind: EventCallback = (_rq, d) => {
       emitter.unbind(event, callbackWithUnbind);
       fakeCallbackInner(d);
     };
@@ -57,7 +57,7 @@ describe('Emitter', () => {
     const event = 'test';
     const data = 'lol';
     const fakeCallbackInner = jest.fn();
-    const callbackWithUnbind = (_rq: RequestArgs | undefined, d: string | null) => {
+    const callbackWithUnbind: EventCallback = (_rq, d) => {
       emitter.unbind(event, callbackWithUnbind);
       fakeCallbackInner(d);
     };
@@ -133,7 +133,7 @@ describe('Emitter', () => {
     const event2 = 'test2';
     const fakeCallbackInner = jest.fn();
     const fakeCallback1 = jest.fn();
-    const callbackWithUnbind = (_rq: RequestArgs | undefined, d: string | null) => {
+    const callbackWithUnbind: EventCallback = (_rq, d) => {
       emitter.unbind(event, callbackWithUnbind);
       fakeCallbackInner(d);
     };
@@ -152,7 +152,7 @@ describe('Emitter', () => {
     const event2 = 'test2';
     const fakeCallbackInner = jest.fn();
     const fakeCallback1 = jest.fn();
-    const callbackWithUnbind = (_rq: RequestArgs | undefined, d: string | null) => {
+    const callbackWithUnbind: EventCallback = (_rq, d) => {
       emitter.unbind(event, callbackWithUnbind);
       fakeCallbackInner(d);
     };
@@ -172,7 +172,7 @@ describe('Emitter', () => {
     const fakeCallbackInner = jest.fn();
     const fakeCallback1 = jest.fn();
     const fakeCallback2 = jest.fn();
-    const callbackWithUnbind = (_rq: RequestArgs | undefined, d: string | null) => {
+    const callbackWithUnbind: EventCallback = (_rq, d) => {
       emitter.unbind(event, callbackWithUnbind);
       fakeCallbackInner(d);
     };

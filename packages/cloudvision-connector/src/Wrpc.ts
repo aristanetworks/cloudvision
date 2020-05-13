@@ -16,30 +16,28 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 import {
-  ConnectionCallback,
-  NotifCallback,
-  SubscriptionIdentifier,
-  EventCallback,
-  RequestArgs,
-} from '../types';
-import {
+  CloseParams,
   CloudVisionBatchedResult,
   CloudVisionMessage,
+  CloudVisionParams,
+  CloudVisionPublishRequest,
   CloudVisionResult,
   CloudVisionServiceResult,
   CloudVisionStatus,
-} from '../types/notifications';
-import {
-  WsCommand,
-  GetCommands,
-  StreamCommands,
-  CloudVisionParams,
+  ConnectionCallback,
+  EventCallback,
+  GetCommand,
+  NotifCallback,
   PauseParams,
+  RequestArgs,
   ResumeParams,
-  CloseParams,
-} from '../types/params';
-import { CloudVisionPublishRequest, ServiceRequest } from '../types/query';
+  ServiceRequest,
+  StreamCommand,
+  SubscriptionIdentifier,
+  WsCommand,
+} from '../types';
 
+import Parser from './Parser';
 import {
   ACTIVE_CODE,
   CLOSE,
@@ -57,7 +55,6 @@ import {
 } from './constants';
 import Emitter from './emitter';
 import { log } from './logger';
-import Parser from './parser';
 import { createCloseParams, makeToken, validateResponse } from './utils';
 
 type StreamArgs = [string, WsCommand, CloudVisionParams | ServiceRequest];
@@ -70,19 +67,19 @@ type StreamArgs = [string, WsCommand, CloudVisionParams | ServiceRequest];
  *    sending notifications when the client cannot keep up.
  */
 interface ConnectorOptions {
-  pauseStreams: boolean;
   batchResults: boolean;
   debugMode: boolean;
+  pauseStreams: boolean;
 }
 
 /**
  * Wraps a given WebSocket with CloudVision API streaming and data querying
  * methods.
  */
-class WRPC {
-  public static CONNECTED: string;
+export default class Wrpc {
+  public static CONNECTED: typeof CONNECTED = CONNECTED;
 
-  public static DISCONNECTED: string;
+  public static DISCONNECTED: typeof DISCONNECTED = DISCONNECTED;
 
   private closingStreams: Map<string, string>;
 
@@ -112,8 +109,8 @@ class WRPC {
       batchResults: true,
       debugMode: false,
     },
-    websocketClass: typeof WebSocket = WebSocket,
-    parser: typeof Parser = Parser,
+    websocketClass = WebSocket,
+    parser = Parser,
   ) {
     this.connectorOptions = options;
     this.isRunning = false;
@@ -150,7 +147,7 @@ class WRPC {
   private addWaitingStream(
     waitingOnToken: string,
     token: string,
-    command: StreamCommands,
+    command: StreamCommand,
     params: CloudVisionParams | ServiceRequest,
   ): void {
     const streamsWaiting = this.waitingStreams.get(waitingOnToken) || [];
@@ -215,7 +212,7 @@ class WRPC {
   private closeWs(event: CloseEvent): void {
     this.isRunning = false;
     this.cleanUpConnections();
-    this.connectionEvents.emit('connection', WRPC.DISCONNECTED, event);
+    this.connectionEvents.emit('connection', Wrpc.DISCONNECTED, event);
   }
 
   private closeCommand(
@@ -259,7 +256,7 @@ class WRPC {
 
   /**
    * Subscribes a callback to connection events.
-   * The callback can receive either `WRPC.CONNECTED or `WRPC.DISCONNECTED`.
+   * The callback can receive either `Wrpc.CONNECTED or `Wrpc.DISCONNECTED`.
    */
   public connection(callback: ConnectionCallback): () => void {
     const connectionCallback = (
@@ -292,7 +289,7 @@ class WRPC {
    * connected. The response is received via the provided callback function.
    */
   public get(
-    command: GetCommands,
+    command: GetCommand,
     params: CloudVisionParams,
     callback: NotifCallback,
   ): string | null {
@@ -410,9 +407,9 @@ class WRPC {
    * Sets the specified WebSocket on the class and binds `onopen`, `onclose`, and
    * `onmessage` listeners.
    *
-   * - onopen: The `WRPC.CONNECTED` event is emitted, and the WebSocket is set
+   * - onopen: The `Wrpc.CONNECTED` event is emitted, and the WebSocket is set
    * to isRunning equals `true`.
-   * - onclose: The `WRPC.DISCONNECTED` event is emitted, and the WebSocket is
+   * - onclose: The `Wrpc.DISCONNECTED` event is emitted, and the WebSocket is
    * set to isRunning equals `false`.
    * - onmessage: The message is parsed and the event type `msg.token` is
    * emitted. This results in the calling of all callbacks bound to that event
@@ -429,7 +426,7 @@ class WRPC {
           if (status && status.code !== EOF_CODE) {
             log(ERROR, err, status, token);
           }
-          this.connectionEvents.emit('connection', WRPC.CONNECTED, event);
+          this.connectionEvents.emit('connection', Wrpc.CONNECTED, event);
         });
       }
     };
@@ -590,7 +587,7 @@ class WRPC {
    * at once via `closeStream`.
    */
   public stream(
-    command: StreamCommands,
+    command: StreamCommand,
     params: CloudVisionParams | ServiceRequest,
     callback: NotifCallback,
   ): SubscriptionIdentifier | null {
@@ -649,8 +646,3 @@ class WRPC {
     return this.callCommand(PAUSE, params, callback);
   }
 }
-
-WRPC.CONNECTED = CONNECTED;
-WRPC.DISCONNECTED = DISCONNECTED;
-
-export default WRPC;

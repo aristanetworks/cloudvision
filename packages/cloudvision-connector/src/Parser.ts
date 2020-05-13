@@ -15,29 +15,31 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import { encode, decode, Codec, PathElements, Timestamp } from 'a-msgpack';
+import { encode, decode, Codec, PathElements } from 'a-msgpack';
 import { fromByteArray, toByteArray } from 'base64-js';
 
 import {
+  BatchPublishRequest,
   CloudVisionBatchedNotifications,
   CloudVisionDatapoint,
-  CloudVisionDelete,
+  CloudVisionDeletes,
   CloudVisionMessage,
-  CloudVisionNotification,
   CloudVisionNotifs,
-  CloudVisionRawNotifs,
-  CloudVisionUpdate,
-  ConvertedNotification,
-  RawNotification,
-} from '../types/notifications';
-import { CloudVisionParams, PathObject, Query, QueryObject, QueryParams } from '../types/params';
-import {
-  BatchPublishRequest,
+  CloudVisionParams,
   CloudVisionPublishRequest,
   CloudVisionQueryMessage,
+  CloudVisionRawNotifs,
+  CloudVisionUpdates,
+  ConvertedNotification,
+  NewConvertedNotification,
+  PathObject,
   PublishRequest,
+  Query,
+  QueryObject,
+  QueryParams,
+  RawNotification,
   ServiceRequest,
-} from '../types/query';
+} from '../types';
 
 const msgpack = {
   encode: (inputs: unknown): Uint8Array => encode(inputs, { extensionCodec: Codec }),
@@ -116,8 +118,8 @@ export function decodePathElements(pathElements: string[]): PathElements {
  */
 function decodeNotifs(
   notif: CloudVisionDatapoint<string, string>[],
-): CloudVisionUpdate<unknown, unknown> {
-  const decodedNotifs: CloudVisionUpdate<unknown, unknown> = {};
+): CloudVisionUpdates<unknown, unknown> {
+  const decodedNotifs: CloudVisionUpdates<unknown, unknown> = {};
   for (let i = 0; i < notif.length; i += 1) {
     const key = notif[i].key;
     const value = notif[i].value;
@@ -176,8 +178,8 @@ function encodeDeletes(deletes: unknown[]): string[] {
  * @param deletes an array of NEAT encoded `key` values.
  * @returns an array of decoded keys
  */
-function decodeDeletes(deletes: string[]): CloudVisionDelete<unknown> {
-  const decodedDeletes: CloudVisionDelete<unknown> = {};
+function decodeDeletes(deletes: string[]): CloudVisionDeletes<unknown> {
+  const decodedDeletes: CloudVisionDeletes<unknown> = {};
   for (let i = 0; i < deletes.length; i += 1) {
     const key = deletes[i];
     decodedDeletes[key] = {
@@ -322,14 +324,7 @@ export function decodeNotifications(
  * @param notif a single unencoded notification.
  * @returns the NEAT encoded notifications that can be sent to the server
  */
-function encodeNotification(
-  notif: CloudVisionNotification<
-    PathElements,
-    Timestamp,
-    CloudVisionDatapoint<unknown, unknown>[],
-    unknown[]
-  >,
-): RawNotification {
+function encodeNotification(notif: NewConvertedNotification): RawNotification {
   const encodedNotif: RawNotification = {
     timestamp: notif.timestamp,
   };
@@ -391,7 +386,7 @@ export function encodeNotifications(
  * Implements stringify, so that requests can be sent to the server in the proper format.
  * Implements parse which decodes responses sent by the server.
  */
-class Parser {
+export default class Parser {
   public static parse(data: string, batch: boolean): CloudVisionMessage {
     const message = JSON.parse(data);
     const result = message.result;
@@ -444,5 +439,3 @@ class Parser {
     return publishParams.sync !== undefined && publishParams.batch !== undefined;
   }
 }
-
-export default Parser;

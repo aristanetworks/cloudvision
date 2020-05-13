@@ -1,15 +1,14 @@
 /* eslint-disable no-console */
 
-import { LogLevels } from '../types';
-import { CloudVisionStatus } from '../types/notifications';
+import { CloudVisionStatus, LogLevel } from '../types';
 
 import { ERROR, WARN } from './constants';
 
 /**
- * Logs nicely formatted console log errors or wandings
+ * Logs nicely formatted console log errors or warnings.
  */
 export function log(
-  level: LogLevels,
+  level: LogLevel,
   message: string | null,
   status?: CloudVisionStatus,
   token?: string,

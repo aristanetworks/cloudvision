@@ -20,41 +20,40 @@ import { fromByteArray, toByteArray } from 'base64-js';
 import MurmurHash3 from 'imurmurhash';
 
 import {
-  NotifCallback,
-  PlainObject,
-  SubscriptionIdentifier,
-  PublishCallback,
-  RequestArgs,
-} from '../types';
-import {
+  CloseParams,
   CloudVisionBatchedNotifications,
   CloudVisionBatchedResult,
   CloudVisionDatasets,
   CloudVisionNotifs,
+  CloudVisionParams,
+  CloudVisionPublishRequest,
   CloudVisionResult,
   CloudVisionServiceResult,
   CloudVisionStatus,
-} from '../types/notifications';
-import {
-  CloseParams,
-  CloudVisionParams,
+  NotifCallback,
+  Options,
+  PublishCallback,
   Query,
+  RequestArgs,
   SearchOptions,
   SearchType,
+  ServiceRequest,
+  SubscriptionIdentifier,
   WsCommand,
-} from '../types/params';
-import { Options, CloudVisionPublishRequest, ServiceRequest } from '../types/query';
+} from '../types';
 
-import { ALL_SEARCH_TYPES, ERROR, EOF_CODE, SEARCH_TYPE_ANY } from './constants';
+import { ALL_SEARCH_TYPES, EOF_CODE, ERROR, SEARCH_TYPE_ANY } from './constants';
 import Emitter from './emitter';
 import { log } from './logger';
 
 interface ExplicitSearchOptions extends SearchOptions {
   searchType: SearchType;
 }
+
 export interface ExplicitOptions extends Options {
-  start: number | undefined;
   end: number | undefined;
+  start: number | undefined;
+
   versions?: number;
 }
 
@@ -62,11 +61,9 @@ export interface ExplicitOptions extends Options {
  * Definition for an instance of MurmurHash3, rather than the module.
  */
 interface MurmurHash {
-  result(): number;
-
-  reset(seed?: number): MurmurHash;
-
   hash(value: string): MurmurHash;
+  reset(seed?: number): MurmurHash;
+  result(): number;
 }
 
 /**
@@ -163,14 +160,13 @@ export function validateQuery(query: Query, callback: NotifCallback, allowEmpty 
 /**
  * Recursively hashes an object, given an object and a hashState.
  */
-function hashObjectHelper(object: PlainObject<unknown>, hashState: MurmurHash): string {
-  const objKeys = Object.keys(object);
+function hashObjectHelper<T extends {}>(object: T, hashState: MurmurHash): string {
+  const objKeys = Object.keys(object) as (keyof T)[];
   for (let i = 0; i < objKeys.length; i += 1) {
     const key = objKeys[i];
     const value = object[key];
     if (value && typeof value === 'object') {
-      const objValue = value as PlainObject<unknown>;
-      hashState.hash(key).hash(hashObjectHelper(objValue, hashState));
+      hashState.hash(key.toString()).hash(hashObjectHelper(value, hashState));
     } else {
       hashState.hash(key + '' + value);
     }
@@ -182,7 +178,7 @@ function hashObjectHelper(object: PlainObject<unknown>, hashState: MurmurHash): 
 /**
  * Creates a unique hash given an object.
  */
-export function hashObject(object: PlainObject<unknown>): string {
+export function hashObject(object: {}): string {
   const hashState = MurmurHash3();
   return hashObjectHelper(object, hashState);
 }

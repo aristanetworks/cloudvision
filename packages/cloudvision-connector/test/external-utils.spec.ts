@@ -42,7 +42,7 @@ const binaryKeyTestCases = [
 describe('toBinaryKey', () => {
   test('should create the proper binary key given any key', () => {
     binaryKeyTestCases.forEach((testCase) => {
-      expect(toBinaryKey(testCase.decodedValue)).toEqual(testCase.encodedValue);
+      expect(toBinaryKey(testCase.decodedValue)).toBe(testCase.encodedValue);
     });
   });
 });

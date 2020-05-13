@@ -2,9 +2,9 @@
 
 import { ERROR, INFO, WARN } from '../src/constants';
 import { log } from '../src/logger';
-import { LogLevels } from '../types';
+import { LogLevel } from '../types';
 
-describe.each([
+describe.each<[LogLevel, string]>([
   [ERROR, 'error'],
   [INFO, 'log'],
   [WARN, 'warn'],
@@ -22,13 +22,13 @@ describe.each([
   });
 
   test(`${level} should log a console group for just a message`, () => {
-    log(level as LogLevels, message);
+    log(level, message);
     expect(groupSpy).toHaveBeenCalledTimes(1);
     expect(consoleSpy).toHaveBeenNthCalledWith(1, `${level}: ${message}`);
   });
 
   test(`${level} should log a console group for a message and status`, () => {
-    log(level as LogLevels, message, status);
+    log(level, message, status);
     expect(groupSpy).toHaveBeenCalledTimes(1);
     expect(consoleSpy).toHaveBeenNthCalledWith(1, `${level}: ${message}`);
     expect(consoleSpy).toHaveBeenNthCalledWith(
@@ -38,7 +38,7 @@ describe.each([
   });
 
   test(`${level} should log a console group for a message, status and token`, () => {
-    log(level as LogLevels, message, status, token);
+    log(level, message, status, token);
     expect(groupSpy).toHaveBeenCalledTimes(1);
     expect(consoleSpy).toHaveBeenNthCalledWith(1, `Request Token: ${token}`);
     expect(consoleSpy).toHaveBeenNthCalledWith(2, `${level}: ${message}`);
