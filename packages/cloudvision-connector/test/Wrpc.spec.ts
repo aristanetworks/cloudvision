@@ -17,6 +17,8 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+import Parser from '../src/Parser';
+import Wrpc from '../src/Wrpc';
 import {
   ACTIVE_CODE,
   CLOSE,
@@ -36,16 +38,49 @@ import {
   SUBSCRIBE,
 } from '../src/constants';
 import { log } from '../src/logger';
-import Parser from '../src/parser';
 import { makeToken } from '../src/utils';
-import WRPC from '../src/wrpc';
-import { NotifCallback, SubscriptionIdentifier, RequestArgs } from '../types';
-import { WsCommand, CloudVisionParams } from '../types/params';
-import { CloudVisionQueryMessage } from '../types/query';
+import {
+  CloudVisionParams,
+  CloudVisionQueryMessage,
+  CloudVisionStatus,
+  NotifCallback,
+  QueryParams,
+  RequestArgs,
+  StreamCommand,
+  SubscriptionIdentifier,
+  WsCommand,
+} from '../types';
 
-const query = { query: [] };
+interface PolymorphicCommandFunction {
+  (command: WsCommand, params: CloudVisionParams, callback: NotifCallback): string;
+}
 
-jest.mock('../src/parser', () => ({
+interface CommandFunction {
+  (p: CloudVisionParams, cb: NotifCallback): string;
+}
+
+interface PostedMessage {
+  source: string;
+  timestamp: number;
+
+  request?: CloudVisionQueryMessage;
+  response?:
+    | {
+        result: { dataset: string };
+        token: string;
+      }
+    | {
+        error: string;
+        status: CloudVisionStatus;
+        token: string;
+      };
+}
+
+type WrpcMethod = 'get' | 'pause' | 'publish' | 'requestService' | 'resume' | 'search';
+
+const query: QueryParams = { query: [] };
+
+jest.mock('../src/Parser', () => ({
   parse: (res: string) => JSON.parse(res),
   stringify: (msg: CloudVisionQueryMessage) => JSON.stringify(msg),
 }));
@@ -59,7 +94,7 @@ jest.spyOn(console, 'groupCollapsed').mockImplementation();
 const stringifyMessage = (msg: object) => JSON.stringify(msg);
 
 describe('open/close/connection', () => {
-  let wrpc: WRPC;
+  let wrpc: Wrpc;
   let ws: WebSocket;
   let eventsEmitterSpy: jest.SpyInstance;
   let eventsEmitterUnbindSpy: jest.SpyInstance;
@@ -73,7 +108,7 @@ describe('open/close/connection', () => {
   const connectionSpy = jest.fn();
 
   beforeEach(() => {
-    wrpc = new WRPC();
+    wrpc = new Wrpc();
     wrpc.run('ws://localhost:8080');
     ws = wrpc.websocket;
     connectionSpy.mockClear();
@@ -85,7 +120,7 @@ describe('open/close/connection', () => {
     connectionEmitterCloseSpy = jest.spyOn(wrpc.connectionEmitter, 'close');
     connectionEmitterSpy = jest.spyOn(wrpc.connectionEmitter, 'emit');
     connectionEmitterUnbindSpy = jest.spyOn(wrpc.connectionEmitter, 'unbind');
-    // @ts-ignore
+    // @ts-ignore: Need to access private member
     activeStreamsClearSpy = jest.spyOn(wrpc.activeStreams, 'clear');
   });
 
@@ -100,7 +135,7 @@ describe('open/close/connection', () => {
     expect(eventsEmitterBindSpy).not.toHaveBeenCalled();
     expect(wrpc.isRunning).toBe(true);
     expect(connectionSpy).toHaveBeenCalledTimes(1);
-    expect(connectionSpy).toHaveBeenCalledWith(WRPC.CONNECTED, expect.any(Event));
+    expect(connectionSpy).toHaveBeenCalledWith(Wrpc.CONNECTED, expect.any(Event));
   });
 
   test('should not re emit connection event on subsequent WS open messages', () => {
@@ -115,7 +150,7 @@ describe('open/close/connection', () => {
     expect(eventsEmitterBindSpy).not.toHaveBeenCalled();
     expect(wrpc.isRunning).toBe(true);
     expect(connectionSpy).toHaveBeenCalledTimes(1);
-    expect(connectionSpy).toHaveBeenCalledWith(WRPC.CONNECTED, expect.any(Event));
+    expect(connectionSpy).toHaveBeenCalledWith(Wrpc.CONNECTED, expect.any(Event));
   });
 
   test('should close emitters and call close WS on close call and emit disconnection event', () => {
@@ -132,7 +167,7 @@ describe('open/close/connection', () => {
     expect(connectionEmitterSpy).toHaveBeenCalledTimes(1);
     expect(connectionEmitterSpy).toHaveBeenCalledWith(
       'connection',
-      WRPC.DISCONNECTED,
+      Wrpc.DISCONNECTED,
       expect.any(CloseEvent),
     );
     expect(connectionEmitterUnbindSpy).not.toHaveBeenCalled();
@@ -143,7 +178,7 @@ describe('open/close/connection', () => {
     expect(wrpc.eventsEmitter.getEventsMap().size).toBe(0);
     expect(wrpc.isRunning).toBe(false);
     expect(connectionSpy).toHaveBeenCalledTimes(1);
-    expect(connectionSpy).toHaveBeenCalledWith(WRPC.DISCONNECTED, expect.any(CloseEvent));
+    expect(connectionSpy).toHaveBeenCalledWith(Wrpc.DISCONNECTED, expect.any(CloseEvent));
   });
 
   test('should emit close event on WS close message and emit disconnection event', () => {
@@ -162,11 +197,11 @@ describe('open/close/connection', () => {
     expect(connectionEmitterSpy).toHaveBeenCalledTimes(1);
     expect(connectionEmitterSpy).toHaveBeenCalledWith(
       'connection',
-      WRPC.DISCONNECTED,
+      Wrpc.DISCONNECTED,
       expect.any(CloseEvent),
     );
     expect(connectionSpy).toHaveBeenCalledTimes(1);
-    expect(connectionSpy).toHaveBeenCalledWith(WRPC.DISCONNECTED, expect.any(CloseEvent));
+    expect(connectionSpy).toHaveBeenCalledWith(Wrpc.DISCONNECTED, expect.any(CloseEvent));
   });
 
   test('should unbind connection event callback', () => {
@@ -186,40 +221,35 @@ describe('open/close/connection', () => {
   });
 });
 
-describe.each([
-  [GET_DATASETS, 'get', true],
+describe.each<[WsCommand, WrpcMethod, boolean]>([
   [GET, 'get', true],
+  [GET_DATASETS, 'get', true],
   [PUBLISH, 'publish', false],
   [SEARCH, 'search', false],
   [SERVICE_REQUEST, 'requestService', false],
   [RESUME, 'resume', false],
   [PAUSE, 'pause', false],
 ])('Call Commands', (command, fn, polymorphic) => {
-  const wsCommand = command as WsCommand;
-  let wrpc: WRPC;
+  let wrpc: Wrpc;
   let ws: WebSocket;
   let requestArgs: RequestArgs;
   let sendSpy: jest.SpyInstance;
   let eventsEmitterSpy: jest.SpyInstance;
   let eventsEmitterUnbindSpy: jest.SpyInstance;
   let eventsEmitterBindSpy: jest.SpyInstance;
-  let polymorphicCommandFn: (
-    c: WsCommand,
-    p: CloudVisionParams,
-    cb: NotifCallback,
-  ) => string | null;
-  let commandFn: (p: CloudVisionParams, cb: NotifCallback) => string | null;
+  let polymorphicCommandFn: PolymorphicCommandFunction;
+  let commandFn: CommandFunction;
   const callbackSpy = jest.fn();
   const ERROR_MESSAGE = 'error';
-  const ERROR_STATUS = {
+  const ERROR_STATUS: CloudVisionStatus = {
     code: 3,
-    messages: ERROR_MESSAGE,
+    message: ERROR_MESSAGE,
   };
   const RESULT = { dataset: 'Dodgers' };
 
   beforeEach(() => {
     jest.resetAllMocks();
-    wrpc = new WRPC();
+    wrpc = new Wrpc();
     // @ts-ignore
     commandFn = wrpc[fn];
     requestArgs = { command };
@@ -241,10 +271,10 @@ describe.each([
     callbackSpy.mockClear();
   });
 
-  test(`'${fn} + ${wsCommand}' should not send message if socket is not running`, () => {
+  test(`'${fn} + ${command}' should not send message if socket is not running`, () => {
     let token;
     if (polymorphic) {
-      token = polymorphicCommandFn.call(wrpc, wsCommand, {}, callbackSpy);
+      token = polymorphicCommandFn.call(wrpc, command, {}, callbackSpy);
     } else {
       token = commandFn.call(wrpc, {}, callbackSpy);
     }
@@ -256,12 +286,12 @@ describe.each([
     expect(token).toBe(null);
   });
 
-  test(`'${fn} + ${wsCommand}' should send message if socket is running`, () => {
+  test(`'${fn} + ${command}' should send message if socket is running`, () => {
     ws.dispatchEvent(new MessageEvent('open', {}));
 
     let token;
     if (polymorphic) {
-      token = polymorphicCommandFn.call(wrpc, wsCommand, {}, callbackSpy);
+      token = polymorphicCommandFn.call(wrpc, command, {}, callbackSpy);
     } else {
       token = commandFn.call(wrpc, {}, callbackSpy);
     }
@@ -275,7 +305,7 @@ describe.each([
       expect(sendSpy).toHaveBeenCalledWith(
         Parser.stringify({
           token,
-          command: wsCommand,
+          command,
           params: {},
         }),
       );
@@ -284,7 +314,7 @@ describe.each([
     expect(token).not.toBeNull();
   });
 
-  test(`'${fn} + ${wsCommand}' call callback with error on message that throws a send error`, () => {
+  test(`'${fn} + ${command}' call callback with error on message that throws a send error`, () => {
     ws.dispatchEvent(new MessageEvent('open', {}));
     sendSpy.mockImplementation(() => {
       throw ERROR_MESSAGE;
@@ -292,7 +322,7 @@ describe.each([
 
     let token;
     if (polymorphic) {
-      token = polymorphicCommandFn.call(wrpc, wsCommand, {}, callbackSpy);
+      token = polymorphicCommandFn.call(wrpc, command, {}, callbackSpy);
     } else {
       token = commandFn.call(wrpc, {}, callbackSpy);
     }
@@ -302,7 +332,7 @@ describe.each([
       expect(sendSpy).toHaveBeenCalledWith(
         Parser.stringify({
           token,
-          command: wsCommand,
+          command,
           params: {},
         }),
       );
@@ -323,12 +353,12 @@ describe.each([
     expect(token).not.toBeNull();
   });
 
-  test(`'${fn} + ${wsCommand}' should call callback and unbind on all errors`, () => {
+  test(`'${fn} + ${command}' should call callback and unbind on all errors`, () => {
     ws.dispatchEvent(new MessageEvent('open', {}));
 
     let token;
     if (polymorphic) {
-      token = polymorphicCommandFn.call(wrpc, wsCommand, {}, callbackSpy);
+      token = polymorphicCommandFn.call(wrpc, command, {}, callbackSpy);
     } else {
       token = commandFn.call(wrpc, {}, callbackSpy);
     }
@@ -359,13 +389,13 @@ describe.each([
     expect(token).not.toBeNull();
   });
 
-  test(`'${fn} + ${wsCommand}' should call callback and unbind on all EOF`, () => {
-    const EOF_STATUS = { code: EOF_CODE };
+  test(`'${fn} + ${command}' should call callback and unbind on all EOF`, () => {
+    const EOF_STATUS: CloudVisionStatus = { code: EOF_CODE };
     ws.dispatchEvent(new MessageEvent('open', {}));
 
     let token;
     if (polymorphic) {
-      token = polymorphicCommandFn.call(wrpc, wsCommand, {}, callbackSpy);
+      token = polymorphicCommandFn.call(wrpc, command, {}, callbackSpy);
     } else {
       token = commandFn.call(wrpc, {}, callbackSpy);
     }
@@ -390,12 +420,12 @@ describe.each([
     expect(token).not.toBeNull();
   });
 
-  test(`'${fn} + ${wsCommand}' should call callback on message and not unbind`, () => {
+  test(`'${fn} + ${command}' should call callback on message and not unbind`, () => {
     ws.dispatchEvent(new MessageEvent('open', {}));
 
     let token;
     if (polymorphic) {
-      token = polymorphicCommandFn.call(wrpc, wsCommand, {}, callbackSpy);
+      token = polymorphicCommandFn.call(wrpc, command, {}, callbackSpy);
     } else {
       token = commandFn.call(wrpc, {}, callbackSpy);
     }
@@ -417,12 +447,12 @@ describe.each([
     expect(token).not.toBeNull();
   });
 
-  test(`'${fn} + ${wsCommand}' should not call callback on message that is not a string`, () => {
+  test(`'${fn} + ${command}' should not call callback on message that is not a string`, () => {
     ws.dispatchEvent(new MessageEvent('open', {}));
 
     let token;
     if (polymorphic) {
-      token = polymorphicCommandFn.call(wrpc, wsCommand, {}, callbackSpy);
+      token = polymorphicCommandFn.call(wrpc, command, {}, callbackSpy);
     } else {
       token = commandFn.call(wrpc, {}, callbackSpy);
     }
@@ -440,12 +470,12 @@ describe.each([
     expect(token).not.toBeNull();
   });
 
-  test(`'${fn} + ${wsCommand}' should not call callback on message without token`, () => {
+  test(`'${fn} + ${command}' should not call callback on message without token`, () => {
     ws.dispatchEvent(new MessageEvent('open', {}));
 
     let token;
     if (polymorphic) {
-      token = polymorphicCommandFn.call(wrpc, wsCommand, {}, callbackSpy);
+      token = polymorphicCommandFn.call(wrpc, command, {}, callbackSpy);
     } else {
       token = commandFn.call(wrpc, {}, callbackSpy);
     }
@@ -463,13 +493,13 @@ describe.each([
     expect(token).not.toBeNull();
   });
 
-  test(`'${fn} + ${wsCommand}' should not call callback on message that throws error`, () => {
+  test(`'${fn} + ${command}' should not call callback on message that throws error`, () => {
     ws.dispatchEvent(new MessageEvent('open', {}));
 
     const result = '{ data: 1';
     let token;
     if (polymorphic) {
-      token = polymorphicCommandFn.call(wrpc, wsCommand, {}, callbackSpy);
+      token = polymorphicCommandFn.call(wrpc, command, {}, callbackSpy);
     } else {
       token = commandFn.call(wrpc, {}, callbackSpy);
     }
@@ -489,7 +519,7 @@ describe.each([
   });
 });
 
-describe.each([
+describe.each<[WsCommand, WrpcMethod, boolean]>([
   [GET_DATASETS, 'get', true],
   [GET, 'get', true],
   [PUBLISH, 'publish', false],
@@ -498,9 +528,8 @@ describe.each([
   [RESUME, 'resume', false],
   [PAUSE, 'pause', false],
 ])('Call Commands in debug mode', (command, fn, polymorphic) => {
-  const wsCommand = command as WsCommand;
   let NOW = 0;
-  let wrpc: WRPC;
+  let wrpc: Wrpc;
   let ws: WebSocket;
   let requestArgs: RequestArgs;
   let sendSpy: jest.SpyInstance;
@@ -508,17 +537,13 @@ describe.each([
   let eventsEmitterSpy: jest.SpyInstance;
   let eventsEmitterUnbindSpy: jest.SpyInstance;
   let eventsEmitterBindSpy: jest.SpyInstance;
-  let commandFn: (p: CloudVisionParams, cb: NotifCallback) => string | null;
-  let polymorphicCommandFn: (
-    c: WsCommand,
-    p: CloudVisionParams,
-    cb: NotifCallback,
-  ) => string | null;
+  let commandFn: CommandFunction;
+  let polymorphicCommandFn: PolymorphicCommandFunction;
   const callbackSpy = jest.fn();
   const ERROR_MESSAGE = 'error';
-  const ERROR_STATUS = {
+  const ERROR_STATUS: CloudVisionStatus = {
     code: 3,
-    messages: ERROR_MESSAGE,
+    message: ERROR_MESSAGE,
   };
   const RESULT = { dataset: 'Dodgers' };
 
@@ -526,7 +551,7 @@ describe.each([
     jest.resetAllMocks();
     NOW = Date.now();
     Date.now = jest.fn(() => NOW);
-    wrpc = new WRPC({
+    wrpc = new Wrpc({
       pauseStreams: false,
       batchResults: true,
       debugMode: true,
@@ -554,22 +579,26 @@ describe.each([
     callbackSpy.mockClear();
   });
 
-  test(`'${fn} + ${wsCommand}' should send message and 'postMessage' to window`, () => {
+  test(`'${fn} + ${command}' should send message and 'postMessage' to window`, () => {
     ws.dispatchEvent(new MessageEvent('open', {}));
 
-    const params = {};
+    const params: CloudVisionParams = {};
     let token;
     if (polymorphic) {
-      token = polymorphicCommandFn.call(wrpc, wsCommand, params, callbackSpy);
+      token = polymorphicCommandFn.call(wrpc, command, params, callbackSpy);
     } else {
       token = commandFn.call(wrpc, {}, callbackSpy);
     }
-    const expectedMessage = {
+    const expectedMessage: CloudVisionQueryMessage = {
       token,
       command,
       params,
     };
-    const expectedPostedMessage = { request: expectedMessage, source: ID, timestamp: NOW };
+    const expectedPostedMessage: PostedMessage = {
+      request: expectedMessage,
+      source: ID,
+      timestamp: NOW,
+    };
 
     if (token) {
       expect(postMessageSpy).toHaveBeenCalledWith(expectedPostedMessage, '*');
@@ -582,7 +611,7 @@ describe.each([
       expect(sendSpy).toHaveBeenCalledWith(
         Parser.stringify({
           token,
-          command: wsCommand,
+          command,
           params: {},
         }),
       );
@@ -591,17 +620,17 @@ describe.each([
     expect(token).not.toBeNull();
   });
 
-  test(`'${fn} + ${wsCommand}' should call callback and 'postMessage' to window on message`, () => {
+  test(`'${fn} + ${command}' should call callback and 'postMessage' to window on message`, () => {
     ws.dispatchEvent(new MessageEvent('open', {}));
 
-    const params = {};
+    const params: CloudVisionParams = {};
     let token;
     if (polymorphic) {
-      token = polymorphicCommandFn.call(wrpc, wsCommand, params, callbackSpy);
+      token = polymorphicCommandFn.call(wrpc, command, params, callbackSpy);
     } else {
       token = commandFn.call(wrpc, {}, callbackSpy);
     }
-    const expectedPostedMessage = {
+    const expectedPostedMessage: PostedMessage = {
       response: { token, result: RESULT },
       source: ID,
       timestamp: NOW,
@@ -626,26 +655,30 @@ describe.each([
     expect(token).not.toBeNull();
   });
 
-  test(`'${fn} + ${wsCommand}' should send message and 'postMessage' to window only once`, () => {
+  test(`'${fn} + ${command}' should send message and 'postMessage' to window only once`, () => {
     ws.dispatchEvent(new MessageEvent('open', {}));
 
-    const params = {};
+    const params: CloudVisionParams = {};
     let token;
     if (polymorphic) {
-      token = polymorphicCommandFn.call(wrpc, wsCommand, params, callbackSpy);
+      token = polymorphicCommandFn.call(wrpc, command, params, callbackSpy);
     } else {
       token = commandFn.call(wrpc, {}, callbackSpy);
     }
-    const expectedMessage = {
+    const expectedMessage: CloudVisionQueryMessage = {
       token,
       command,
       params,
     };
-    const expectedPostedMessage = { request: expectedMessage, source: ID, timestamp: NOW };
+    const expectedPostedMessage: PostedMessage = {
+      request: expectedMessage,
+      source: ID,
+      timestamp: NOW,
+    };
 
     // second call
     if (polymorphic) {
-      token = polymorphicCommandFn.call(wrpc, wsCommand, params, callbackSpy);
+      token = polymorphicCommandFn.call(wrpc, command, params, callbackSpy);
     } else {
       token = commandFn.call(wrpc, {}, callbackSpy);
     }
@@ -660,7 +693,7 @@ describe.each([
       expect(sendSpy).toHaveBeenCalledWith(
         Parser.stringify({
           token,
-          command: wsCommand,
+          command,
           params: {},
         }),
       );
@@ -669,17 +702,17 @@ describe.each([
     expect(token).not.toBeNull();
   });
 
-  test(`'${fn} + ${wsCommand}' should call callback and 'postMessage' to window on message only once for multiple callbacks`, () => {
+  test(`'${fn} + ${command}' should call callback and 'postMessage' to window on message only once for multiple callbacks`, () => {
     ws.dispatchEvent(new MessageEvent('open', {}));
 
-    const params = {};
+    const params: CloudVisionParams = {};
     let token;
     if (polymorphic) {
-      token = polymorphicCommandFn.call(wrpc, wsCommand, params, callbackSpy);
+      token = polymorphicCommandFn.call(wrpc, command, params, callbackSpy);
     } else {
       token = commandFn.call(wrpc, {}, callbackSpy);
     }
-    const expectedPostedMessage = {
+    const expectedPostedMessage: PostedMessage = {
       response: { token, result: RESULT },
       source: ID,
       timestamp: NOW,
@@ -687,7 +720,7 @@ describe.each([
 
     // second call
     if (polymorphic) {
-      token = polymorphicCommandFn.call(wrpc, wsCommand, params, callbackSpy);
+      token = polymorphicCommandFn.call(wrpc, command, params, callbackSpy);
     } else {
       token = commandFn.call(wrpc, {}, callbackSpy);
     }
@@ -710,17 +743,17 @@ describe.each([
     expect(token).not.toBeNull();
   });
 
-  test(`'${fn} + ${wsCommand}' should call callback and 'postMessage' to window with error on error message`, () => {
+  test(`'${fn} + ${command}' should call callback and 'postMessage' to window with error on error message`, () => {
     ws.dispatchEvent(new MessageEvent('open', {}));
 
-    const params = {};
+    const params: CloudVisionParams = {};
     let token;
     if (polymorphic) {
-      token = polymorphicCommandFn.call(wrpc, wsCommand, params, callbackSpy);
+      token = polymorphicCommandFn.call(wrpc, command, params, callbackSpy);
     } else {
       token = commandFn.call(wrpc, {}, callbackSpy);
     }
-    const expectedPostedMessage = {
+    const expectedPostedMessage: PostedMessage = {
       response: { token, error: ERROR_MESSAGE, status: ERROR_STATUS },
       source: ID,
       timestamp: NOW,
@@ -754,17 +787,17 @@ describe.each([
     expect(token).not.toBeNull();
   });
 
-  test(`'${fn} + ${wsCommand}' should call callback and 'postMessage' to window with error on error message for each callback`, () => {
+  test(`'${fn} + ${command}' should call callback and 'postMessage' to window with error on error message for each callback`, () => {
     ws.dispatchEvent(new MessageEvent('open', {}));
 
-    const params = {};
+    const params: CloudVisionParams = {};
     let token;
     if (polymorphic) {
-      token = polymorphicCommandFn.call(wrpc, wsCommand, params, callbackSpy);
+      token = polymorphicCommandFn.call(wrpc, command, params, callbackSpy);
     } else {
       token = commandFn.call(wrpc, {}, callbackSpy);
     }
-    const expectedPostedMessage = {
+    const expectedPostedMessage: PostedMessage = {
       response: { token, error: ERROR_MESSAGE, status: ERROR_STATUS },
       source: ID,
       timestamp: NOW,
@@ -772,7 +805,7 @@ describe.each([
 
     // second call
     if (polymorphic) {
-      token = polymorphicCommandFn.call(wrpc, wsCommand, params, callbackSpy);
+      token = polymorphicCommandFn.call(wrpc, command, params, callbackSpy);
     } else {
       token = commandFn.call(wrpc, {}, callbackSpy);
     }
@@ -803,18 +836,18 @@ describe.each([
     expect(token).not.toBeNull();
   });
 
-  test(`'${fn} + ${wsCommand}' should call callback and 'postMessage' to window with error on EOF message`, () => {
-    const EOF_STATUS = { code: EOF_CODE };
+  test(`'${fn} + ${command}' should call callback and 'postMessage' to window with error on EOF message`, () => {
+    const EOF_STATUS: CloudVisionStatus = { code: EOF_CODE };
     ws.dispatchEvent(new MessageEvent('open', {}));
 
-    const params = {};
+    const params: CloudVisionParams = {};
     let token;
     if (polymorphic) {
-      token = polymorphicCommandFn.call(wrpc, wsCommand, params, callbackSpy);
+      token = polymorphicCommandFn.call(wrpc, command, params, callbackSpy);
     } else {
       token = commandFn.call(wrpc, {}, callbackSpy);
     }
-    const expectedPostedMessage = {
+    const expectedPostedMessage: PostedMessage = {
       response: { token, error: EOF, status: EOF_STATUS },
       source: ID,
       timestamp: NOW,
@@ -843,37 +876,31 @@ describe.each([
   });
 });
 
-describe.each([
+describe.each<[StreamCommand, 'stream']>([
   [SUBSCRIBE, 'stream'],
   [SEARCH_SUBSCRIBE, 'stream'],
   [SERVICE_REQUEST, 'stream'],
 ])('Stream Commands', (command, fn) => {
-  const wsCommand = command as WsCommand;
-  let wrpc: WRPC;
+  let wrpc: Wrpc;
   let ws: WebSocket;
   let requestArgs: RequestArgs;
   let sendSpy: jest.SpyInstance;
   let eventsEmitterSpy: jest.SpyInstance;
   let eventsEmitterUnbindSpy: jest.SpyInstance;
   let eventsEmitterBindSpy: jest.SpyInstance;
-  let commandFn: (
-    c: WsCommand,
-    p: CloudVisionParams,
-    cb: NotifCallback,
-  ) => SubscriptionIdentifier | null;
+  let commandFn: Wrpc['stream'];
   const callbackSpy = jest.fn();
   const ERROR_MESSAGE = 'error';
-  const ERROR_STATUS = {
+  const ERROR_STATUS: CloudVisionStatus = {
     code: 3,
-    messages: ERROR_MESSAGE,
+    message: ERROR_MESSAGE,
   };
-  const ACTIVE_STATUS = { code: ACTIVE_CODE };
+  const ACTIVE_STATUS: CloudVisionStatus = { code: ACTIVE_CODE };
   const RESULT = { dataset: 'Dodgers' };
 
   beforeEach(() => {
     jest.resetAllMocks();
-    wrpc = new WRPC();
-    // @ts-ignore
+    wrpc = new Wrpc();
     commandFn = wrpc[fn];
     requestArgs = { command };
     wrpc.run('ws://localhost:8080');
@@ -892,8 +919,8 @@ describe.each([
     callbackSpy.mockClear();
   });
 
-  test(`'${fn} + ${wsCommand}' should not send message if socket is not running`, () => {
-    const subscriptionId = commandFn.call(wrpc, wsCommand, query, callbackSpy);
+  test(`'${fn} + ${command}' should not send message if socket is not running`, () => {
+    const subscriptionId = commandFn.call(wrpc, command, query, callbackSpy);
 
     expect(callbackSpy).toHaveBeenCalledWith('Connection is down');
     expect(eventsEmitterSpy).not.toHaveBeenCalled();
@@ -902,10 +929,10 @@ describe.each([
     expect(subscriptionId).toBe(null);
   });
 
-  test(`'${fn} + ${wsCommand}' should send message if socket is running`, () => {
+  test(`'${fn} + ${command}' should send message if socket is running`, () => {
     ws.dispatchEvent(new MessageEvent('open', {}));
 
-    const subscriptionId = commandFn.call(wrpc, wsCommand, query, callbackSpy);
+    const subscriptionId = commandFn.call(wrpc, command, query, callbackSpy);
     if (subscriptionId && subscriptionId.token) {
       const token = subscriptionId.token;
       expect(wrpc.streams).not.toContain(token);
@@ -918,7 +945,7 @@ describe.each([
       expect(sendSpy).toHaveBeenCalledWith(
         Parser.stringify({
           token,
-          command: wsCommand,
+          command,
           params: query,
         }),
       );
@@ -927,10 +954,10 @@ describe.each([
     expect(subscriptionId).not.toBeNull();
   });
 
-  test(`'${fn} + ${wsCommand}' should add to activeStreams if ACK message is received`, () => {
+  test(`'${fn} + ${command}' should add to activeStreams if ACK message is received`, () => {
     ws.dispatchEvent(new MessageEvent('open', {}));
 
-    const subscriptionId = commandFn.call(wrpc, wsCommand, query, callbackSpy);
+    const subscriptionId = commandFn.call(wrpc, command, query, callbackSpy);
     if (subscriptionId && subscriptionId.token) {
       const token = subscriptionId.token;
       ws.dispatchEvent(
@@ -942,7 +969,7 @@ describe.each([
       expect(sendSpy).toHaveBeenCalledWith(
         Parser.stringify({
           token,
-          command: wsCommand,
+          command,
           params: query,
         }),
       );
@@ -959,11 +986,11 @@ describe.each([
     expect(subscriptionId).not.toBeNull();
   });
 
-  test(`'${fn} + ${wsCommand}' should send subscribe message only once`, () => {
+  test(`'${fn} + ${command}' should send subscribe message only once`, () => {
     const callbackSpyTwo = jest.fn();
     ws.dispatchEvent(new MessageEvent('open', {}));
 
-    const subscriptionId = commandFn.call(wrpc, wsCommand, query, callbackSpy);
+    const subscriptionId = commandFn.call(wrpc, command, query, callbackSpy);
     if (subscriptionId && subscriptionId.token) {
       const token = subscriptionId.token;
       // Active the stream
@@ -972,7 +999,7 @@ describe.each([
           data: stringifyMessage({ token, status: ACTIVE_STATUS }),
         }),
       );
-      const subscriptionIdTwo = commandFn.call(wrpc, wsCommand, query, callbackSpyTwo);
+      const subscriptionIdTwo = commandFn.call(wrpc, command, query, callbackSpyTwo);
       if (subscriptionIdTwo && subscriptionIdTwo.token) {
         const tokenTwo = subscriptionIdTwo.token;
         expect(wrpc.streams).toContain(token);
@@ -986,7 +1013,7 @@ describe.each([
         expect(sendSpy).toHaveBeenCalledWith(
           Parser.stringify({
             token,
-            command: wsCommand,
+            command,
             params: query,
           }),
         );
@@ -999,12 +1026,12 @@ describe.each([
     expect(subscriptionId).not.toBeNull();
   });
 
-  test(`'${fn} + ${wsCommand}' should send subscribe message only once for simultaneous requests`, () => {
+  test(`'${fn} + ${command}' should send subscribe message only once for simultaneous requests`, () => {
     const callbackSpyTwo = jest.fn();
     ws.dispatchEvent(new MessageEvent('open', {}));
 
-    const subscriptionId = commandFn.call(wrpc, wsCommand, query, callbackSpy);
-    const subscriptionIdTwo = commandFn.call(wrpc, wsCommand, query, callbackSpyTwo);
+    const subscriptionId = commandFn.call(wrpc, command, query, callbackSpy);
+    const subscriptionIdTwo = commandFn.call(wrpc, command, query, callbackSpyTwo);
     if (subscriptionId && subscriptionId.token && subscriptionIdTwo && subscriptionIdTwo.token) {
       const token = subscriptionId.token;
       const tokenTwo = subscriptionIdTwo.token;
@@ -1026,7 +1053,7 @@ describe.each([
       expect(sendSpy).toHaveBeenCalledWith(
         Parser.stringify({
           token,
-          command: wsCommand,
+          command,
           params: query,
         }),
       );
@@ -1038,13 +1065,13 @@ describe.each([
     expect(subscriptionId).not.toBeNull();
   });
 
-  test(`'${fn} + ${wsCommand}' should call callback with error on message that throws a send error`, () => {
+  test(`'${fn} + ${command}' should call callback with error on message that throws a send error`, () => {
     ws.dispatchEvent(new MessageEvent('open', {}));
     sendSpy.mockImplementation(() => {
       throw ERROR_MESSAGE;
     });
 
-    const subscriptionId = commandFn.call(wrpc, wsCommand, query, callbackSpy);
+    const subscriptionId = commandFn.call(wrpc, command, query, callbackSpy);
     if (subscriptionId && subscriptionId.token) {
       const token = subscriptionId.token;
       expect(log).toHaveBeenCalledTimes(1);
@@ -1052,7 +1079,7 @@ describe.each([
       expect(sendSpy).toHaveBeenCalledWith(
         Parser.stringify({
           token,
-          command: wsCommand,
+          command,
           params: query,
         }),
       );
@@ -1073,10 +1100,10 @@ describe.each([
     expect(subscriptionId).not.toBeNull();
   });
 
-  test(`'${fn} + ${wsCommand}' should call callback and unbind on all errors`, () => {
+  test(`'${fn} + ${command}' should call callback and unbind on all errors`, () => {
     ws.dispatchEvent(new MessageEvent('open', {}));
 
-    const subscriptionId = commandFn.call(wrpc, wsCommand, query, callbackSpy);
+    const subscriptionId = commandFn.call(wrpc, command, query, callbackSpy);
     if (subscriptionId && subscriptionId.token) {
       const token = subscriptionId.token;
       ws.dispatchEvent(
@@ -1105,11 +1132,11 @@ describe.each([
     expect(subscriptionId).not.toBeNull();
   });
 
-  test(`'${fn} + ${wsCommand}' should call callback and unbind on all EOF`, () => {
-    const EOF_STATUS = { code: EOF_CODE };
+  test(`'${fn} + ${command}' should call callback and unbind on all EOF`, () => {
+    const EOF_STATUS: CloudVisionStatus = { code: EOF_CODE };
     ws.dispatchEvent(new MessageEvent('open', {}));
 
-    const subscriptionId = commandFn.call(wrpc, wsCommand, query, callbackSpy);
+    const subscriptionId = commandFn.call(wrpc, command, query, callbackSpy);
     if (subscriptionId && subscriptionId.token) {
       const token = subscriptionId.token;
       ws.dispatchEvent(
@@ -1132,10 +1159,10 @@ describe.each([
     expect(subscriptionId).not.toBeNull();
   });
 
-  test(`'${fn} + ${wsCommand}' should call callback on message and not unbind`, () => {
+  test(`'${fn} + ${command}' should call callback on message and not unbind`, () => {
     ws.dispatchEvent(new MessageEvent('open', {}));
 
-    const subscriptionId = commandFn.call(wrpc, wsCommand, query, callbackSpy);
+    const subscriptionId = commandFn.call(wrpc, command, query, callbackSpy);
     if (subscriptionId && subscriptionId.token) {
       const token = subscriptionId.token;
       ws.dispatchEvent(
@@ -1155,10 +1182,10 @@ describe.each([
     expect(subscriptionId).not.toBeNull();
   });
 
-  test(`'${fn} + ${wsCommand}' should not call callback on message that is not a string`, () => {
+  test(`'${fn} + ${command}' should not call callback on message that is not a string`, () => {
     ws.dispatchEvent(new MessageEvent('open', {}));
 
-    const subscriptionId = commandFn.call(wrpc, wsCommand, query, callbackSpy);
+    const subscriptionId = commandFn.call(wrpc, command, query, callbackSpy);
     if (subscriptionId && subscriptionId.token) {
       const token = subscriptionId.token;
       ws.dispatchEvent(new MessageEvent('message', { data: RESULT }));
@@ -1174,10 +1201,10 @@ describe.each([
     expect(subscriptionId).not.toBeNull();
   });
 
-  test(`'${fn} + ${wsCommand}' should not call callback on message without token`, () => {
+  test(`'${fn} + ${command}' should not call callback on message without token`, () => {
     ws.dispatchEvent(new MessageEvent('open', {}));
 
-    const subscriptionId = commandFn.call(wrpc, wsCommand, query, callbackSpy);
+    const subscriptionId = commandFn.call(wrpc, command, query, callbackSpy);
     if (subscriptionId && subscriptionId.token) {
       const token = subscriptionId.token;
       ws.dispatchEvent(new MessageEvent('message', { data: stringifyMessage({ result: RESULT }) }));
@@ -1193,11 +1220,11 @@ describe.each([
     expect(subscriptionId).not.toBeNull();
   });
 
-  test(`'${fn} + ${wsCommand}' should not call callback on message that throws error`, () => {
+  test(`'${fn} + ${command}' should not call callback on message that throws error`, () => {
     ws.dispatchEvent(new MessageEvent('open', {}));
 
     const result = '{ data: 1';
-    const subscriptionId = commandFn.call(wrpc, wsCommand, query, callbackSpy);
+    const subscriptionId = commandFn.call(wrpc, command, query, callbackSpy);
     if (subscriptionId && subscriptionId.token) {
       const token = subscriptionId.token;
       ws.dispatchEvent(new MessageEvent('message', { data: result }));
@@ -1215,13 +1242,12 @@ describe.each([
   });
 });
 
-describe.each([
+describe.each<[StreamCommand, 'stream']>([
   [SUBSCRIBE, 'stream'],
   [SEARCH_SUBSCRIBE, 'stream'],
   [SERVICE_REQUEST, 'stream'],
 ])('Close Stream Commands', (command, fn) => {
-  const wsCommand = command as WsCommand;
-  let wrpc: WRPC;
+  let wrpc: Wrpc;
   let ws: WebSocket;
   let requestArgs: RequestArgs;
   let subscriptionId: SubscriptionIdentifier;
@@ -1230,43 +1256,41 @@ describe.each([
   let eventsEmitterSpy: jest.SpyInstance;
   let eventsEmitterUnbindSpy: jest.SpyInstance;
   let eventsEmitterBindSpy: jest.SpyInstance;
-  let commandFn: (
-    c: WsCommand,
-    p: CloudVisionParams,
-    cb: NotifCallback,
-  ) => SubscriptionIdentifier | null;
+  let commandFn: Wrpc['stream'];
   const callbackSpy = jest.fn();
   const callbackSpyTwo = jest.fn();
   const closeCallback = jest.fn();
   const ERROR_MESSAGE = 'error';
-  const ERROR_STATUS = {
+  const ERROR_STATUS: CloudVisionStatus = {
     code: 3,
-    messages: ERROR_MESSAGE,
+    message: ERROR_MESSAGE,
   };
-  const ACTIVE_STATUS = { code: ACTIVE_CODE };
-  const EOF_STATUS = { code: EOF_CODE };
+  const ACTIVE_STATUS: CloudVisionStatus = { code: ACTIVE_CODE };
+  const EOF_STATUS: CloudVisionStatus = { code: EOF_CODE };
   const RESULT = { dataset: 'Dodgers' };
 
   beforeEach(() => {
     jest.resetAllMocks();
-    wrpc = new WRPC();
-    // @ts-ignore
+    wrpc = new Wrpc();
     commandFn = wrpc[fn];
     wrpc.run('ws://localhost:8080');
     ws = wrpc.websocket;
     ws.dispatchEvent(new MessageEvent('open', {}));
-    const subIdOrNull = commandFn.call(wrpc, wsCommand, query, callbackSpy);
+
+    const subIdOrNull = commandFn.call(wrpc, command, query, callbackSpy);
     if (subIdOrNull) {
       subscriptionId = subIdOrNull;
     }
     expect(subIdOrNull).not.toBeNull();
     expect(subscriptionId).toBeDefined();
-    const subIdOrNullTwo = commandFn.call(wrpc, wsCommand, {}, callbackSpyTwo);
+
+    const subIdOrNullTwo = commandFn.call(wrpc, command, {}, callbackSpyTwo);
     if (subIdOrNullTwo) {
       subscriptionIdTwo = subIdOrNullTwo;
     }
     expect(subIdOrNullTwo).not.toBeNull();
     expect(subscriptionIdTwo).toBeDefined();
+
     ws.dispatchEvent(
       new MessageEvent('message', {
         data: stringifyMessage({ token: subscriptionId.token, status: ACTIVE_STATUS }),
@@ -1291,7 +1315,7 @@ describe.each([
   });
 
   describe('single stream', () => {
-    test(`'${fn} + ${wsCommand}' should send close stream message`, () => {
+    test(`'${fn} + ${command}' should send close stream message`, () => {
       const token = wrpc.closeStream(subscriptionId, closeCallback);
 
       if (token) {
@@ -1309,7 +1333,7 @@ describe.each([
       expect(token).not.toBeNull();
     });
 
-    test(`'${fn} + ${wsCommand}' should callback with error on close message that throws a send error`, () => {
+    test(`'${fn} + ${command}' should callback with error on close message that throws a send error`, () => {
       sendSpy.mockImplementation(() => {
         throw ERROR_MESSAGE;
       });
@@ -1333,7 +1357,7 @@ describe.each([
       expect(token).not.toBeNull();
     });
 
-    test(`'${fn} + ${wsCommand}' should not send close stream message if no streams are present`, () => {
+    test(`'${fn} + ${command}' should not send close stream message if no streams are present`, () => {
       const token = wrpc.closeStream(
         { token: 'random token', callback: callbackSpy },
         closeCallback,
@@ -1348,7 +1372,7 @@ describe.each([
       expect(sendSpy).not.toHaveBeenCalled();
     });
 
-    test(`'${fn} + ${wsCommand}' should remove stream from closing map when EOF is received`, () => {
+    test(`'${fn} + ${command}' should remove stream from closing map when EOF is received`, () => {
       const token = wrpc.closeStream(subscriptionId, closeCallback);
       requestArgs = { command: CLOSE };
 
@@ -1377,7 +1401,7 @@ describe.each([
       expect(token).not.toBeNull();
     });
 
-    test(`'${fn} + ${wsCommand}' should remove stream from closing map when any error is received`, () => {
+    test(`'${fn} + ${command}' should remove stream from closing map when any error is received`, () => {
       const token = wrpc.closeStream(subscriptionId, closeCallback);
       requestArgs = { command: CLOSE };
 
@@ -1417,11 +1441,11 @@ describe.each([
       expect(token).not.toBeNull();
     });
 
-    test(`'${fn} + ${wsCommand}' should reopen a stream if a stream with the same token is requested while closing`, () => {
+    test(`'${fn} + ${command}' should reopen a stream if a stream with the same token is requested while closing`, () => {
       const token = wrpc.closeStream(subscriptionId, closeCallback);
 
       expect(wrpc.streamInClosingState.get(subscriptionId.token)).toEqual(token);
-      const subscriptionIdNew = commandFn.call(wrpc, wsCommand, query, callbackSpyTwo);
+      const subscriptionIdNew = commandFn.call(wrpc, command, query, callbackSpyTwo);
 
       if (token && subscriptionIdNew && subscriptionIdNew.token) {
         expect(callbackSpy).not.toHaveBeenCalled();
@@ -1445,7 +1469,7 @@ describe.each([
         expect(sendSpy).toHaveBeenCalledWith(
           Parser.stringify({
             token: subscriptionIdNew.token,
-            command: wsCommand,
+            command,
             params: query,
           }),
         );
@@ -1498,7 +1522,7 @@ describe.each([
   });
 
   describe('multiple streams', () => {
-    test(`'${fn} + ${wsCommand}' should send close message`, () => {
+    test(`'${fn} + ${command}' should send close message`, () => {
       const streams = [subscriptionId, subscriptionIdTwo];
       const token = wrpc.closeStreams(streams, closeCallback);
       requestArgs = { command: CLOSE };
@@ -1533,7 +1557,7 @@ describe.each([
       expect(token).not.toBeNull();
     });
 
-    test(`'${fn} + ${wsCommand}' should callback with error on close message that throws a send error`, () => {
+    test(`'${fn} + ${command}' should callback with error on close message that throws a send error`, () => {
       sendSpy.mockImplementation(() => {
         throw ERROR_MESSAGE;
       });
@@ -1573,7 +1597,7 @@ describe.each([
       expect(token).not.toBeNull();
     });
 
-    test(`'${fn} + ${wsCommand}' should not send close stream message if no streams are present`, () => {
+    test(`'${fn} + ${command}' should not send close stream message if no streams are present`, () => {
       const streams = [
         { token: 'random token', callback: callbackSpy },
         { token: 'another random token', callback: callbackSpyTwo },
@@ -1588,7 +1612,7 @@ describe.each([
       expect(sendSpy).not.toHaveBeenCalled();
     });
 
-    test(`'${fn} + ${wsCommand}' should remove stream from closing map when EOF is received`, () => {
+    test(`'${fn} + ${command}' should remove stream from closing map when EOF is received`, () => {
       const streams = [subscriptionId, subscriptionIdTwo];
       const token = wrpc.closeStreams(streams, closeCallback);
       requestArgs = { command: CLOSE };
@@ -1624,7 +1648,7 @@ describe.each([
       expect(token).not.toBeNull();
     });
 
-    test(`'${fn} + ${wsCommand}' should remove stream from closing map when any error is received`, () => {
+    test(`'${fn} + ${command}' should remove stream from closing map when any error is received`, () => {
       const streams = [subscriptionId, subscriptionIdTwo];
       const token = wrpc.closeStreams(streams, closeCallback);
       requestArgs = { command: CLOSE };
@@ -1671,12 +1695,12 @@ describe.each([
       expect(token).not.toBeNull();
     });
 
-    test(`'${fn} + ${wsCommand}' should reopen a stream if a stream with the same token is requested while closing`, () => {
+    test(`'${fn} + ${command}' should reopen a stream if a stream with the same token is requested while closing`, () => {
       const streams = [subscriptionId, subscriptionIdTwo];
       const token = wrpc.closeStreams(streams, closeCallback);
 
       expect(wrpc.streamInClosingState.get(subscriptionId.token)).toEqual(token);
-      const subscriptionIdNew = commandFn.call(wrpc, wsCommand, query, callbackSpyTwo);
+      const subscriptionIdNew = commandFn.call(wrpc, command, query, callbackSpyTwo);
 
       if (token && subscriptionIdNew && subscriptionIdNew.token) {
         expect(callbackSpy).not.toHaveBeenCalled();
@@ -1706,7 +1730,7 @@ describe.each([
         expect(sendSpy).toHaveBeenCalledWith(
           Parser.stringify({
             token: subscriptionIdNew.token,
-            command: wsCommand,
+            command,
             params: query,
           }),
         );
@@ -1760,27 +1784,26 @@ describe.each([
 });
 
 describe('enableOptions', () => {
-  let wrpc: WRPC;
+  let wrpc: Wrpc;
   let ws: WebSocket;
   let sendSpy: jest.SpyInstance;
   let eventsEmitterSpy: jest.SpyInstance;
   const ERROR_MESSAGE = 'error';
-  const ERROR_STATUS = {
+  const ERROR_STATUS: CloudVisionStatus = {
     code: 3,
-    messages: ERROR_MESSAGE,
+    message: ERROR_MESSAGE,
   };
-  const PAUSE_STATUS = {
+  const PAUSE_STATUS: CloudVisionStatus = {
     code: PAUSED_CODE,
   };
 
   beforeEach(() => {
     jest.resetAllMocks();
-    wrpc = new WRPC({
+    wrpc = new Wrpc({
       pauseStreams: true,
       batchResults: true,
       debugMode: false,
     });
-    // @ts-ignore
     wrpc.run('ws://localhost:8080');
     ws = wrpc.websocket;
     sendSpy = jest.spyOn(ws, 'send');
