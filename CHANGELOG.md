@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.2.0](https://github.com/aristanetworks/cloudvision/compare/v4.1.0...v4.2.0) (2020-05-19)
+
+
+### Bug Fixes
+
+* **cloudvision-connector:** Rename request args and add default ([1c40ef2](https://github.com/aristanetworks/cloudvision/commit/1c40ef2b027ca9d48d8bec90f3391585d0eb7321))
+
+
+### Features
+
+* **cloudvision-connector:** Refactor typings ([6668680](https://github.com/aristanetworks/cloudvision/commit/66686801705fca50e40226957bbca61bf42c6285))
+
+
+
+
+
 # [4.1.0](https://github.com/aristanetworks/cloudvision/compare/v4.0.5...v4.1.0) (2020-05-11)
 
 
