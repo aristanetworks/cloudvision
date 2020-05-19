@@ -57,7 +57,7 @@ import {
   CloudVisionStatus,
   Options,
   Query,
-  RequestArgs,
+  RequestContext,
   SearchOptions,
   SubscriptionIdentifier,
 } from '../types';
@@ -313,7 +313,7 @@ describe('makeToken', () => {
 
 describe('makeNotifCallback', () => {
   const token = 'Dodgers';
-  const requestArgs: RequestArgs = { command: GET };
+  const requestContext: RequestContext = { command: GET };
   const callbackSpy = jest.fn();
 
   beforeEach(() => {
@@ -331,10 +331,10 @@ describe('makeNotifCallback', () => {
   test('should send undefined on `EOF`', () => {
     const notifCallback = makeNotifCallback(callbackSpy);
 
-    notifCallback(EOF, undefined, EOF_STATUS, token, requestArgs);
+    notifCallback(EOF, undefined, EOF_STATUS, token, requestContext);
 
     expect(callbackSpy).toHaveBeenCalledTimes(1);
-    expect(callbackSpy).toHaveBeenCalledWith(null, undefined, EOF_STATUS, token, requestArgs);
+    expect(callbackSpy).toHaveBeenCalledWith(null, undefined, EOF_STATUS, token, requestContext);
   });
 
   test('should invoke a callack with the result, when there is no error', () => {
@@ -347,10 +347,10 @@ describe('makeNotifCallback', () => {
       ],
     };
 
-    notifCallback(null, notif, undefined, token, requestArgs);
+    notifCallback(null, notif, undefined, token, requestContext);
 
     expect(callbackSpy).toHaveBeenCalledTimes(1);
-    expect(callbackSpy).toHaveBeenCalledWith(null, notif, undefined, token, requestArgs);
+    expect(callbackSpy).toHaveBeenCalledWith(null, notif, undefined, token, requestContext);
   });
 
   test('should invoke the callback properly for dataset responses', () => {
@@ -368,10 +368,10 @@ describe('makeNotifCallback', () => {
       ],
     };
 
-    notifCallback(null, notif, undefined, token, requestArgs);
+    notifCallback(null, notif, undefined, token, requestContext);
 
     expect(callbackSpy).toHaveBeenCalledTimes(1);
-    expect(callbackSpy).toHaveBeenCalledWith(null, notif, undefined, token, requestArgs);
+    expect(callbackSpy).toHaveBeenCalledWith(null, notif, undefined, token, requestContext);
   });
 
   test('should invoke the callback properly for service responses', () => {
@@ -380,17 +380,17 @@ describe('makeNotifCallback', () => {
       Dodgers: 'the best team in baseball',
     };
 
-    notifCallback(null, notif, undefined, token, requestArgs);
+    notifCallback(null, notif, undefined, token, requestContext);
 
     expect(callbackSpy).toHaveBeenCalledTimes(1);
-    expect(callbackSpy).toHaveBeenCalledWith(null, notif, undefined, token, requestArgs);
+    expect(callbackSpy).toHaveBeenCalledWith(null, notif, undefined, token, requestContext);
   });
 
   test('should invoke the callback if there is an error', () => {
     const notifCallback = makeNotifCallback(callbackSpy);
     const errorText = 'Some Error';
 
-    notifCallback(errorText, undefined, undefined, token, requestArgs);
+    notifCallback(errorText, undefined, undefined, token, requestContext);
 
     expect(callbackSpy).toHaveBeenCalledTimes(2);
     expect(callbackSpy).toHaveBeenLastCalledWith(
@@ -398,7 +398,7 @@ describe('makeNotifCallback', () => {
       undefined,
       { code: EOF_CODE },
       token,
-      requestArgs,
+      requestContext,
     );
     expect(callbackSpy.mock.calls[0][0]).toContain(errorText);
   });
@@ -412,7 +412,7 @@ describe('createCloseParams', () => {
     token: streamToken,
     callback: streamCallback,
   };
-  const requestArgs: RequestArgs = { command: SUBSCRIBE };
+  const requestContext: RequestContext = { command: SUBSCRIBE };
   const streamCallback2 = jest.fn();
   const streamToken2 = 'VinScully';
   const stream2: SubscriptionIdentifier = {
@@ -422,8 +422,8 @@ describe('createCloseParams', () => {
 
   beforeEach(() => {
     emitter = new Emitter();
-    emitter.bind(streamToken, requestArgs, streamCallback);
-    emitter.bind(streamToken2, requestArgs, streamCallback2);
+    emitter.bind(streamToken, requestContext, streamCallback);
+    emitter.bind(streamToken2, requestContext, streamCallback2);
   });
 
   test('should create the proper stream close params for one stream', () => {
@@ -453,7 +453,7 @@ describe('createCloseParams', () => {
     () => {
       const anotherCallback = jest.fn();
       const expectedCloseParams = null;
-      emitter.bind(streamToken, requestArgs, anotherCallback);
+      emitter.bind(streamToken, requestContext, anotherCallback);
 
       const closeParams = createCloseParams(stream, emitter);
 
@@ -475,7 +475,7 @@ describe('createCloseParams', () => {
         callback: anotherCallback,
       };
       const streams = [stream, annotherStream];
-      emitter.bind(streamToken, requestArgs, anotherCallback);
+      emitter.bind(streamToken, requestContext, anotherCallback);
 
       const closeParams = createCloseParams(streams, emitter);
 

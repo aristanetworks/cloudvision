@@ -1,5 +1,5 @@
-import { EventCallback, RequestArgs } from './connection';
+import { EventCallback, RequestContext } from './connection';
 
 export type EmitterEvents = Map<string, EventCallback[]>;
 
-export type EmitterRequestArgs = Map<string, RequestArgs>;
+export type EmitterRequestContext = Map<string, RequestContext>;
