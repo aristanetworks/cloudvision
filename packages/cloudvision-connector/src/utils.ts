@@ -34,7 +34,7 @@ import {
   Options,
   PublishCallback,
   Query,
-  RequestArgs,
+  RequestContext,
   SearchOptions,
   SearchType,
   ServiceRequest,
@@ -208,10 +208,10 @@ export function makeNotifCallback(callback: NotifCallback, options: Options = {}
     result?: CloudVisionResult | CloudVisionBatchedResult | CloudVisionServiceResult,
     status?: CloudVisionStatus,
     token?: string,
-    requestArgs?: RequestArgs,
+    requestContext?: RequestContext,
   ): void => {
     if (status && status.code === EOF_CODE) {
-      callback(null, undefined, status, token, requestArgs);
+      callback(null, undefined, status, token, requestContext);
       return;
     }
     if (err) {
@@ -220,28 +220,28 @@ export function makeNotifCallback(callback: NotifCallback, options: Options = {}
         undefined,
         status,
         token,
-        requestArgs,
+        requestContext,
       );
       // Send an extra EOF response to mark notification as complete.
-      callback(null, undefined, { code: EOF_CODE }, token, requestArgs);
+      callback(null, undefined, { code: EOF_CODE }, token, requestContext);
       return;
     }
 
     const datasets = result as CloudVisionDatasets;
     if (datasets && datasets.datasets) {
-      callback(null, datasets, status, token, requestArgs);
+      callback(null, datasets, status, token, requestContext);
       return;
     }
 
     const notifs = result as CloudVisionNotifs | CloudVisionBatchedNotifications;
     if (notifs && notifs.dataset) {
-      callback(null, notifs, status, token, requestArgs);
+      callback(null, notifs, status, token, requestContext);
       return;
     }
 
     // if none of the cases above apply, then it's a service request
     if (notifs) {
-      callback(null, notifs, status, token, requestArgs);
+      callback(null, notifs, status, token, requestContext);
     }
   };
 

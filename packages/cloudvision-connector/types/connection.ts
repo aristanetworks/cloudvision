@@ -2,11 +2,11 @@ import { WsCommand } from './params';
 
 export interface EventCallback {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  (requestArgs: RequestArgs | undefined, ...args: any[]): void;
+  (requestContext: RequestContext, ...args: any[]): void;
 }
 
-export interface RequestArgs {
-  command: WsCommand | 'connection';
+export interface RequestContext {
+  command: WsCommand | 'connection' | 'NO_COMMAND';
 }
 
 export interface ConnectionCallback {

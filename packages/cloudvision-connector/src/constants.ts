@@ -15,7 +15,7 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import { SearchType } from '../types';
+import { RequestContext, SearchType } from '../types';
 
 export const ERROR = 'ERROR';
 export const INFO = 'INFO';
@@ -70,3 +70,5 @@ export const ALL_SEARCH_TYPES = new Set<SearchType>([
 export const CONNECTED = 'connected';
 export const DISCONNECTED = 'disconnected';
 export const ID = 'cloudvision-connector';
+
+export const DEFAULT_CONTEXT: RequestContext = { command: 'NO_COMMAND' };

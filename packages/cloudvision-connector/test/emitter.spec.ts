@@ -15,12 +15,12 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import { GET } from '../src/constants';
+import { DEFAULT_CONTEXT, GET } from '../src/constants';
 import Emitter from '../src/emitter';
-import { EventCallback, RequestArgs } from '../types';
+import { EventCallback, RequestContext } from '../types';
 
 describe('Emitter', () => {
-  const requestArgs: RequestArgs = { command: GET };
+  const requestContext: RequestContext = { command: GET };
 
   test('should remove itself from callback during emit', () => {
     const emitter = new Emitter();
@@ -34,17 +34,17 @@ describe('Emitter', () => {
       fakeCallbackInner(d);
     };
 
-    emitter.bind(event, requestArgs, fakeCallback1);
-    emitter.bind(event, requestArgs, callbackWithUnbind);
-    emitter.bind(event, requestArgs, fakeCallback2);
+    emitter.bind(event, requestContext, fakeCallback1);
+    emitter.bind(event, requestContext, callbackWithUnbind);
+    emitter.bind(event, requestContext, fakeCallback2);
 
     expect(emitter.getEventsMap().get(event)).toHaveLength(3);
 
     emitter.emit(event, data);
 
-    expect(fakeCallback1).toHaveBeenCalledWith(requestArgs, data);
+    expect(fakeCallback1).toHaveBeenCalledWith(requestContext, data);
     expect(fakeCallbackInner).toHaveBeenCalledWith(data);
-    expect(fakeCallback2).toHaveBeenCalledWith(requestArgs, data);
+    expect(fakeCallback2).toHaveBeenCalledWith(requestContext, data);
 
     expect(emitter.getEventsMap().get(event)).toHaveLength(2);
     expect(emitter.getEventsMap().get(event)).toContain(fakeCallback1);
@@ -62,16 +62,16 @@ describe('Emitter', () => {
       fakeCallbackInner(d);
     };
 
-    emitter.bind(event, requestArgs, callbackWithUnbind);
+    emitter.bind(event, requestContext, callbackWithUnbind);
 
     expect(emitter.getEventsMap().get(event)).toHaveLength(1);
-    expect(emitter.getRequestArgsMap().get(event)).toEqual(requestArgs);
+    expect(emitter.getRequestContextMap().get(event)).toEqual(requestContext);
 
     emitter.emit(event, data);
 
     expect(fakeCallbackInner).toHaveBeenCalledWith(data);
     expect(emitter.getEventsMap().get(event)).toBe(undefined);
-    expect(emitter.getRequestArgsMap().get(event)).toBe(undefined);
+    expect(emitter.getRequestContextMap().get(event)).toBe(undefined);
   });
 
   test('should not unbind if callack or remove request data is not present', () => {
@@ -80,11 +80,11 @@ describe('Emitter', () => {
     const fakeCallback = jest.fn();
     const fakeCallback2 = jest.fn();
 
-    emitter.bind(event, requestArgs, fakeCallback);
+    emitter.bind(event, requestContext, fakeCallback);
     emitter.unbind(event, fakeCallback2);
 
     expect(emitter.getEventsMap().get(event)).toHaveLength(1);
-    expect(emitter.getRequestArgsMap().get(event)).toEqual(requestArgs);
+    expect(emitter.getRequestContextMap().get(event)).toEqual(requestContext);
   });
 
   test('should not unbind if event type or remove request data is not present', () => {
@@ -92,11 +92,11 @@ describe('Emitter', () => {
     const event = 'test';
     const fakeCallback = jest.fn();
 
-    emitter.bind(event, requestArgs, fakeCallback);
+    emitter.bind(event, requestContext, fakeCallback);
     emitter.unbind('test2', fakeCallback);
 
     expect(emitter.getEventsMap().get(event)).toHaveLength(1);
-    expect(emitter.getRequestArgsMap().get(event)).toEqual(requestArgs);
+    expect(emitter.getRequestContextMap().get(event)).toEqual(requestContext);
   });
 
   test('should unbind if callack is present and remove request data', () => {
@@ -104,11 +104,11 @@ describe('Emitter', () => {
     const event = 'test';
     const fakeCallback = jest.fn();
 
-    emitter.bind(event, requestArgs, fakeCallback);
+    emitter.bind(event, requestContext, fakeCallback);
     emitter.unbind(event, fakeCallback);
 
     expect(emitter.getEventsMap().get(event)).toBe(undefined);
-    expect(emitter.getRequestArgsMap().get(event)).toBe(undefined);
+    expect(emitter.getRequestContextMap().get(event)).toBe(undefined);
   });
 
   test('should unbind if callack is present and but not remove shared request data', () => {
@@ -117,17 +117,17 @@ describe('Emitter', () => {
     const fakeCallback = jest.fn();
     const fakeCallback2 = jest.fn();
 
-    emitter.bind(event, requestArgs, fakeCallback);
-    emitter.bind(event, requestArgs, fakeCallback2);
+    emitter.bind(event, requestContext, fakeCallback);
+    emitter.bind(event, requestContext, fakeCallback2);
     expect(emitter.getEventsMap().get(event)).toHaveLength(2);
 
     emitter.unbind(event, fakeCallback);
 
     expect(emitter.getEventsMap().get(event)).toHaveLength(1);
-    expect(emitter.getRequestArgsMap().get(event)).toEqual(requestArgs);
+    expect(emitter.getRequestContextMap().get(event)).toEqual(requestContext);
   });
 
-  test('`getRequestArgsMap` should return request args', () => {
+  test('`getRequestContextMap` should return request context', () => {
     const emitter = new Emitter();
     const event = 'test';
     const event2 = 'test2';
@@ -138,12 +138,12 @@ describe('Emitter', () => {
       fakeCallbackInner(d);
     };
 
-    emitter.bind(event, requestArgs, callbackWithUnbind);
-    emitter.bind(event2, requestArgs, fakeCallback1);
+    emitter.bind(event, requestContext, callbackWithUnbind);
+    emitter.bind(event2, requestContext, fakeCallback1);
 
     // @ts-ignore
     expect(emitter.events.size).toBe(2);
-    expect(emitter.getRequestArgsMap().size).toBe(2);
+    expect(emitter.getRequestContextMap().size).toBe(2);
   });
 
   test('`getEventsMap` should return events', () => {
@@ -157,8 +157,8 @@ describe('Emitter', () => {
       fakeCallbackInner(d);
     };
 
-    emitter.bind(event, requestArgs, callbackWithUnbind);
-    emitter.bind(event2, requestArgs, fakeCallback1);
+    emitter.bind(event, requestContext, callbackWithUnbind);
+    emitter.bind(event2, requestContext, fakeCallback1);
 
     // @ts-ignore
     expect(emitter.events.size).toBe(2);
@@ -177,18 +177,18 @@ describe('Emitter', () => {
       fakeCallbackInner(d);
     };
 
-    emitter.bind(event, requestArgs, callbackWithUnbind);
-    emitter.bind(event, requestArgs, fakeCallback2);
-    emitter.bind(event2, requestArgs, fakeCallback1);
+    emitter.bind(event, requestContext, callbackWithUnbind);
+    emitter.bind(event, requestContext, fakeCallback2);
+    emitter.bind(event2, requestContext, fakeCallback1);
     expect(emitter.getEventsMap().get(event)).toHaveLength(2);
     expect(emitter.getEventsMap().size).toBe(2);
-    expect(emitter.getRequestArgsMap().get(event)).toEqual(requestArgs);
+    expect(emitter.getRequestContextMap().get(event)).toEqual(requestContext);
 
     emitter.unbindAll(event);
 
     expect(emitter.getEventsMap().get(event)).toBe(undefined);
     expect(emitter.getEventsMap().size).toBe(1);
-    expect(emitter.getRequestArgsMap().get(event)).toBe(undefined);
+    expect(emitter.getRequestContextMap().get(event)).toBe(undefined);
   });
 
   test('should not emit eventType if no callbacks present', () => {
@@ -196,27 +196,46 @@ describe('Emitter', () => {
     const event = 'test';
     const fakeCallback1 = jest.fn();
 
-    emitter.bind(event, requestArgs, fakeCallback1);
+    emitter.bind(event, requestContext, fakeCallback1);
     emitter.emit('test1');
 
     expect(fakeCallback1).not.toHaveBeenCalled();
   });
 
-  test('should include request args in emit', () => {
+  test('should include request context in emit', () => {
     const emitter = new Emitter();
     const event = 'test';
     const otherArg = 'something';
     const fakeCallback = jest.fn();
     const fakeCallback1 = jest.fn();
 
-    emitter.bind(event, requestArgs, fakeCallback);
-    emitter.bind(event, requestArgs, fakeCallback1);
+    emitter.bind(event, requestContext, fakeCallback);
+    emitter.bind(event, requestContext, fakeCallback1);
 
     emitter.emit(event, otherArg);
-    expect(fakeCallback).toHaveBeenCalledWith(requestArgs, otherArg);
+    expect(fakeCallback).toHaveBeenCalledWith(requestContext, otherArg);
 
     emitter.emit(event);
-    expect(fakeCallback).toHaveBeenCalledWith(requestArgs);
+    expect(fakeCallback).toHaveBeenCalledWith(requestContext);
+  });
+
+  test('should include default request context in emit, if none is found', () => {
+    const emitter = new Emitter();
+    const event = 'test';
+    const otherArg = 'something';
+    const fakeCallback = jest.fn();
+    const fakeCallback1 = jest.fn();
+
+    // @ts-ignore setup for callback that is missing request context
+    emitter.bind(event, undefined, fakeCallback);
+    // @ts-ignore setup for callback that is missing request context
+    emitter.bind(event, undefined, fakeCallback1);
+
+    emitter.emit(event, otherArg);
+    expect(fakeCallback).toHaveBeenCalledWith(DEFAULT_CONTEXT, otherArg);
+
+    emitter.emit(event);
+    expect(fakeCallback).toHaveBeenCalledWith(DEFAULT_CONTEXT);
   });
 
   test('should clear events `Map` on close', () => {
@@ -224,22 +243,22 @@ describe('Emitter', () => {
     const event = 'test';
     const fakeCallback1 = jest.fn();
 
-    emitter.bind(event, requestArgs, fakeCallback1);
+    emitter.bind(event, requestContext, fakeCallback1);
     emitter.close();
 
     expect(emitter.getEventsMap().get(event)).toBe(undefined);
     expect(emitter.getEventsMap().size).toBe(0);
   });
 
-  test('should clear requestArgs `Map` on close', () => {
+  test('should clear requestContext `Map` on close', () => {
     const emitter = new Emitter();
     const event = 'test';
     const fakeCallback1 = jest.fn();
 
-    emitter.bind(event, requestArgs, fakeCallback1);
+    emitter.bind(event, requestContext, fakeCallback1);
     emitter.close();
 
-    expect(emitter.getRequestArgsMap().get(event)).toBe(undefined);
+    expect(emitter.getRequestContextMap().get(event)).toBe(undefined);
   });
 
   test('should return true if `has` is called with a callback present in the emitter', () => {
@@ -247,7 +266,7 @@ describe('Emitter', () => {
     const event = 'test';
     const fakeCallback1 = jest.fn();
 
-    emitter.bind(event, requestArgs, fakeCallback1);
+    emitter.bind(event, requestContext, fakeCallback1);
     expect(emitter.has(event)).toBe(true);
   });
 
@@ -257,7 +276,7 @@ describe('Emitter', () => {
     expect(emitter.has(event)).toBe(false);
 
     const fakeCallback1 = jest.fn();
-    emitter.bind(event, requestArgs, fakeCallback1);
+    emitter.bind(event, requestContext, fakeCallback1);
     emitter.close();
     expect(emitter.has(event)).toBe(false);
   });

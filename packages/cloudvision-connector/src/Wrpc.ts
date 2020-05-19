@@ -29,7 +29,7 @@ import {
   GetCommand,
   NotifCallback,
   PauseParams,
-  RequestArgs,
+  RequestContext,
   ResumeParams,
   ServiceRequest,
   StreamCommand,
@@ -175,16 +175,16 @@ export default class Wrpc {
       return null;
     }
     const token: string = makeToken(command, params);
-    const requestArgs = { command };
+    const requestContext = { command };
     if (!this.activeRequests.has(token)) {
       // only execute request if not already getting data
       this.activeRequests.add(token);
       const callbackWithUnbind = this.makeCallbackWithUnbind(token, callback);
-      this.events.bind(token, requestArgs, callbackWithUnbind);
+      this.events.bind(token, requestContext, callbackWithUnbind);
       this.sendMessageOrError(token, command, params);
     } else {
       const queuedCallbackWithUnbind = this.makeQueuedCallbackWithUnbind(token, callback);
-      this.events.bind(token, requestArgs, queuedCallbackWithUnbind);
+      this.events.bind(token, requestContext, queuedCallbackWithUnbind);
     }
 
     return token;
@@ -260,7 +260,7 @@ export default class Wrpc {
    */
   public connection(callback: ConnectionCallback): () => void {
     const connectionCallback = (
-      _requestArgs: RequestArgs | undefined,
+      _requestContext: RequestContext,
       connEvent: string,
       wsEvent: Event,
     ): void => {
@@ -298,7 +298,7 @@ export default class Wrpc {
 
   private makeCallbackWithUnbind(token: string, callback: NotifCallback): EventCallback {
     const callbackWithUnbind = (
-      requestArgs: RequestArgs | undefined,
+      requestContext: RequestContext,
       err: string | null,
       result?: CloudVisionBatchedResult | CloudVisionResult,
       status?: CloudVisionStatus,
@@ -308,7 +308,7 @@ export default class Wrpc {
         this.activeRequests.delete(token);
         this.events.unbind(token, callbackWithUnbind);
       }
-      callback(err, result, status, token, requestArgs);
+      callback(err, result, status, token, requestContext);
     };
 
     return callbackWithUnbind;
@@ -316,7 +316,7 @@ export default class Wrpc {
 
   private makeQueuedCallbackWithUnbind(token: string, callback: NotifCallback): EventCallback {
     const callbackWithUnbind = (
-      requestArgs: RequestArgs | undefined,
+      requestContext: RequestContext,
       err: string | null,
       result?: CloudVisionBatchedResult | CloudVisionResult,
       status?: CloudVisionStatus,
@@ -324,7 +324,7 @@ export default class Wrpc {
       if (err) {
         // Unbind callback and invoke callback only when any error message is received
         this.events.unbind(token, callbackWithUnbind);
-        callback(err, result, status, token, requestArgs);
+        callback(err, result, status, token, requestContext);
       }
     };
 
@@ -554,13 +554,13 @@ export default class Wrpc {
     callback: NotifCallback,
   ): void {
     const closeCallback = (
-      requestArgs: RequestArgs | undefined,
+      requestContext: RequestContext,
       err: string | null,
       result?: CloudVisionBatchedResult | CloudVisionResult,
       status?: CloudVisionStatus,
     ): void => {
       this.removeStreamClosingState(streams, closeToken);
-      callback(err, result, status, closeToken, requestArgs);
+      callback(err, result, status, closeToken, requestContext);
     };
 
     if (Array.isArray(streams)) {
@@ -596,9 +596,9 @@ export default class Wrpc {
       return null;
     }
     const token = makeToken(command, params);
-    const callerRequestArgs = { command };
+    const callerRequestContext = { command };
     const callbackWithUnbind: EventCallback = (
-      requestArgs: RequestArgs | undefined,
+      requestContext: RequestContext,
       err: string | null,
       result?: CloudVisionBatchedResult | CloudVisionResult,
       status?: CloudVisionStatus,
@@ -611,9 +611,9 @@ export default class Wrpc {
       if (status && status.code === ACTIVE_CODE) {
         this.activeStreams.add(token);
       }
-      callback(err, result, status, token, requestArgs);
+      callback(err, result, status, token, requestContext);
     };
-    const numCallbacks = this.events.bind(token, callerRequestArgs, callbackWithUnbind);
+    const numCallbacks = this.events.bind(token, callerRequestContext, callbackWithUnbind);
     if (numCallbacks === 1) {
       // Only execute the request on the first callback.
       // If there are open request to the same data, just attach the callback
@@ -626,7 +626,7 @@ export default class Wrpc {
       }
     } else if (this.activeStreams.has(token)) {
       // The stream is already open immediately call get
-      callback(null, undefined, { code: ACTIVE_CODE }, token, callerRequestArgs);
+      callback(null, undefined, { code: ACTIVE_CODE }, token, callerRequestContext);
     }
 
     return { token, callback: callbackWithUnbind };

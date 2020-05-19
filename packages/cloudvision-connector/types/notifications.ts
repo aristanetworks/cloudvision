@@ -1,6 +1,6 @@
 import { PathElements, Timestamp } from 'a-msgpack';
 
-import { RequestArgs } from './connection';
+import { RequestContext } from './connection';
 import { DatasetObject } from './params';
 
 export interface CloudVisionDatasets {
@@ -114,6 +114,6 @@ export interface NotifCallback {
     result?: CloudVisionBatchedResult | CloudVisionResult | CloudVisionServiceResult,
     status?: CloudVisionStatus,
     token?: string,
-    requestArgs?: RequestArgs,
+    requestContext?: RequestContext,
   ): void;
 }
