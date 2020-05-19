@@ -7,10 +7,10 @@
   resolved "https://registry.yarnpkg.com/@arista/prettier-config/-/prettier-config-1.1.3.tgz#1e4f6d4c68dbd919941e76847661f79b43610e44"
   integrity sha512-oyjS5UYx/zfmvouhaeRCZKT7hlYP1BQb9TFnSDI3PhEiJtOjlWcQ434TwzspfwFyyTLxhPOMx75ZcWW5yvaYBw==
 
-"@msgpack/msgpack@1.12.1":
-  version "1.12.1"
-  resolved "https://registry.yarnpkg.com/@msgpack/msgpack/-/msgpack-1.12.1.tgz#aab1084bc33c955501bc0f202099e38304143e0b"
-  integrity sha512-nGwwmkdm3tuLdEkWMIwLBgFBfMFILILxcZIQY0dfqsdboN2iZdKfOYKUOKoa0wXw1FL1PL3yEYGPCXhwodQDTA==
+"@msgpack/msgpack@1.12.2":
+  version "1.12.2"
+  resolved "https://registry.yarnpkg.com/@msgpack/msgpack/-/msgpack-1.12.2.tgz#6a22e99a49b131a8789053d0b0903834552da36f"
+  integrity sha512-Vwhc3ObxmDZmA5hY8mfsau2rJ4vGPvzbj20QSZ2/E1GDPF61QVyjLfNHak9xmel6pW4heRt3v1fHa6np9Ehfeg==
 
 "@types/benchmark@1.0.32":
   version "1.0.32"
