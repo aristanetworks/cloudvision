@@ -27,8 +27,8 @@
     "prettier-fix": "prettier --write *.js src/**/*.ts test/**/*.ts types/**/*.ts",
     "test": "cross-env NODE_ENV=production jest",
     "test:clean": "rimraf .jest-cache",
-    "test:cov": "rimraf coverage && npm run test --coverage",
-    "test:watch": "npm run test --watch",
+    "test:cov": "rimraf coverage && npm run test -- --coverage",
+    "test:watch": "npm run test -- --watch",
     "type-check": "tsc --noEmit"
   },
   "files": [

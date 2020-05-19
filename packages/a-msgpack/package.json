@@ -28,10 +28,10 @@
     "test": "jest",
     "test:all": "npm run test && npm run test:purejs && npm run test:forcete",
     "test:clean": "rimraf .jest-cache",
-    "test:cov": "rimraf coverage && npm run test --coverage && npm run test:purejs --coverage && npm run test:forcete --coverage",
+    "test:cov": "rimraf coverage && npm run test -- --coverage && npm run test:purejs && npm run test:forcete -- --coverage",
     "test:forcete": "cross-env TEXT_ENCODING=force TEXT_DECODING=force jest",
-    "test:purejs": "cross-env TEXT_ENCODING=never jest",
-    "test:watch": "npm run test --watch",
+    "test:purejs": "cross-env TEXT_ENCODING=never TEXT_DECODING=never jest",
+    "test:watch": "npm run test -- --watch",
     "type-check": "tsc --noEmit"
   },
   "keywords": [

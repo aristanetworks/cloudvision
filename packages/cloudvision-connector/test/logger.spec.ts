@@ -21,6 +21,12 @@ describe.each<[LogLevel, string]>([
     consoleSpy.mockReset();
   });
 
+  test(`${level} should log a console group with the default message there is no message`, () => {
+    log(level, null);
+    expect(groupSpy).toHaveBeenCalledTimes(1);
+    expect(consoleSpy).toHaveBeenNthCalledWith(1, `${level}: No message provided`);
+  });
+
   test(`${level} should log a console group for just a message`, () => {
     log(level, message);
     expect(groupSpy).toHaveBeenCalledTimes(1);
