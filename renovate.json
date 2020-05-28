@@ -6,5 +6,12 @@
   ],
   "assignees": ["rufman"],
   "labels": ["dependencies"],
+  "packageRules": [
+    {
+      "updateTypes": ["minor", "patch", "pin", "digest"],
+      "automerge": true,
+      "automergeType": "branch"
+    }
+  ],
   "schedule": ["after 10pm and before 5am on every weekday", "every weekend"]
 }
