@@ -103,6 +103,18 @@ export default class Connector extends Wrpc {
     subscriptions: SubscriptionIdentifier[],
     callback: NotifCallback,
   ): string | null {
+    // Check for GET requests related to these close requests and close them as well
+    const relatedRequests: SubscriptionIdentifier[] = [];
+    subscriptions.forEach(({ callback: cb }) => {
+      const relatedRequest = this.streamRequests.get(cb);
+      if (relatedRequest) {
+        relatedRequests.push(relatedRequest);
+        this.streamRequests.delete(cb);
+      }
+    });
+    if (relatedRequests.length > 0) {
+      this.closeStreams(relatedRequests, callback);
+    }
     return this.closeStreams(subscriptions, makeNotifCallback(callback));
   }
 
@@ -172,13 +184,13 @@ export default class Connector extends Wrpc {
       result?: CloudVisionBatchedResult | CloudVisionResult | CloudVisionServiceResult,
       status?: CloudVisionStatus,
       token?: string,
-    ): void => {
+    ): SubscriptionIdentifier | null => {
       const subscribeNotifCallback = makeNotifCallback(callback);
       if (status && status.code === ACTIVE_CODE) {
-        this.getWithOptions(query, callback, sanitizedOptions);
-      } else {
-        subscribeNotifCallback(err, result, status, token, { command: SUBSCRIBE });
+        return this.getWithOptions(query, callback, sanitizedOptions);
       }
+      subscribeNotifCallback(err, result, status, token, { command: SUBSCRIBE });
+      return null;
     };
 
     return {
@@ -190,7 +202,7 @@ export default class Connector extends Wrpc {
   /**
    * Returns a list of apps (datasets with type == 'app').
    */
-  public getApps(callback: NotifCallback): string | null {
+  public getApps(callback: NotifCallback): SubscriptionIdentifier | null {
     const appType: typeof APP_DATASET_TYPE[] = [APP_DATASET_TYPE];
     const params: AppParams = { types: appType };
     return this.get(GET_DATASETS, params, makeNotifCallback(callback));
@@ -200,7 +212,7 @@ export default class Connector extends Wrpc {
    * Returns a list of datasets. This will return data sets of type 'device',
    * as well as type 'app'.
    */
-  public getDatasets(callback: NotifCallback): string | null {
+  public getDatasets(callback: NotifCallback): SubscriptionIdentifier | null {
     const allDatasetTypes: DatasetType[] = [APP_DATASET_TYPE, DEVICE_DATASET_TYPE];
     const params: AppParams = { types: allDatasetTypes };
     return this.get(GET_DATASETS, params, makeNotifCallback(callback));
@@ -209,7 +221,7 @@ export default class Connector extends Wrpc {
   /**
    * Returns a list of devices (datasets with type == 'device').
    */
-  public getDevices(callback: NotifCallback): string | null {
+  public getDevices(callback: NotifCallback): SubscriptionIdentifier | null {
     const deviceType: typeof DEVICE_DATASET_TYPE[] = [DEVICE_DATASET_TYPE];
     return this.get(GET_DATASETS, { types: deviceType }, makeNotifCallback(callback));
   }
@@ -250,7 +262,7 @@ export default class Connector extends Wrpc {
     query: Query | typeof DEVICES_DATASET_ID,
     callback: NotifCallback,
     options: Options,
-  ): string | null {
+  ): SubscriptionIdentifier | null {
     if (query === DEVICES_DATASET_ID) {
       this.getDatasets(callback);
       return null;

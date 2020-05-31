@@ -258,18 +258,11 @@ export function createCloseParams(
   eventsMap: Emitter,
 ): CloseParams | null {
   const closeParams: CloseParams = {};
-  if (Array.isArray(streams)) {
-    const streamsLen = streams.length;
-    for (let i = 0; i < streamsLen; i += 1) {
-      const { token, callback } = streams[i];
-      const remainingCallbacks = eventsMap.unbind(token, callback);
-      // Get number of registered callbacks for each stream, to determine which to close
-      if (remainingCallbacks === 0) {
-        closeParams[token] = true;
-      }
-    }
-  } else {
-    const { token, callback } = streams;
+  const streamArr = Array.isArray(streams) ? streams : [streams];
+
+  const streamsLen = streamArr.length;
+  for (let i = 0; i < streamsLen; i += 1) {
+    const { token, callback } = streamArr[i];
     const remainingCallbacks = eventsMap.unbind(token, callback);
     // Get number of registered callbacks for each stream, to determine which to close
     if (remainingCallbacks === 0) {

@@ -95,6 +95,8 @@ export default class Wrpc {
 
   private waitingStreams: Map<string, StreamArgs[]>;
 
+  public streamRequests: Map<EventCallback, SubscriptionIdentifier>;
+
   private activeStreams: Set<string>;
 
   private activeRequests: Set<string>;
@@ -118,6 +120,7 @@ export default class Wrpc {
     this.events = new Emitter();
     this.closingStreams = new Map();
     this.waitingStreams = new Map();
+    this.streamRequests = new Map();
     this.activeStreams = new Set();
     this.activeRequests = new Set();
     this.WebSocket = websocketClass;
@@ -169,7 +172,7 @@ export default class Wrpc {
     command: WsCommand,
     params: CloudVisionParams | CloudVisionPublishRequest | ServiceRequest,
     callback: NotifCallback,
-  ): string | null {
+  ): SubscriptionIdentifier | null {
     if (!this.isRunning) {
       callback('Connection is down');
       return null;
@@ -182,12 +185,11 @@ export default class Wrpc {
       const callbackWithUnbind = this.makeCallbackWithUnbind(token, callback);
       this.events.bind(token, requestContext, callbackWithUnbind);
       this.sendMessageOrError(token, command, params);
-    } else {
-      const queuedCallbackWithUnbind = this.makeQueuedCallbackWithUnbind(token, callback);
-      this.events.bind(token, requestContext, queuedCallbackWithUnbind);
+      return { token, callback: callbackWithUnbind };
     }
-
-    return token;
+    const queuedCallbackWithUnbind = this.makeQueuedCallbackWithUnbind(token, callback);
+    this.events.bind(token, requestContext, queuedCallbackWithUnbind);
+    return { token, callback: queuedCallbackWithUnbind };
   }
 
   /**
@@ -233,10 +235,12 @@ export default class Wrpc {
   }
 
   /**
-   * Closes multiple streams in one `close` call.
+   * Closes multiple streams in one `close` call. If there are GET requests associated with any
+   * of those streams, closes those as well.
    */
   public closeStreams(streams: SubscriptionIdentifier[], callback: NotifCallback): string | null {
     const closeParams = createCloseParams(streams, this.events);
+
     if (closeParams) {
       return this.closeCommand(streams, closeParams, callback);
     }
@@ -244,7 +248,8 @@ export default class Wrpc {
   }
 
   /**
-   * Closes one single stream.
+   * Closes one single stream. If there is a GET request associated with that stream, closes that
+   * as well.
    */
   public closeStream(stream: SubscriptionIdentifier, callback: NotifCallback): string | null {
     const closeParams = createCloseParams(stream, this.events);
@@ -292,7 +297,7 @@ export default class Wrpc {
     command: GetCommand,
     params: CloudVisionParams,
     callback: NotifCallback,
-  ): string | null {
+  ): SubscriptionIdentifier | null {
     return this.callCommand(command, params, callback);
   }
 
@@ -336,7 +341,8 @@ export default class Wrpc {
    * the provided callback, to indicate whether the write is successful or not.
    */
   public publish(params: CloudVisionPublishRequest, callback: NotifCallback): string | null {
-    return this.callCommand(PUBLISH, params, callback);
+    const result = this.callCommand(PUBLISH, params, callback);
+    return result ? result.token : null;
   }
 
   /**
@@ -374,7 +380,8 @@ export default class Wrpc {
    * Send a service request command to the CloudVision API
    */
   public requestService(request: ServiceRequest, callback: NotifCallback): string | null {
-    return this.callCommand(SERVICE_REQUEST, request, callback);
+    const result = this.callCommand(SERVICE_REQUEST, request, callback);
+    return result ? result.token : null;
   }
 
   /**
@@ -392,7 +399,8 @@ export default class Wrpc {
    * Requests the server to resume one of the currently paused streams.
    */
   private resume(params: ResumeParams, callback: NotifCallback): string | null {
-    return this.callCommand(RESUME, params, callback);
+    const result = this.callCommand(RESUME, params, callback);
+    return result ? result.token : null;
   }
 
   /**
@@ -493,7 +501,8 @@ export default class Wrpc {
   }
 
   public search(params: CloudVisionParams, callback: NotifCallback): string | null {
-    return this.callCommand(SEARCH, params, callback);
+    const result = this.callCommand(SEARCH, params, callback);
+    return result ? result.token : null;
   }
 
   /**
@@ -567,11 +576,18 @@ export default class Wrpc {
       const streamsLen = streams.length;
       for (let i = 0; i < streamsLen; i += 1) {
         const { token } = streams[i];
+
+        // Remove token from activeRequests in case it is a GET request
+        this.activeRequests.delete(token);
+
         const oldToken = this.closingStreams.get(token);
         this.waitingStreams.delete(oldToken || '');
         this.closingStreams.set(token, closeToken);
       }
     } else {
+      // Remove token from activeRequests in case it is a GET request
+      this.activeRequests.delete(streams.token);
+
       this.closingStreams.set(streams.token, closeToken);
     }
 
@@ -611,7 +627,13 @@ export default class Wrpc {
       if (status && status.code === ACTIVE_CODE) {
         this.activeStreams.add(token);
       }
-      callback(err, result, status, token, requestContext);
+      const requestId = callback(err, result, status, token, requestContext);
+      if (requestId as unknown) {
+        this.streamRequests.set(
+          callbackWithUnbind,
+          (requestId as unknown) as SubscriptionIdentifier,
+        );
+      }
     };
     const numCallbacks = this.events.bind(token, callerRequestContext, callbackWithUnbind);
     if (numCallbacks === 1) {
@@ -643,6 +665,7 @@ export default class Wrpc {
    * paused by the server.
    */
   private pause(params: PauseParams, callback: NotifCallback): string | null {
-    return this.callCommand(PAUSE, params, callback);
+    const result = this.callCommand(PAUSE, params, callback);
+    return result ? result.token : null;
   }
 }

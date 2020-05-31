@@ -295,6 +295,9 @@ describe.each<[WsCommand, WrpcMethod, boolean]>([
     } else {
       token = commandFn.call(wrpc, {}, callbackSpy);
     }
+    if (token && typeof token !== 'string') {
+      token = (token as SubscriptionIdentifier).token;
+    }
     if (token) {
       expect(callbackSpy).not.toHaveBeenCalled();
       expect(eventsEmitterSpy).not.toHaveBeenCalled();
@@ -329,6 +332,9 @@ describe.each<[WsCommand, WrpcMethod, boolean]>([
       token = polymorphicCommandFn.call(wrpc, command, {}, callbackSpy);
     } else {
       token = commandFn.call(wrpc, {}, callbackSpy);
+    }
+    if (token && typeof token !== 'string') {
+      token = (token as SubscriptionIdentifier).token;
     }
     if (token) {
       expect(log).toHaveBeenCalledTimes(1);
@@ -369,6 +375,9 @@ describe.each<[WsCommand, WrpcMethod, boolean]>([
       token = polymorphicCommandFn.call(wrpc, command, {}, callbackSpy);
     } else {
       token = commandFn.call(wrpc, {}, callbackSpy);
+    }
+    if (token && typeof token !== 'string') {
+      token = (token as SubscriptionIdentifier).token;
     }
     if (token) {
       ws.dispatchEvent(
@@ -411,6 +420,9 @@ describe.each<[WsCommand, WrpcMethod, boolean]>([
     } else {
       token = commandFn.call(wrpc, {}, callbackSpy);
     }
+    if (token && typeof token !== 'string') {
+      token = (token as SubscriptionIdentifier).token;
+    }
     if (token) {
       ws.dispatchEvent(
         new MessageEvent('message', {
@@ -445,6 +457,9 @@ describe.each<[WsCommand, WrpcMethod, boolean]>([
     } else {
       token = commandFn.call(wrpc, {}, callbackSpy);
     }
+    if (token && typeof token !== 'string') {
+      token = (token as SubscriptionIdentifier).token;
+    }
     if (token) {
       ws.dispatchEvent(
         new MessageEvent('message', { data: stringifyMessage({ token, result: RESULT }) }),
@@ -476,6 +491,9 @@ describe.each<[WsCommand, WrpcMethod, boolean]>([
     } else {
       token = commandFn.call(wrpc, {}, callbackSpy);
     }
+    if (token && typeof token !== 'string') {
+      token = (token as SubscriptionIdentifier).token;
+    }
     if (token) {
       ws.dispatchEvent(new MessageEvent('message', { data: RESULT }));
 
@@ -502,6 +520,9 @@ describe.each<[WsCommand, WrpcMethod, boolean]>([
       token = polymorphicCommandFn.call(wrpc, command, {}, callbackSpy);
     } else {
       token = commandFn.call(wrpc, {}, callbackSpy);
+    }
+    if (token && typeof token !== 'string') {
+      token = (token as SubscriptionIdentifier).token;
     }
     if (token) {
       ws.dispatchEvent(new MessageEvent('message', { data: stringifyMessage({ result: RESULT }) }));
@@ -530,6 +551,9 @@ describe.each<[WsCommand, WrpcMethod, boolean]>([
       token = polymorphicCommandFn.call(wrpc, command, {}, callbackSpy);
     } else {
       token = commandFn.call(wrpc, {}, callbackSpy);
+    }
+    if (token && typeof token !== 'string') {
+      token = (token as SubscriptionIdentifier).token;
     }
     if (token) {
       ws.dispatchEvent(new MessageEvent('message', { data: result }));
@@ -621,6 +645,9 @@ describe.each<[WsCommand, WrpcMethod, boolean]>([
     } else {
       token = commandFn.call(wrpc, {}, callbackSpy);
     }
+    if (token && typeof token !== 'string') {
+      token = (token as SubscriptionIdentifier).token;
+    }
     const expectedMessage: CloudVisionQueryMessage = {
       token,
       command,
@@ -666,6 +693,9 @@ describe.each<[WsCommand, WrpcMethod, boolean]>([
     } else {
       token = commandFn.call(wrpc, {}, callbackSpy);
     }
+    if (token && typeof token !== 'string') {
+      token = (token as SubscriptionIdentifier).token;
+    }
     const expectedPostedMessage: PostedMessage = {
       response: { token, result: RESULT },
       source: ID,
@@ -705,6 +735,9 @@ describe.each<[WsCommand, WrpcMethod, boolean]>([
     } else {
       token = commandFn.call(wrpc, {}, callbackSpy);
     }
+    if (token && typeof token !== 'string') {
+      token = (token as SubscriptionIdentifier).token;
+    }
     const expectedMessage: CloudVisionQueryMessage = {
       token,
       command,
@@ -721,6 +754,9 @@ describe.each<[WsCommand, WrpcMethod, boolean]>([
       token = polymorphicCommandFn.call(wrpc, command, params, callbackSpy);
     } else {
       token = commandFn.call(wrpc, {}, callbackSpy);
+    }
+    if (token && typeof token !== 'string') {
+      token = (token as SubscriptionIdentifier).token;
     }
 
     if (token) {
@@ -752,6 +788,9 @@ describe.each<[WsCommand, WrpcMethod, boolean]>([
     } else {
       token = commandFn.call(wrpc, {}, callbackSpy);
     }
+    if (token && typeof token !== 'string') {
+      token = (token as SubscriptionIdentifier).token;
+    }
     const expectedPostedMessage: PostedMessage = {
       response: { token, result: RESULT },
       source: ID,
@@ -763,6 +802,9 @@ describe.each<[WsCommand, WrpcMethod, boolean]>([
       token = polymorphicCommandFn.call(wrpc, command, params, callbackSpy);
     } else {
       token = commandFn.call(wrpc, {}, callbackSpy);
+    }
+    if (token && typeof token !== 'string') {
+      token = (token as SubscriptionIdentifier).token;
     }
 
     if (token) {
@@ -792,6 +834,9 @@ describe.each<[WsCommand, WrpcMethod, boolean]>([
       token = polymorphicCommandFn.call(wrpc, command, params, callbackSpy);
     } else {
       token = commandFn.call(wrpc, {}, callbackSpy);
+    }
+    if (token && typeof token !== 'string') {
+      token = (token as SubscriptionIdentifier).token;
     }
     const expectedPostedMessage: PostedMessage = {
       response: { token, error: ERROR_MESSAGE, status: ERROR_STATUS },
@@ -841,6 +886,9 @@ describe.each<[WsCommand, WrpcMethod, boolean]>([
     } else {
       token = commandFn.call(wrpc, {}, callbackSpy);
     }
+    if (token && typeof token !== 'string') {
+      token = (token as SubscriptionIdentifier).token;
+    }
     const expectedPostedMessage: PostedMessage = {
       response: { token, error: ERROR_MESSAGE, status: ERROR_STATUS },
       source: ID,
@@ -852,6 +900,9 @@ describe.each<[WsCommand, WrpcMethod, boolean]>([
       token = polymorphicCommandFn.call(wrpc, command, params, callbackSpy);
     } else {
       token = commandFn.call(wrpc, {}, callbackSpy);
+    }
+    if (token && typeof token !== 'string') {
+      token = (token as SubscriptionIdentifier).token;
     }
 
     if (token) {
@@ -890,6 +941,9 @@ describe.each<[WsCommand, WrpcMethod, boolean]>([
       token = polymorphicCommandFn.call(wrpc, command, params, callbackSpy);
     } else {
       token = commandFn.call(wrpc, {}, callbackSpy);
+    }
+    if (token && typeof token !== 'string') {
+      token = (token as SubscriptionIdentifier).token;
     }
     const expectedPostedMessage: PostedMessage = {
       response: { token, error: EOF, status: EOF_STATUS },

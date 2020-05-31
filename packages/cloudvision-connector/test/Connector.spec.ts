@@ -423,6 +423,30 @@ describe('getAndSubscribe', () => {
 
     expect(subscriptionId).not.toBeNull();
   });
+
+  test('should close subscriptions and gets', () => {
+    jest.spyOn(conn, 'closeStreams');
+
+    const subscriptionId = conn.getAndSubscribe(singlePathQuery, callback, options);
+
+    if (subscriptionId && subscriptionId.subscribe) {
+      // Send ACK
+      conn.websocket.dispatchEvent(
+        new MessageEvent('message', {
+          data: JSON.stringify({ token: subscriptionId.subscribe.token, status: ACTIVE_STATUS }),
+        }),
+      );
+
+      // streamRequest should have an entry
+      expect(conn.streamRequests.size).toEqual(1);
+      expect(conn.streamRequests.get(subscriptionId.subscribe.callback)).toBeDefined();
+
+      conn.closeSubscriptions([subscriptionId.subscribe], callback);
+      expect(conn.streamRequests.size).toEqual(0);
+      expect(conn.streamRequests.get(subscriptionId.subscribe.callback)).toBeUndefined();
+      expect(conn.closeStreams).toBeCalledTimes(2);
+    }
+  });
 });
 
 describe.each([
@@ -544,8 +568,11 @@ describe.each([
     expect(token).not.toBeNull();
   });
 
-  test('should call callback with data', () => {
-    const token = connFn.call(conn, rootQuery, callback, options);
+  test(`'${fn}' call callback with data`, () => {
+    let token = connFn.call(conn, rootQuery, callback, options);
+    if (token && typeof token === 'object') {
+      token = (token as SubscriptionIdentifier).token;
+    }
 
     if (token) {
       // Send message
@@ -561,8 +588,11 @@ describe.each([
     expect(token).not.toBeNull();
   });
 
-  test('should call callback with error', () => {
-    const token = connFn.call(conn, rootQuery, callback, options);
+  test(`'${fn}' call callback with error`, () => {
+    let token = connFn.call(conn, rootQuery, callback, options);
+    if (token && typeof token === 'object') {
+      token = (token as SubscriptionIdentifier).token;
+    }
 
     if (token) {
       // Send message
