@@ -47,7 +47,7 @@ import {
   QueryParams,
   RequestContext,
   StreamCommand,
-  SubscriptionIdentifier,
+  RequestIdentifier,
   WsCommand,
 } from '../types';
 
@@ -295,6 +295,9 @@ describe.each<[WsCommand, WrpcMethod, boolean]>([
     } else {
       token = commandFn.call(wrpc, {}, callbackSpy);
     }
+    if (token && typeof token !== 'string') {
+      token = (token as RequestIdentifier).token;
+    }
     if (token) {
       expect(callbackSpy).not.toHaveBeenCalled();
       expect(eventsEmitterSpy).not.toHaveBeenCalled();
@@ -329,6 +332,9 @@ describe.each<[WsCommand, WrpcMethod, boolean]>([
       token = polymorphicCommandFn.call(wrpc, command, {}, callbackSpy);
     } else {
       token = commandFn.call(wrpc, {}, callbackSpy);
+    }
+    if (token && typeof token !== 'string') {
+      token = (token as RequestIdentifier).token;
     }
     if (token) {
       expect(log).toHaveBeenCalledTimes(1);
@@ -369,6 +375,9 @@ describe.each<[WsCommand, WrpcMethod, boolean]>([
       token = polymorphicCommandFn.call(wrpc, command, {}, callbackSpy);
     } else {
       token = commandFn.call(wrpc, {}, callbackSpy);
+    }
+    if (token && typeof token !== 'string') {
+      token = (token as RequestIdentifier).token;
     }
     if (token) {
       ws.dispatchEvent(
@@ -411,6 +420,9 @@ describe.each<[WsCommand, WrpcMethod, boolean]>([
     } else {
       token = commandFn.call(wrpc, {}, callbackSpy);
     }
+    if (token && typeof token !== 'string') {
+      token = (token as RequestIdentifier).token;
+    }
     if (token) {
       ws.dispatchEvent(
         new MessageEvent('message', {
@@ -445,6 +457,9 @@ describe.each<[WsCommand, WrpcMethod, boolean]>([
     } else {
       token = commandFn.call(wrpc, {}, callbackSpy);
     }
+    if (token && typeof token !== 'string') {
+      token = (token as RequestIdentifier).token;
+    }
     if (token) {
       ws.dispatchEvent(
         new MessageEvent('message', { data: stringifyMessage({ token, result: RESULT }) }),
@@ -476,6 +491,9 @@ describe.each<[WsCommand, WrpcMethod, boolean]>([
     } else {
       token = commandFn.call(wrpc, {}, callbackSpy);
     }
+    if (token && typeof token !== 'string') {
+      token = (token as RequestIdentifier).token;
+    }
     if (token) {
       ws.dispatchEvent(new MessageEvent('message', { data: RESULT }));
 
@@ -502,6 +520,9 @@ describe.each<[WsCommand, WrpcMethod, boolean]>([
       token = polymorphicCommandFn.call(wrpc, command, {}, callbackSpy);
     } else {
       token = commandFn.call(wrpc, {}, callbackSpy);
+    }
+    if (token && typeof token !== 'string') {
+      token = (token as RequestIdentifier).token;
     }
     if (token) {
       ws.dispatchEvent(new MessageEvent('message', { data: stringifyMessage({ result: RESULT }) }));
@@ -530,6 +551,9 @@ describe.each<[WsCommand, WrpcMethod, boolean]>([
       token = polymorphicCommandFn.call(wrpc, command, {}, callbackSpy);
     } else {
       token = commandFn.call(wrpc, {}, callbackSpy);
+    }
+    if (token && typeof token !== 'string') {
+      token = (token as RequestIdentifier).token;
     }
     if (token) {
       ws.dispatchEvent(new MessageEvent('message', { data: result }));
@@ -621,6 +645,9 @@ describe.each<[WsCommand, WrpcMethod, boolean]>([
     } else {
       token = commandFn.call(wrpc, {}, callbackSpy);
     }
+    if (token && typeof token !== 'string') {
+      token = (token as RequestIdentifier).token;
+    }
     const expectedMessage: CloudVisionQueryMessage = {
       token,
       command,
@@ -666,6 +693,9 @@ describe.each<[WsCommand, WrpcMethod, boolean]>([
     } else {
       token = commandFn.call(wrpc, {}, callbackSpy);
     }
+    if (token && typeof token !== 'string') {
+      token = (token as RequestIdentifier).token;
+    }
     const expectedPostedMessage: PostedMessage = {
       response: { token, result: RESULT },
       source: ID,
@@ -705,6 +735,9 @@ describe.each<[WsCommand, WrpcMethod, boolean]>([
     } else {
       token = commandFn.call(wrpc, {}, callbackSpy);
     }
+    if (token && typeof token !== 'string') {
+      token = (token as RequestIdentifier).token;
+    }
     const expectedMessage: CloudVisionQueryMessage = {
       token,
       command,
@@ -721,6 +754,9 @@ describe.each<[WsCommand, WrpcMethod, boolean]>([
       token = polymorphicCommandFn.call(wrpc, command, params, callbackSpy);
     } else {
       token = commandFn.call(wrpc, {}, callbackSpy);
+    }
+    if (token && typeof token !== 'string') {
+      token = (token as RequestIdentifier).token;
     }
 
     if (token) {
@@ -752,6 +788,9 @@ describe.each<[WsCommand, WrpcMethod, boolean]>([
     } else {
       token = commandFn.call(wrpc, {}, callbackSpy);
     }
+    if (token && typeof token !== 'string') {
+      token = (token as RequestIdentifier).token;
+    }
     const expectedPostedMessage: PostedMessage = {
       response: { token, result: RESULT },
       source: ID,
@@ -763,6 +802,9 @@ describe.each<[WsCommand, WrpcMethod, boolean]>([
       token = polymorphicCommandFn.call(wrpc, command, params, callbackSpy);
     } else {
       token = commandFn.call(wrpc, {}, callbackSpy);
+    }
+    if (token && typeof token !== 'string') {
+      token = (token as RequestIdentifier).token;
     }
 
     if (token) {
@@ -792,6 +834,9 @@ describe.each<[WsCommand, WrpcMethod, boolean]>([
       token = polymorphicCommandFn.call(wrpc, command, params, callbackSpy);
     } else {
       token = commandFn.call(wrpc, {}, callbackSpy);
+    }
+    if (token && typeof token !== 'string') {
+      token = (token as RequestIdentifier).token;
     }
     const expectedPostedMessage: PostedMessage = {
       response: { token, error: ERROR_MESSAGE, status: ERROR_STATUS },
@@ -841,6 +886,9 @@ describe.each<[WsCommand, WrpcMethod, boolean]>([
     } else {
       token = commandFn.call(wrpc, {}, callbackSpy);
     }
+    if (token && typeof token !== 'string') {
+      token = (token as RequestIdentifier).token;
+    }
     const expectedPostedMessage: PostedMessage = {
       response: { token, error: ERROR_MESSAGE, status: ERROR_STATUS },
       source: ID,
@@ -852,6 +900,9 @@ describe.each<[WsCommand, WrpcMethod, boolean]>([
       token = polymorphicCommandFn.call(wrpc, command, params, callbackSpy);
     } else {
       token = commandFn.call(wrpc, {}, callbackSpy);
+    }
+    if (token && typeof token !== 'string') {
+      token = (token as RequestIdentifier).token;
     }
 
     if (token) {
@@ -890,6 +941,9 @@ describe.each<[WsCommand, WrpcMethod, boolean]>([
       token = polymorphicCommandFn.call(wrpc, command, params, callbackSpy);
     } else {
       token = commandFn.call(wrpc, {}, callbackSpy);
+    }
+    if (token && typeof token !== 'string') {
+      token = (token as RequestIdentifier).token;
     }
     const expectedPostedMessage: PostedMessage = {
       response: { token, error: EOF, status: EOF_STATUS },
@@ -1348,8 +1402,8 @@ describe.each<[StreamCommand, 'stream']>([
   let wrpc: Wrpc;
   let ws: WebSocket;
   let requestContext: RequestContext;
-  let subscriptionId: SubscriptionIdentifier;
-  let subscriptionIdTwo: SubscriptionIdentifier;
+  let subscriptionId: RequestIdentifier;
+  let subscriptionIdTwo: RequestIdentifier;
   let sendSpy: jest.SpyInstance;
   let eventsEmitterSpy: jest.SpyInstance;
   let eventsEmitterUnbindSpy: jest.SpyInstance;
@@ -1414,7 +1468,7 @@ describe.each<[StreamCommand, 'stream']>([
 
   describe('single stream', () => {
     test(`'${fn} + ${command}' should send close stream message`, () => {
-      const token = wrpc.closeStream(subscriptionId, closeCallback);
+      const token = wrpc.closeRequest(subscriptionId, closeCallback);
 
       if (token) {
         expect(wrpc.streamInClosingState.get(subscriptionId.token)).toEqual(token);
@@ -1436,7 +1490,7 @@ describe.each<[StreamCommand, 'stream']>([
         throw ERROR_MESSAGE;
       });
 
-      const token = wrpc.closeStream(subscriptionId, closeCallback);
+      const token = wrpc.closeRequest(subscriptionId, closeCallback);
 
       if (token) {
         expect(wrpc.streamInClosingState.get(subscriptionId.token)).toEqual(undefined);
@@ -1456,7 +1510,7 @@ describe.each<[StreamCommand, 'stream']>([
     });
 
     test(`'${fn} + ${command}' should not send close stream message if no streams are present`, () => {
-      const token = wrpc.closeStream(
+      const token = wrpc.closeRequest(
         { token: 'random token', callback: callbackSpy },
         closeCallback,
       );
@@ -1471,7 +1525,7 @@ describe.each<[StreamCommand, 'stream']>([
     });
 
     test(`'${fn} + ${command}' should remove stream from closing map when EOF is received`, () => {
-      const token = wrpc.closeStream(subscriptionId, closeCallback);
+      const token = wrpc.closeRequest(subscriptionId, closeCallback);
       requestContext = { command: CLOSE };
 
       if (token) {
@@ -1510,7 +1564,7 @@ describe.each<[StreamCommand, 'stream']>([
     });
 
     test(`'${fn} + ${command}' should remove stream from closing map when any error is received`, () => {
-      const token = wrpc.closeStream(subscriptionId, closeCallback);
+      const token = wrpc.closeRequest(subscriptionId, closeCallback);
       requestContext = { command: CLOSE };
 
       if (token) {
@@ -1554,7 +1608,7 @@ describe.each<[StreamCommand, 'stream']>([
     });
 
     test(`'${fn} + ${command}' should reopen a stream if a stream with the same token is requested while closing`, () => {
-      const token = wrpc.closeStream(subscriptionId, closeCallback);
+      const token = wrpc.closeRequest(subscriptionId, closeCallback);
 
       expect(wrpc.streamInClosingState.get(subscriptionId.token)).toEqual(token);
       const subscriptionIdNew = commandFn.call(wrpc, command, query, callbackSpyTwo);
@@ -1635,8 +1689,8 @@ describe.each<[StreamCommand, 'stream']>([
 
   describe('multiple streams', () => {
     test(`'${fn} + ${command}' should send close message`, () => {
-      const streams = [subscriptionId, subscriptionIdTwo];
-      const token = wrpc.closeStreams(streams, closeCallback);
+      const requests = [subscriptionId, subscriptionIdTwo];
+      const token = wrpc.closeRequests(requests, closeCallback);
       requestContext = { command: CLOSE };
 
       if (token) {
@@ -1678,8 +1732,8 @@ describe.each<[StreamCommand, 'stream']>([
         throw ERROR_MESSAGE;
       });
 
-      const streams = [subscriptionId, subscriptionIdTwo];
-      const token = wrpc.closeStreams(streams, closeCallback);
+      const requests = [subscriptionId, subscriptionIdTwo];
+      const token = wrpc.closeRequests(requests, closeCallback);
       requestContext = { command: CLOSE };
 
       if (token) {
@@ -1718,11 +1772,11 @@ describe.each<[StreamCommand, 'stream']>([
     });
 
     test(`'${fn} + ${command}' should not send close stream message if no streams are present`, () => {
-      const streams = [
+      const requests = [
         { token: 'random token', callback: callbackSpy },
         { token: 'another random token', callback: callbackSpyTwo },
       ];
-      const token = wrpc.closeStreams(streams, closeCallback);
+      const token = wrpc.closeRequests(requests, closeCallback);
       expect(token).toBeNull();
 
       expect(callbackSpy).not.toHaveBeenCalled();
@@ -1733,8 +1787,8 @@ describe.each<[StreamCommand, 'stream']>([
     });
 
     test(`'${fn} + ${command}' should remove stream from closing map when EOF is received`, () => {
-      const streams = [subscriptionId, subscriptionIdTwo];
-      const token = wrpc.closeStreams(streams, closeCallback);
+      const requests = [subscriptionId, subscriptionIdTwo];
+      const token = wrpc.closeRequests(requests, closeCallback);
       requestContext = { command: CLOSE };
 
       if (token) {
@@ -1779,8 +1833,8 @@ describe.each<[StreamCommand, 'stream']>([
     });
 
     test(`'${fn} + ${command}' should remove stream from closing map when any error is received`, () => {
-      const streams = [subscriptionId, subscriptionIdTwo];
-      const token = wrpc.closeStreams(streams, closeCallback);
+      const requests = [subscriptionId, subscriptionIdTwo];
+      const token = wrpc.closeRequests(requests, closeCallback);
       requestContext = { command: CLOSE };
 
       if (token) {
@@ -1830,8 +1884,8 @@ describe.each<[StreamCommand, 'stream']>([
     });
 
     test(`'${fn} + ${command}' should reopen a stream if a stream with the same token is requested while closing`, () => {
-      const streams = [subscriptionId, subscriptionIdTwo];
-      const token = wrpc.closeStreams(streams, closeCallback);
+      const requests = [subscriptionId, subscriptionIdTwo];
+      const token = wrpc.closeRequests(requests, closeCallback);
 
       expect(wrpc.streamInClosingState.get(subscriptionId.token)).toEqual(token);
       const subscriptionIdNew = commandFn.call(wrpc, command, query, callbackSpyTwo);

@@ -33,7 +33,7 @@ import {
   ResumeParams,
   ServiceRequest,
   StreamCommand,
-  SubscriptionIdentifier,
+  RequestIdentifier,
   WsCommand,
 } from '../types';
 
@@ -95,6 +95,8 @@ export default class Wrpc {
 
   private waitingStreams: Map<string, StreamArgs[]>;
 
+  public streamRequests: Map<EventCallback, RequestIdentifier>;
+
   private activeStreams: Set<string>;
 
   private activeRequests: Set<string>;
@@ -118,6 +120,7 @@ export default class Wrpc {
     this.events = new Emitter();
     this.closingStreams = new Map();
     this.waitingStreams = new Map();
+    this.streamRequests = new Map();
     this.activeStreams = new Set();
     this.activeRequests = new Set();
     this.WebSocket = websocketClass;
@@ -169,7 +172,7 @@ export default class Wrpc {
     command: WsCommand,
     params: CloudVisionParams | CloudVisionPublishRequest | ServiceRequest,
     callback: NotifCallback,
-  ): string | null {
+  ): RequestIdentifier | null {
     if (!this.isRunning) {
       callback('Connection is down');
       return null;
@@ -182,12 +185,11 @@ export default class Wrpc {
       const callbackWithUnbind = this.makeCallbackWithUnbind(token, callback);
       this.events.bind(token, requestContext, callbackWithUnbind);
       this.sendMessageOrError(token, command, params);
-    } else {
-      const queuedCallbackWithUnbind = this.makeQueuedCallbackWithUnbind(token, callback);
-      this.events.bind(token, requestContext, queuedCallbackWithUnbind);
+      return { token, callback: callbackWithUnbind };
     }
-
-    return token;
+    const queuedCallbackWithUnbind = this.makeQueuedCallbackWithUnbind(token, callback);
+    this.events.bind(token, requestContext, queuedCallbackWithUnbind);
+    return { token, callback: queuedCallbackWithUnbind };
   }
 
   /**
@@ -216,40 +218,41 @@ export default class Wrpc {
   }
 
   private closeCommand(
-    streams: SubscriptionIdentifier[] | SubscriptionIdentifier,
+    requests: RequestIdentifier[] | RequestIdentifier,
     closeParams: CloseParams,
     callback: NotifCallback,
   ): string {
     const closeToken: string = makeToken(CLOSE, closeParams);
-    this.setStreamClosingState(streams, closeToken, callback);
+    this.setRequestClosingState(requests, closeToken, callback);
     try {
       this.sendMessage(closeToken, CLOSE, closeParams);
     } catch (err) {
       log(ERROR, err);
-      this.removeStreamClosingState(streams, closeToken);
+      this.removeStreamClosingState(requests, closeToken);
       callback(err, undefined, undefined, closeToken);
     }
     return closeToken;
   }
 
   /**
-   * Closes multiple streams in one `close` call.
+   * Closes multiple backend requests in one `close` call.
    */
-  public closeStreams(streams: SubscriptionIdentifier[], callback: NotifCallback): string | null {
-    const closeParams = createCloseParams(streams, this.events);
+  public closeRequests(requests: RequestIdentifier[], callback: NotifCallback): string | null {
+    const closeParams = createCloseParams(requests, this.events);
+
     if (closeParams) {
-      return this.closeCommand(streams, closeParams, callback);
+      return this.closeCommand(requests, closeParams, callback);
     }
     return null;
   }
 
   /**
-   * Closes one single stream.
+   * Closes one single backend request.
    */
-  public closeStream(stream: SubscriptionIdentifier, callback: NotifCallback): string | null {
-    const closeParams = createCloseParams(stream, this.events);
+  public closeRequest(request: RequestIdentifier, callback: NotifCallback): string | null {
+    const closeParams = createCloseParams(request, this.events);
     if (closeParams) {
-      return this.closeCommand(stream, closeParams, callback);
+      return this.closeCommand(request, closeParams, callback);
     }
     return null;
   }
@@ -292,7 +295,7 @@ export default class Wrpc {
     command: GetCommand,
     params: CloudVisionParams,
     callback: NotifCallback,
-  ): string | null {
+  ): RequestIdentifier | null {
     return this.callCommand(command, params, callback);
   }
 
@@ -336,16 +339,17 @@ export default class Wrpc {
    * the provided callback, to indicate whether the write is successful or not.
    */
   public publish(params: CloudVisionPublishRequest, callback: NotifCallback): string | null {
-    return this.callCommand(PUBLISH, params, callback);
+    const result = this.callCommand(PUBLISH, params, callback);
+    return result ? result.token : null;
   }
 
   /**
-   * Cleans up the steam closing state set in `setStreamClosingState`, as well
+   * Cleans up the stream closing state set in `setRequestClosingState`, as well
    * as re-subscribing to any streams (with the same token as the stream that
    * was just closed) opened up during the closing of the current stream.
    */
   private removeStreamClosingState(
-    streams: SubscriptionIdentifier[] | SubscriptionIdentifier,
+    streams: RequestIdentifier[] | RequestIdentifier,
     closeToken: string,
   ): void {
     if (Array.isArray(streams)) {
@@ -374,7 +378,8 @@ export default class Wrpc {
    * Send a service request command to the CloudVision API
    */
   public requestService(request: ServiceRequest, callback: NotifCallback): string | null {
-    return this.callCommand(SERVICE_REQUEST, request, callback);
+    const result = this.callCommand(SERVICE_REQUEST, request, callback);
+    return result ? result.token : null;
   }
 
   /**
@@ -392,7 +397,8 @@ export default class Wrpc {
    * Requests the server to resume one of the currently paused streams.
    */
   private resume(params: ResumeParams, callback: NotifCallback): string | null {
-    return this.callCommand(RESUME, params, callback);
+    const result = this.callCommand(RESUME, params, callback);
+    return result ? result.token : null;
   }
 
   /**
@@ -493,7 +499,8 @@ export default class Wrpc {
   }
 
   public search(params: CloudVisionParams, callback: NotifCallback): string | null {
-    return this.callCommand(SEARCH, params, callback);
+    const result = this.callCommand(SEARCH, params, callback);
+    return result ? result.token : null;
   }
 
   /**
@@ -546,10 +553,11 @@ export default class Wrpc {
   /**
    * Sets all the parameters for one or more streams when they are closed.
    * When the `close` request has been successfully processed,
-   * `removeStreamClosingState` is called to clean up any closing state.
+   * `removeStreamClosingState` is called to clean up any closing state for
+   * stream requests.
    */
-  private setStreamClosingState(
-    streams: SubscriptionIdentifier[] | SubscriptionIdentifier,
+  private setRequestClosingState(
+    requests: RequestIdentifier[] | RequestIdentifier,
     closeToken: string,
     callback: NotifCallback,
   ): void {
@@ -559,20 +567,27 @@ export default class Wrpc {
       result?: CloudVisionBatchedResult | CloudVisionResult,
       status?: CloudVisionStatus,
     ): void => {
-      this.removeStreamClosingState(streams, closeToken);
+      this.removeStreamClosingState(requests, closeToken);
       callback(err, result, status, closeToken, requestContext);
     };
 
-    if (Array.isArray(streams)) {
-      const streamsLen = streams.length;
-      for (let i = 0; i < streamsLen; i += 1) {
-        const { token } = streams[i];
+    if (Array.isArray(requests)) {
+      const requestsLen = requests.length;
+      for (let i = 0; i < requestsLen; i += 1) {
+        const { token } = requests[i];
+
+        // Remove token from activeRequests in case it is a GET request
+        this.activeRequests.delete(token);
+
         const oldToken = this.closingStreams.get(token);
         this.waitingStreams.delete(oldToken || '');
         this.closingStreams.set(token, closeToken);
       }
     } else {
-      this.closingStreams.set(streams.token, closeToken);
+      // Remove token from activeRequests in case it is a GET request
+      this.activeRequests.delete(requests.token);
+
+      this.closingStreams.set(requests.token, closeToken);
     }
 
     this.events.bind(closeToken, { command: CLOSE }, closeCallback);
@@ -584,13 +599,13 @@ export default class Wrpc {
    * provided callback, as these messages get produced.
    * The client can close the stream with returned close function, or use the
    * attached identifier (`closeFunction.identifier`) to close multiple streams
-   * at once via `closeStream`.
+   * at once via `closeRequest`.
    */
   public stream(
     command: StreamCommand,
     params: CloudVisionParams | ServiceRequest,
     callback: NotifCallback,
-  ): SubscriptionIdentifier | null {
+  ): RequestIdentifier | null {
     if (!this.isRunning) {
       callback('Connection is down');
       return null;
@@ -611,7 +626,10 @@ export default class Wrpc {
       if (status && status.code === ACTIVE_CODE) {
         this.activeStreams.add(token);
       }
-      callback(err, result, status, token, requestContext);
+      const requestId = callback(err, result, status, token, requestContext);
+      if (requestId as unknown) {
+        this.streamRequests.set(callbackWithUnbind, (requestId as unknown) as RequestIdentifier);
+      }
     };
     const numCallbacks = this.events.bind(token, callerRequestContext, callbackWithUnbind);
     if (numCallbacks === 1) {
@@ -643,6 +661,7 @@ export default class Wrpc {
    * paused by the server.
    */
   private pause(params: PauseParams, callback: NotifCallback): string | null {
-    return this.callCommand(PAUSE, params, callback);
+    const result = this.callCommand(PAUSE, params, callback);
+    return result ? result.token : null;
   }
 }

@@ -19,7 +19,7 @@ export interface ConnectionCallback {
  * means we use the callback to identify the call, if there are multiple of
  * the same calls.
  */
-export interface SubscriptionIdentifier {
+export interface RequestIdentifier {
   callback: EventCallback;
   token: string;
 }

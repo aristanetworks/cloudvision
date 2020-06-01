@@ -15,7 +15,7 @@ import {
   SearchOptions,
   SearchParams,
   ServiceRequest,
-  SubscriptionIdentifier,
+  RequestIdentifier,
   WsCommand,
 } from '../types';
 
@@ -74,9 +74,13 @@ export default class Connector extends Wrpc {
   public static SUBSCRIBE: typeof SUBSCRIBE = SUBSCRIBE;
 
   /**
-   * Close multiple subscriptions in one `close` call. The subscription
-   * identifier return in the `subscribe` call along with the close function
-   * can be passed in here to close the subscription together with others.
+   * Closes multiple data requests in one `close` call. The request
+   * identifier returned in the `subscribe` call or the `getWithOptions` call
+   * along with the close function can be passed in here to close the subscription
+   * together with others.
+   * Checks wrpc.streamRequests to see if there are `get` requests associated
+   * with any of the requests, and call closeRequests for those requests
+   * as well.
    *
    * @example
    * ```typescript
@@ -99,11 +103,25 @@ export default class Connector extends Wrpc {
    * const closeSubscriptions([subscriptionCloseFn.identifier]);
    * ```
    */
-  public closeSubscriptions(
-    subscriptions: SubscriptionIdentifier[],
+  public closeDataRequests(
+    dataRequests: RequestIdentifier[],
     callback: NotifCallback,
   ): string | null {
-    return this.closeStreams(subscriptions, makeNotifCallback(callback));
+    // Check for GET requests related to these close requests and close them as well
+    const relatedRequests: RequestIdentifier[] = [];
+    const length = dataRequests.length;
+    for (let i = 0; i < length; i++) {
+      const { callback: cb } = dataRequests[i];
+      const relatedRequest = this.streamRequests.get(cb);
+      if (relatedRequest) {
+        relatedRequests.push(relatedRequest);
+        this.streamRequests.delete(cb);
+      }
+    }
+    if (relatedRequests.length > 0) {
+      this.closeRequests(relatedRequests, callback);
+    }
+    return this.closeRequests(dataRequests, makeNotifCallback(callback));
   }
 
   /**
@@ -146,7 +164,7 @@ export default class Connector extends Wrpc {
     callback: NotifCallback,
     options: Options,
   ): {
-    subscribe: SubscriptionIdentifier | null;
+    subscribe: RequestIdentifier | null;
     get: string;
   } | null {
     if (!validateQuery(query, callback)) {
@@ -172,13 +190,13 @@ export default class Connector extends Wrpc {
       result?: CloudVisionBatchedResult | CloudVisionResult | CloudVisionServiceResult,
       status?: CloudVisionStatus,
       token?: string,
-    ): void => {
+    ): RequestIdentifier | null => {
       const subscribeNotifCallback = makeNotifCallback(callback);
       if (status && status.code === ACTIVE_CODE) {
-        this.getWithOptions(query, callback, sanitizedOptions);
-      } else {
-        subscribeNotifCallback(err, result, status, token, { command: SUBSCRIBE });
+        return this.getWithOptions(query, callback, sanitizedOptions);
       }
+      subscribeNotifCallback(err, result, status, token, { command: SUBSCRIBE });
+      return null;
     };
 
     return {
@@ -190,7 +208,7 @@ export default class Connector extends Wrpc {
   /**
    * Returns a list of apps (datasets with type == 'app').
    */
-  public getApps(callback: NotifCallback): string | null {
+  public getApps(callback: NotifCallback): RequestIdentifier | null {
     const appType: typeof APP_DATASET_TYPE[] = [APP_DATASET_TYPE];
     const params: AppParams = { types: appType };
     return this.get(GET_DATASETS, params, makeNotifCallback(callback));
@@ -200,7 +218,7 @@ export default class Connector extends Wrpc {
    * Returns a list of datasets. This will return data sets of type 'device',
    * as well as type 'app'.
    */
-  public getDatasets(callback: NotifCallback): string | null {
+  public getDatasets(callback: NotifCallback): RequestIdentifier | null {
     const allDatasetTypes: DatasetType[] = [APP_DATASET_TYPE, DEVICE_DATASET_TYPE];
     const params: AppParams = { types: allDatasetTypes };
     return this.get(GET_DATASETS, params, makeNotifCallback(callback));
@@ -209,7 +227,7 @@ export default class Connector extends Wrpc {
   /**
    * Returns a list of devices (datasets with type == 'device').
    */
-  public getDevices(callback: NotifCallback): string | null {
+  public getDevices(callback: NotifCallback): RequestIdentifier | null {
     const deviceType: typeof DEVICE_DATASET_TYPE[] = [DEVICE_DATASET_TYPE];
     return this.get(GET_DATASETS, { types: deviceType }, makeNotifCallback(callback));
   }
@@ -250,7 +268,7 @@ export default class Connector extends Wrpc {
     query: Query | typeof DEVICES_DATASET_ID,
     callback: NotifCallback,
     options: Options,
-  ): string | null {
+  ): RequestIdentifier | null {
     if (query === DEVICES_DATASET_ID) {
       this.getDatasets(callback);
       return null;
@@ -283,7 +301,7 @@ export default class Connector extends Wrpc {
   public runStreamingService(
     request: ServiceRequest,
     callback: NotifCallback,
-  ): SubscriptionIdentifier | null {
+  ): RequestIdentifier | null {
     if (!request) {
       callback('`request` param cannot be empty');
       return null;
@@ -323,7 +341,7 @@ export default class Connector extends Wrpc {
     query: Query,
     callback: NotifCallback,
     options: SearchOptions = { search: '' },
-  ): SubscriptionIdentifier | null {
+  ): RequestIdentifier | null {
     if (!validateQuery(query, callback, true)) {
       return null;
     }
@@ -365,7 +383,7 @@ export default class Connector extends Wrpc {
    * const subscriptionCloseFn = connector.subscribe(query, handleResponse);
    * ```
    */
-  public subscribe(query: Query, callback: NotifCallback): SubscriptionIdentifier | null {
+  public subscribe(query: Query, callback: NotifCallback): RequestIdentifier | null {
     if (!validateQuery(query, callback)) {
       return null;
     }

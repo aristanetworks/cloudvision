@@ -59,7 +59,7 @@ import {
   Query,
   RequestContext,
   SearchOptions,
-  SubscriptionIdentifier,
+  RequestIdentifier,
 } from '../types';
 
 const EOF_STATUS: CloudVisionStatus = {
@@ -408,14 +408,14 @@ describe('createCloseParams', () => {
   let emitter: Emitter;
   const streamCallback = jest.fn();
   const streamToken = 'DodgerBlue';
-  const stream: SubscriptionIdentifier = {
+  const stream: RequestIdentifier = {
     token: streamToken,
     callback: streamCallback,
   };
   const requestContext: RequestContext = { command: SUBSCRIBE };
   const streamCallback2 = jest.fn();
   const streamToken2 = 'VinScully';
-  const stream2: SubscriptionIdentifier = {
+  const stream2: RequestIdentifier = {
     token: streamToken2,
     callback: streamCallback2,
   };
@@ -436,9 +436,9 @@ describe('createCloseParams', () => {
   });
 
   test('should create the proper stream close params for multiple streams', () => {
-    const streams = [stream, stream2];
+    const requests = [stream, stream2];
     const expectedCloseParams: CloseParams = { [streamToken]: true, [streamToken2]: true };
-    const closeParams = createCloseParams(streams, emitter);
+    const closeParams = createCloseParams(requests, emitter);
 
     expect(closeParams).toEqual(expectedCloseParams);
     expect(streamCallback).not.toHaveBeenCalled();
@@ -470,14 +470,14 @@ describe('createCloseParams', () => {
     () => {
       const anotherCallback = jest.fn();
       const expectedCloseParams: CloseParams = { [streamToken]: true };
-      const annotherStream: SubscriptionIdentifier = {
+      const annotherStream: RequestIdentifier = {
         token: streamToken,
         callback: anotherCallback,
       };
-      const streams = [stream, annotherStream];
+      const requests = [stream, annotherStream];
       emitter.bind(streamToken, requestContext, anotherCallback);
 
-      const closeParams = createCloseParams(streams, emitter);
+      const closeParams = createCloseParams(requests, emitter);
 
       expect(closeParams).toEqual(expectedCloseParams);
       expect(streamCallback).not.toHaveBeenCalled();

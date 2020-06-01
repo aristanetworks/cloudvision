@@ -41,7 +41,7 @@ import {
   Query,
   SearchOptions,
   ServiceRequest,
-  SubscriptionIdentifier,
+  RequestIdentifier,
 } from '../types';
 
 const dataset = 'deviceFoo';
@@ -103,7 +103,7 @@ describe('getCommandToken', () => {
   });
 });
 
-describe('closeSubscriptions', () => {
+describe('closeDataRequests', () => {
   const streamCallback = jest.fn();
   const streamToken = 'DodgerBlue';
   const streamCallback2 = jest.fn();
@@ -118,12 +118,12 @@ describe('closeSubscriptions', () => {
     conn.run('ws://localhost:8080');
     conn.websocket.dispatchEvent(new MessageEvent('open', {}));
 
-    jest.spyOn(conn, 'closeStreams');
+    jest.spyOn(conn, 'closeRequests');
     const spyCallback = jest.fn();
 
-    conn.closeSubscriptions(subscriptions, spyCallback);
+    conn.closeDataRequests(subscriptions, spyCallback);
 
-    expect(conn.closeStreams).toHaveBeenCalledWith(subscriptions, expect.any(Function));
+    expect(conn.closeRequests).toHaveBeenCalledWith(subscriptions, expect.any(Function));
     expect(spyCallback).not.toHaveBeenCalled();
   });
 });
@@ -423,6 +423,30 @@ describe('getAndSubscribe', () => {
 
     expect(subscriptionId).not.toBeNull();
   });
+
+  test('should close subscriptions and gets', () => {
+    jest.spyOn(conn, 'closeRequests');
+
+    const subscriptionId = conn.getAndSubscribe(singlePathQuery, callback, options);
+
+    if (subscriptionId && subscriptionId.subscribe) {
+      // Send ACK
+      conn.websocket.dispatchEvent(
+        new MessageEvent('message', {
+          data: JSON.stringify({ token: subscriptionId.subscribe.token, status: ACTIVE_STATUS }),
+        }),
+      );
+
+      // streamRequest should have an entry
+      expect(conn.streamRequests.size).toEqual(1);
+      expect(conn.streamRequests.get(subscriptionId.subscribe.callback)).toBeDefined();
+
+      conn.closeDataRequests([subscriptionId.subscribe], callback);
+      expect(conn.streamRequests.size).toEqual(0);
+      expect(conn.streamRequests.get(subscriptionId.subscribe.callback)).toBeUndefined();
+      expect(conn.closeRequests).toBeCalledTimes(2);
+    }
+  });
 });
 
 describe.each([
@@ -544,8 +568,11 @@ describe.each([
     expect(token).not.toBeNull();
   });
 
-  test('should call callback with data', () => {
-    const token = connFn.call(conn, rootQuery, callback, options);
+  test(`'${fn}' call callback with data`, () => {
+    let token = connFn.call(conn, rootQuery, callback, options);
+    if (token && typeof token === 'object') {
+      token = (token as RequestIdentifier).token;
+    }
 
     if (token) {
       // Send message
@@ -561,8 +588,11 @@ describe.each([
     expect(token).not.toBeNull();
   });
 
-  test('should call callback with error', () => {
-    const token = connFn.call(conn, rootQuery, callback, options);
+  test(`'${fn}' call callback with error`, () => {
+    let token = connFn.call(conn, rootQuery, callback, options);
+    if (token && typeof token === 'object') {
+      token = (token as RequestIdentifier).token;
+    }
 
     if (token) {
       // Send message
@@ -601,7 +631,7 @@ describe.each([
     q: Query | ServiceRequest,
     cb: NotifCallback,
     o?: SearchOptions,
-  ) => SubscriptionIdentifier | null;
+  ) => RequestIdentifier | null;
   const RESULT = { dataset: 'Dodgers' };
 
   beforeEach(() => {
