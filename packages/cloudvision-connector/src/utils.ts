@@ -38,7 +38,7 @@ import {
   SearchOptions,
   SearchType,
   ServiceRequest,
-  SubscriptionIdentifier,
+  RequestIdentifier,
   WsCommand,
 } from '../types';
 
@@ -254,24 +254,17 @@ export function makeNotifCallback(callback: NotifCallback, options: Options = {}
  * close params.
  */
 export function createCloseParams(
-  streams: SubscriptionIdentifier[] | SubscriptionIdentifier,
+  requests: RequestIdentifier[] | RequestIdentifier,
   eventsMap: Emitter,
 ): CloseParams | null {
   const closeParams: CloseParams = {};
-  if (Array.isArray(streams)) {
-    const streamsLen = streams.length;
-    for (let i = 0; i < streamsLen; i += 1) {
-      const { token, callback } = streams[i];
-      const remainingCallbacks = eventsMap.unbind(token, callback);
-      // Get number of registered callbacks for each stream, to determine which to close
-      if (remainingCallbacks === 0) {
-        closeParams[token] = true;
-      }
-    }
-  } else {
-    const { token, callback } = streams;
+  const requestArray = Array.isArray(requests) ? requests : [requests];
+
+  const requestsLen = requestArray.length;
+  for (let i = 0; i < requestsLen; i += 1) {
+    const { token, callback } = requestArray[i];
     const remainingCallbacks = eventsMap.unbind(token, callback);
-    // Get number of registered callbacks for each stream, to determine which to close
+    // Get number of registered callbacks for each request, to determine which to close
     if (remainingCallbacks === 0) {
       closeParams[token] = true;
     }
