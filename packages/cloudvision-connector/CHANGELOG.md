@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.3.0](https://github.com/aristanetworks/cloudvision/compare/v4.2.0...v4.3.0) (2020-06-08)
+
+
+### Bug Fixes
+
+* **packages:** add rimraf dev dependency ([#79](https://github.com/aristanetworks/cloudvision/issues/79)) ([15396e7](https://github.com/aristanetworks/cloudvision/commit/15396e72ca26bf7fc13009233c597cefe336d214))
+
+
+### Features
+
+* **cloudvision-connector:** add instrumentation ([#88](https://github.com/aristanetworks/cloudvision/issues/88)) ([59b99af](https://github.com/aristanetworks/cloudvision/commit/59b99afc870d95e97a3e77cd145afac27bec2424))
+
+
+
+
+
 # [4.2.0](https://github.com/aristanetworks/cloudvision/compare/v4.1.0...v4.2.0) (2020-05-19)
 
 
