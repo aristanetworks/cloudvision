@@ -38,7 +38,7 @@ import {
   SUBSCRIBE,
 } from '../src/constants';
 import { log } from '../src/logger';
-import { makeToken } from '../src/utils';
+import { makeToken, toBinaryKey } from '../src/utils';
 import {
   CloudVisionParams,
   CloudVisionQueryMessage,
@@ -91,7 +91,17 @@ jest.mock('../src/logger', () => {
 
 jest.spyOn(console, 'groupCollapsed').mockImplementation();
 
-const stringifyMessage = (msg: object) => JSON.stringify(msg);
+function stringifyMessage(msg: object) {
+  return JSON.stringify(msg);
+}
+
+function createRequestContext(command: WsCommand, token: string, params: unknown): RequestContext {
+  return {
+    command,
+    token,
+    encodedParams: toBinaryKey(params),
+  };
+}
 
 describe('open/close/connection', () => {
   let wrpc: Wrpc;
@@ -232,7 +242,6 @@ describe.each<[WsCommand, WrpcMethod, boolean]>([
 ])('Call Commands', (command, fn, polymorphic) => {
   let wrpc: Wrpc;
   let ws: WebSocket;
-  let requestContext: RequestContext;
   let sendSpy: jest.SpyInstance;
   let eventsEmitterSpy: jest.SpyInstance;
   let eventsEmitterUnbindSpy: jest.SpyInstance;
@@ -252,7 +261,6 @@ describe.each<[WsCommand, WrpcMethod, boolean]>([
     wrpc = new Wrpc();
     // @ts-ignore
     commandFn = wrpc[fn];
-    requestContext = { command };
     // @ts-ignore
     polymorphicCommandFn = wrpc[fn];
     wrpc.run('ws://localhost:8080');
@@ -302,7 +310,7 @@ describe.each<[WsCommand, WrpcMethod, boolean]>([
       expect(eventsEmitterBindSpy).toHaveBeenCalledTimes(1);
       expect(eventsEmitterBindSpy).toHaveBeenCalledWith(
         token,
-        requestContext,
+        createRequestContext(command, token, {}),
         expect.any(Function),
       );
       expect(sendSpy).toHaveBeenCalledTimes(1);
@@ -331,6 +339,7 @@ describe.each<[WsCommand, WrpcMethod, boolean]>([
       token = commandFn.call(wrpc, {}, callbackSpy);
     }
     if (token) {
+      const requestContext = createRequestContext(command, token, {});
       expect(log).toHaveBeenCalledTimes(1);
       expect(sendSpy).toHaveBeenCalledTimes(1);
       expect(sendSpy).toHaveBeenCalledWith(
@@ -371,6 +380,7 @@ describe.each<[WsCommand, WrpcMethod, boolean]>([
       token = commandFn.call(wrpc, {}, callbackSpy);
     }
     if (token) {
+      const requestContext = createRequestContext(command, token, {});
       ws.dispatchEvent(
         new MessageEvent('message', {
           data: stringifyMessage({ token, error: ERROR_MESSAGE, status: ERROR_STATUS }),
@@ -412,6 +422,7 @@ describe.each<[WsCommand, WrpcMethod, boolean]>([
       token = commandFn.call(wrpc, {}, callbackSpy);
     }
     if (token) {
+      const requestContext = createRequestContext(command, token, {});
       ws.dispatchEvent(
         new MessageEvent('message', {
           data: stringifyMessage({ token, error: EOF, status: EOF_STATUS }),
@@ -446,6 +457,7 @@ describe.each<[WsCommand, WrpcMethod, boolean]>([
       token = commandFn.call(wrpc, {}, callbackSpy);
     }
     if (token) {
+      const requestContext = createRequestContext(command, token, {});
       ws.dispatchEvent(
         new MessageEvent('message', { data: stringifyMessage({ token, result: RESULT }) }),
       );
@@ -484,7 +496,7 @@ describe.each<[WsCommand, WrpcMethod, boolean]>([
       expect(eventsEmitterBindSpy).toHaveBeenCalledTimes(1);
       expect(eventsEmitterBindSpy).toHaveBeenCalledWith(
         token,
-        requestContext,
+        createRequestContext(command, token, {}),
         expect.any(Function),
       );
       expect(eventsEmitterUnbindSpy).not.toHaveBeenCalled();
@@ -511,7 +523,7 @@ describe.each<[WsCommand, WrpcMethod, boolean]>([
       expect(eventsEmitterBindSpy).toHaveBeenCalledTimes(1);
       expect(eventsEmitterBindSpy).toHaveBeenCalledWith(
         token,
-        requestContext,
+        createRequestContext(command, token, {}),
         expect.any(Function),
       );
       expect(eventsEmitterUnbindSpy).not.toHaveBeenCalled();
@@ -540,7 +552,7 @@ describe.each<[WsCommand, WrpcMethod, boolean]>([
       expect(eventsEmitterBindSpy).toHaveBeenCalledTimes(1);
       expect(eventsEmitterBindSpy).toHaveBeenCalledWith(
         token,
-        requestContext,
+        createRequestContext(command, token, {}),
         expect.any(Function),
       );
       expect(eventsEmitterUnbindSpy).not.toHaveBeenCalled();
@@ -563,7 +575,6 @@ describe.each<[WsCommand, WrpcMethod, boolean]>([
   let NOW = 0;
   let wrpc: Wrpc;
   let ws: WebSocket;
-  let requestContext: RequestContext;
   let sendSpy: jest.SpyInstance;
   let postMessageSpy: jest.SpyInstance;
   let eventsEmitterSpy: jest.SpyInstance;
@@ -590,7 +601,6 @@ describe.each<[WsCommand, WrpcMethod, boolean]>([
     });
     // @ts-ignore
     commandFn = wrpc[fn];
-    requestContext = { command };
     // @ts-ignore
     polymorphicCommandFn = wrpc[fn];
     wrpc.run('ws://localhost:8080');
@@ -640,7 +650,7 @@ describe.each<[WsCommand, WrpcMethod, boolean]>([
       expect(eventsEmitterBindSpy).toHaveBeenCalledTimes(1);
       expect(eventsEmitterBindSpy).toHaveBeenCalledWith(
         token,
-        requestContext,
+        createRequestContext(command, token, params),
         expect.any(Function),
       );
       expect(sendSpy).toHaveBeenCalledTimes(1);
@@ -673,6 +683,7 @@ describe.each<[WsCommand, WrpcMethod, boolean]>([
     };
 
     if (token) {
+      const requestContext = createRequestContext(command, token, params);
       postMessageSpy.mockClear();
       ws.dispatchEvent(
         new MessageEvent('message', { data: stringifyMessage({ token, result: RESULT }) }),
@@ -774,7 +785,13 @@ describe.each<[WsCommand, WrpcMethod, boolean]>([
       expect(postMessageSpy).toHaveBeenCalledTimes(1);
       expect(postMessageSpy).toHaveBeenCalledWith(expectedPostedMessage, '*');
       expect(callbackSpy).toHaveBeenCalledTimes(1);
-      expect(callbackSpy).toHaveBeenCalledWith(null, RESULT, undefined, token, requestContext);
+      expect(callbackSpy).toHaveBeenCalledWith(
+        null,
+        RESULT,
+        undefined,
+        token,
+        createRequestContext(command, token, params),
+      );
       expect(eventsEmitterSpy).toHaveBeenCalledTimes(1);
       expect(eventsEmitterUnbindSpy).not.toHaveBeenCalled();
       expect(eventsEmitterBindSpy).toHaveBeenCalledTimes(2);
@@ -800,6 +817,7 @@ describe.each<[WsCommand, WrpcMethod, boolean]>([
     };
 
     if (token) {
+      const requestContext = createRequestContext(command, token, params);
       postMessageSpy.mockClear();
       ws.dispatchEvent(
         new MessageEvent('message', {
@@ -870,7 +888,7 @@ describe.each<[WsCommand, WrpcMethod, boolean]>([
         undefined,
         ERROR_STATUS,
         token,
-        requestContext,
+        createRequestContext(command, token, params),
       );
       expect(eventsEmitterSpy).toHaveBeenCalledTimes(1);
       expect(eventsEmitterUnbindSpy).toHaveBeenCalledTimes(2);
@@ -898,6 +916,7 @@ describe.each<[WsCommand, WrpcMethod, boolean]>([
     };
 
     if (token) {
+      const requestContext = createRequestContext(command, token, params);
       postMessageSpy.mockClear();
       ws.dispatchEvent(
         new MessageEvent('message', {
@@ -931,7 +950,6 @@ describe.each<[StreamCommand, 'stream']>([
 ])('Stream Commands', (command, fn) => {
   let wrpc: Wrpc;
   let ws: WebSocket;
-  let requestContext: RequestContext;
   let sendSpy: jest.SpyInstance;
   let eventsEmitterSpy: jest.SpyInstance;
   let eventsEmitterUnbindSpy: jest.SpyInstance;
@@ -950,7 +968,6 @@ describe.each<[StreamCommand, 'stream']>([
     jest.resetAllMocks();
     wrpc = new Wrpc();
     commandFn = wrpc[fn];
-    requestContext = { command };
     wrpc.run('ws://localhost:8080');
     ws = wrpc.websocket;
     sendSpy = jest.spyOn(ws, 'send');
@@ -990,7 +1007,7 @@ describe.each<[StreamCommand, 'stream']>([
       expect(eventsEmitterBindSpy).toHaveBeenCalledTimes(1);
       expect(eventsEmitterBindSpy).toHaveBeenCalledWith(
         token,
-        requestContext,
+        createRequestContext(command, token, query),
         expect.any(Function),
       );
       expect(sendSpy).toHaveBeenCalledTimes(1);
@@ -1012,6 +1029,7 @@ describe.each<[StreamCommand, 'stream']>([
     const subscriptionId = commandFn.call(wrpc, command, query, callbackSpy);
     if (subscriptionId && subscriptionId.token) {
       const token = subscriptionId.token;
+      const requestContext = createRequestContext(command, token, query);
       ws.dispatchEvent(
         new MessageEvent('message', {
           data: stringifyMessage({ token, status: ACTIVE_STATUS }),
@@ -1072,7 +1090,7 @@ describe.each<[StreamCommand, 'stream']>([
         expect(eventsEmitterBindSpy).toHaveBeenCalledTimes(2);
         expect(eventsEmitterBindSpy).toHaveBeenCalledWith(
           token,
-          requestContext,
+          createRequestContext(command, token, query),
           expect.any(Function),
         );
         expect(sendSpy).toHaveBeenCalledTimes(1);
@@ -1116,7 +1134,7 @@ describe.each<[StreamCommand, 'stream']>([
       expect(eventsEmitterBindSpy).toHaveBeenCalledTimes(2);
       expect(eventsEmitterBindSpy).toHaveBeenCalledWith(
         token,
-        requestContext,
+        createRequestContext(command, token, query),
         expect.any(Function),
       );
       expect(sendSpy).toHaveBeenCalledTimes(1);
@@ -1144,6 +1162,7 @@ describe.each<[StreamCommand, 'stream']>([
     const subscriptionId = commandFn.call(wrpc, command, query, callbackSpy);
     if (subscriptionId && subscriptionId.token) {
       const token = subscriptionId.token;
+      const requestContext = createRequestContext(command, token, query);
       expect(log).toHaveBeenCalledTimes(1);
       expect(sendSpy).toHaveBeenCalledTimes(1);
       expect(sendSpy).toHaveBeenCalledWith(
@@ -1180,6 +1199,7 @@ describe.each<[StreamCommand, 'stream']>([
     const subscriptionId = commandFn.call(wrpc, command, query, callbackSpy);
     if (subscriptionId && subscriptionId.token) {
       const token = subscriptionId.token;
+      const requestContext = createRequestContext(command, token, query);
       ws.dispatchEvent(
         new MessageEvent('message', {
           data: stringifyMessage({ token, error: ERROR_MESSAGE, status: ERROR_STATUS }),
@@ -1217,6 +1237,7 @@ describe.each<[StreamCommand, 'stream']>([
     const subscriptionId = commandFn.call(wrpc, command, query, callbackSpy);
     if (subscriptionId && subscriptionId.token) {
       const token = subscriptionId.token;
+      const requestContext = createRequestContext(command, token, query);
       ws.dispatchEvent(
         new MessageEvent('message', {
           data: stringifyMessage({ token, error: EOF, status: EOF_STATUS }),
@@ -1247,6 +1268,7 @@ describe.each<[StreamCommand, 'stream']>([
     const subscriptionId = commandFn.call(wrpc, command, query, callbackSpy);
     if (subscriptionId && subscriptionId.token) {
       const token = subscriptionId.token;
+      const requestContext = createRequestContext(command, token, query);
       ws.dispatchEvent(
         new MessageEvent('message', { data: stringifyMessage({ token, result: RESULT }) }),
       );
@@ -1281,7 +1303,7 @@ describe.each<[StreamCommand, 'stream']>([
       expect(eventsEmitterBindSpy).toHaveBeenCalledTimes(1);
       expect(eventsEmitterBindSpy).toHaveBeenCalledWith(
         token,
-        requestContext,
+        createRequestContext(command, token, query),
         expect.any(Function),
       );
       expect(eventsEmitterUnbindSpy).not.toHaveBeenCalled();
@@ -1304,7 +1326,7 @@ describe.each<[StreamCommand, 'stream']>([
       expect(eventsEmitterBindSpy).toHaveBeenCalledTimes(1);
       expect(eventsEmitterBindSpy).toHaveBeenCalledWith(
         token,
-        requestContext,
+        createRequestContext(command, token, query),
         expect.any(Function),
       );
       expect(eventsEmitterUnbindSpy).not.toHaveBeenCalled();
@@ -1329,7 +1351,7 @@ describe.each<[StreamCommand, 'stream']>([
       expect(eventsEmitterBindSpy).toHaveBeenCalledTimes(1);
       expect(eventsEmitterBindSpy).toHaveBeenCalledWith(
         token,
-        requestContext,
+        createRequestContext(command, token, query),
         expect.any(Function),
       );
       expect(eventsEmitterUnbindSpy).not.toHaveBeenCalled();
@@ -1347,7 +1369,6 @@ describe.each<[StreamCommand, 'stream']>([
 ])('Close Stream Commands', (command, fn) => {
   let wrpc: Wrpc;
   let ws: WebSocket;
-  let requestContext: RequestContext;
   let subscriptionId: SubscriptionIdentifier;
   let subscriptionIdTwo: SubscriptionIdentifier;
   let sendSpy: jest.SpyInstance;
@@ -1472,9 +1493,9 @@ describe.each<[StreamCommand, 'stream']>([
 
     test(`'${fn} + ${command}' should remove stream from closing map when EOF is received`, () => {
       const token = wrpc.closeStream(subscriptionId, closeCallback);
-      requestContext = { command: CLOSE };
 
       if (token) {
+        const requestContext = createRequestContext(CLOSE, token, subscriptionId);
         expect(wrpc.streamInClosingState.get(subscriptionId.token)).toEqual(token);
         ws.dispatchEvent(
           new MessageEvent('message', {
@@ -1511,9 +1532,9 @@ describe.each<[StreamCommand, 'stream']>([
 
     test(`'${fn} + ${command}' should remove stream from closing map when any error is received`, () => {
       const token = wrpc.closeStream(subscriptionId, closeCallback);
-      requestContext = { command: CLOSE };
 
       if (token) {
+        const requestContext = createRequestContext(CLOSE, token, subscriptionId);
         expect(wrpc.streamInClosingState.get(subscriptionId.token)).toEqual(token);
         ws.dispatchEvent(
           new MessageEvent('message', {
@@ -1560,6 +1581,7 @@ describe.each<[StreamCommand, 'stream']>([
       const subscriptionIdNew = commandFn.call(wrpc, command, query, callbackSpyTwo);
 
       if (token && subscriptionIdNew && subscriptionIdNew.token) {
+        const requestContext = createRequestContext(command, subscriptionIdNew.token, query);
         expect(callbackSpy).not.toHaveBeenCalled();
         expect(eventsEmitterSpy).not.toHaveBeenCalled();
         expect(eventsEmitterUnbindSpy).toHaveBeenCalledTimes(1);
@@ -1604,7 +1626,7 @@ describe.each<[StreamCommand, 'stream']>([
           undefined,
           ACTIVE_STATUS,
           subscriptionIdNew.token,
-          { command },
+          requestContext,
         );
 
         eventsEmitterSpy.mockClear();
@@ -1625,7 +1647,7 @@ describe.each<[StreamCommand, 'stream']>([
           RESULT,
           undefined,
           subscriptionIdNew.token,
-          { command },
+          requestContext,
         );
       }
       expect(token).not.toBeNull();
@@ -1637,9 +1659,9 @@ describe.each<[StreamCommand, 'stream']>([
     test(`'${fn} + ${command}' should send close message`, () => {
       const streams = [subscriptionId, subscriptionIdTwo];
       const token = wrpc.closeStreams(streams, closeCallback);
-      requestContext = { command: CLOSE };
 
       if (token) {
+        const requestContext = createRequestContext(CLOSE, token, streams);
         expect(closeCallback).not.toHaveBeenCalled();
         expect(callbackSpy).not.toHaveBeenCalled();
         expect(callbackSpyTwo).not.toHaveBeenCalled();
@@ -1680,9 +1702,9 @@ describe.each<[StreamCommand, 'stream']>([
 
       const streams = [subscriptionId, subscriptionIdTwo];
       const token = wrpc.closeStreams(streams, closeCallback);
-      requestContext = { command: CLOSE };
 
       if (token) {
+        const requestContext = createRequestContext(CLOSE, token, streams);
         expect(closeCallback).toHaveBeenCalledTimes(1);
         expect(log).toHaveBeenCalledTimes(1);
         expect(callbackSpy).not.toHaveBeenCalled();
@@ -1735,9 +1757,9 @@ describe.each<[StreamCommand, 'stream']>([
     test(`'${fn} + ${command}' should remove stream from closing map when EOF is received`, () => {
       const streams = [subscriptionId, subscriptionIdTwo];
       const token = wrpc.closeStreams(streams, closeCallback);
-      requestContext = { command: CLOSE };
 
       if (token) {
+        const requestContext = createRequestContext(CLOSE, token, streams);
         expect(wrpc.streamInClosingState.get(subscriptionId.token)).toEqual(token);
         ws.dispatchEvent(
           new MessageEvent('message', {
@@ -1781,9 +1803,9 @@ describe.each<[StreamCommand, 'stream']>([
     test(`'${fn} + ${command}' should remove stream from closing map when any error is received`, () => {
       const streams = [subscriptionId, subscriptionIdTwo];
       const token = wrpc.closeStreams(streams, closeCallback);
-      requestContext = { command: CLOSE };
 
       if (token) {
+        const requestContext = createRequestContext(CLOSE, token, streams);
         expect(wrpc.streamInClosingState.get(subscriptionId.token)).toEqual(token);
         ws.dispatchEvent(
           new MessageEvent('message', {
@@ -1837,6 +1859,7 @@ describe.each<[StreamCommand, 'stream']>([
       const subscriptionIdNew = commandFn.call(wrpc, command, query, callbackSpyTwo);
 
       if (token && subscriptionIdNew && subscriptionIdNew.token) {
+        const requestContext = createRequestContext(command, subscriptionIdNew.token, query);
         expect(callbackSpy).not.toHaveBeenCalled();
         expect(eventsEmitterSpy).not.toHaveBeenCalled();
         expect(eventsEmitterUnbindSpy).toHaveBeenCalledTimes(2);
@@ -1887,7 +1910,7 @@ describe.each<[StreamCommand, 'stream']>([
           undefined,
           ACTIVE_STATUS,
           subscriptionIdNew.token,
-          { command },
+          requestContext,
         );
 
         eventsEmitterSpy.mockClear();
@@ -1908,7 +1931,7 @@ describe.each<[StreamCommand, 'stream']>([
           RESULT,
           undefined,
           subscriptionIdNew.token,
-          { command },
+          requestContext,
         );
       }
       expect(token).not.toBeNull();

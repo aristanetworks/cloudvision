@@ -44,6 +44,7 @@ import {
   makeToken,
   sanitizeOptions,
   sanitizeSearchOptions,
+  toBinaryKey,
   validateOptions,
   validateQuery,
   validateResponse,
@@ -60,6 +61,7 @@ import {
   RequestContext,
   SearchOptions,
   SubscriptionIdentifier,
+  WsCommand,
 } from '../types';
 
 const EOF_STATUS: CloudVisionStatus = {
@@ -70,6 +72,14 @@ jest.mock('../src/logger', () => {
   return { log: jest.fn() };
 });
 jest.spyOn(console, 'groupCollapsed').mockImplementation();
+
+function createRequestContext(command: WsCommand, token: string, params: unknown): RequestContext {
+  return {
+    command,
+    token,
+    encodedParams: toBinaryKey(params),
+  };
+}
 
 describe('invalidParamMsg', () => {
   test('should generate a proper error message given parameters', () => {
@@ -313,8 +323,8 @@ describe('makeToken', () => {
 
 describe('makeNotifCallback', () => {
   const token = 'Dodgers';
-  const requestContext: RequestContext = { command: GET };
   const callbackSpy = jest.fn();
+  const requestContext = createRequestContext(GET, token, {});
 
   beforeEach(() => {
     callbackSpy.mockReset();
@@ -412,7 +422,6 @@ describe('createCloseParams', () => {
     token: streamToken,
     callback: streamCallback,
   };
-  const requestContext: RequestContext = { command: SUBSCRIBE };
   const streamCallback2 = jest.fn();
   const streamToken2 = 'VinScully';
   const stream2: SubscriptionIdentifier = {
@@ -420,10 +429,13 @@ describe('createCloseParams', () => {
     callback: streamCallback2,
   };
 
+  const requestContext = createRequestContext(SUBSCRIBE, streamToken, {});
+  const requestContext2 = createRequestContext(SUBSCRIBE, streamToken2, {});
+
   beforeEach(() => {
     emitter = new Emitter();
     emitter.bind(streamToken, requestContext, streamCallback);
-    emitter.bind(streamToken2, requestContext, streamCallback2);
+    emitter.bind(streamToken2, requestContext2, streamCallback2);
   });
 
   test('should create the proper stream close params for one stream', () => {

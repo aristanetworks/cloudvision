@@ -54,10 +54,11 @@ import {
   SERVICE_REQUEST,
 } from './constants';
 import Emitter from './emitter';
+import Instrumentation, { InstrumentationConfig } from './instrumentation';
 import { log } from './logger';
-import { createCloseParams, makeToken, validateResponse } from './utils';
+import { createCloseParams, makeToken, toBinaryKey, validateResponse } from './utils';
 
-type StreamArgs = [string, WsCommand, CloudVisionParams | ServiceRequest];
+type StreamArgs = [string, WsCommand, RequestContext, CloudVisionParams | ServiceRequest];
 
 /**
  * Options passed to the constructor, that configure some global options
@@ -69,6 +70,7 @@ type StreamArgs = [string, WsCommand, CloudVisionParams | ServiceRequest];
 interface ConnectorOptions {
   batchResults: boolean;
   debugMode: boolean;
+  instrumentationConfig?: InstrumentationConfig;
   pauseStreams: boolean;
 }
 
@@ -93,6 +95,8 @@ export default class Wrpc {
 
   private Parser: typeof Parser;
 
+  private instrumentation: Instrumentation;
+
   private waitingStreams: Map<string, StreamArgs[]>;
 
   private activeStreams: Set<string>;
@@ -105,9 +109,9 @@ export default class Wrpc {
 
   public constructor(
     options: ConnectorOptions = {
-      pauseStreams: false,
       batchResults: true,
       debugMode: false,
+      pauseStreams: false,
     },
     websocketClass = WebSocket,
     parser = Parser,
@@ -122,6 +126,7 @@ export default class Wrpc {
     this.activeRequests = new Set();
     this.WebSocket = websocketClass;
     this.Parser = parser;
+    this.instrumentation = new Instrumentation(options.instrumentationConfig);
   }
 
   public get websocket(): WebSocket {
@@ -149,9 +154,10 @@ export default class Wrpc {
     token: string,
     command: StreamCommand,
     params: CloudVisionParams | ServiceRequest,
+    requestContext: RequestContext,
   ): void {
     const streamsWaiting = this.waitingStreams.get(waitingOnToken) || [];
-    streamsWaiting.push([token, command, params]);
+    streamsWaiting.push([token, command, requestContext, params]);
     this.waitingStreams.set(waitingOnToken, streamsWaiting);
   }
 
@@ -175,13 +181,13 @@ export default class Wrpc {
       return null;
     }
     const token: string = makeToken(command, params);
-    const requestContext = { command };
+    const requestContext = { command, encodedParams: toBinaryKey(params), token };
     if (!this.activeRequests.has(token)) {
       // only execute request if not already getting data
       this.activeRequests.add(token);
       const callbackWithUnbind = this.makeCallbackWithUnbind(token, callback);
       this.events.bind(token, requestContext, callbackWithUnbind);
-      this.sendMessageOrError(token, command, params);
+      this.sendMessageOrError(token, command, params, requestContext);
     } else {
       const queuedCallbackWithUnbind = this.makeQueuedCallbackWithUnbind(token, callback);
       this.events.bind(token, requestContext, queuedCallbackWithUnbind);
@@ -221,9 +227,15 @@ export default class Wrpc {
     callback: NotifCallback,
   ): string {
     const closeToken: string = makeToken(CLOSE, closeParams);
-    this.setStreamClosingState(streams, closeToken, callback);
+    const requestContext: RequestContext = {
+      command: CLOSE,
+      encodedParams: toBinaryKey(streams),
+      token: closeToken,
+    };
+
+    this.setStreamClosingState(streams, closeToken, requestContext, callback);
     try {
-      this.sendMessage(closeToken, CLOSE, closeParams);
+      this.sendMessage(closeToken, CLOSE, requestContext, closeParams);
     } catch (err) {
       log(ERROR, err);
       this.removeStreamClosingState(streams, closeToken);
@@ -266,7 +278,11 @@ export default class Wrpc {
     ): void => {
       callback(connEvent, wsEvent);
     };
-    this.connectionEvents.bind('connection', { command: 'connection' }, connectionCallback);
+    this.connectionEvents.bind(
+      'connection',
+      { command: 'connection', encodedParams: '', token: '' },
+      connectionCallback,
+    );
 
     return (): void => {
       this.connectionEvents.unbind('connection', connectionCallback);
@@ -307,7 +323,11 @@ export default class Wrpc {
         // Unbind callback when any error message is received
         this.activeRequests.delete(token);
         this.events.unbind(token, callbackWithUnbind);
+        this.instrumentation.callInfo(requestContext.command, requestContext, {
+          error: err,
+        });
       }
+      this.instrumentation.callEnd(requestContext.command, requestContext);
       callback(err, result, status, token, requestContext);
     };
 
@@ -503,6 +523,7 @@ export default class Wrpc {
   private sendMessage(
     token: string,
     command: WsCommand,
+    requestContext: RequestContext,
     params: CloudVisionParams | CloudVisionPublishRequest | ServiceRequest,
   ): void {
     if (this.connectorOptions.debugMode) {
@@ -520,6 +541,7 @@ export default class Wrpc {
         '*',
       );
     }
+    this.instrumentation.callStart(command, requestContext);
     this.ws.send(
       this.Parser.stringify({
         token,
@@ -533,9 +555,10 @@ export default class Wrpc {
     token: string,
     command: WsCommand,
     params: CloudVisionParams | CloudVisionPublishRequest | ServiceRequest,
+    requestContext: RequestContext,
   ): void {
     try {
-      this.sendMessage(token, command, params);
+      this.sendMessage(token, command, requestContext, params);
     } catch (err) {
       log(ERROR, err);
       // notifAndUnBindCallback(err, undefined, undefined, token);
@@ -551,16 +574,17 @@ export default class Wrpc {
   private setStreamClosingState(
     streams: SubscriptionIdentifier[] | SubscriptionIdentifier,
     closeToken: string,
+    requestContext: RequestContext,
     callback: NotifCallback,
   ): void {
     const closeCallback = (
-      requestContext: RequestContext,
+      closeRequestContext: RequestContext,
       err: string | null,
       result?: CloudVisionBatchedResult | CloudVisionResult,
       status?: CloudVisionStatus,
     ): void => {
       this.removeStreamClosingState(streams, closeToken);
-      callback(err, result, status, closeToken, requestContext);
+      callback(err, result, status, closeToken, closeRequestContext);
     };
 
     if (Array.isArray(streams)) {
@@ -575,7 +599,7 @@ export default class Wrpc {
       this.closingStreams.set(streams.token, closeToken);
     }
 
-    this.events.bind(closeToken, { command: CLOSE }, closeCallback);
+    this.events.bind(closeToken, requestContext, closeCallback);
   }
 
   /**
@@ -596,7 +620,7 @@ export default class Wrpc {
       return null;
     }
     const token = makeToken(command, params);
-    const callerRequestContext = { command };
+    const callerRequestContext = { command, encodedParams: toBinaryKey(params), token };
     const callbackWithUnbind: EventCallback = (
       requestContext: RequestContext,
       err: string | null,
@@ -607,9 +631,16 @@ export default class Wrpc {
         // Unbind callback when any error message is received.
         // No need to send close to server because it will close them automatically.
         this.events.unbind(token, callbackWithUnbind);
+        this.instrumentation.callInfo(callerRequestContext.command, callerRequestContext, {
+          error: err,
+        });
+        this.instrumentation.callEnd(requestContext.command, requestContext);
       }
       if (status && status.code === ACTIVE_CODE) {
         this.activeStreams.add(token);
+        this.instrumentation.callInfo(callerRequestContext.command, callerRequestContext, {
+          message: 'stream active',
+        });
       }
       callback(err, result, status, token, requestContext);
     };
@@ -620,9 +651,9 @@ export default class Wrpc {
       const closingStreamToken = this.closingStreams.get(token);
       if (closingStreamToken) {
         // The stream is still closing, so wait for it to close before re requesting
-        this.addWaitingStream(closingStreamToken, token, command, params);
+        this.addWaitingStream(closingStreamToken, token, command, params, callerRequestContext);
       } else {
-        this.sendMessageOrError(token, command, params);
+        this.sendMessageOrError(token, command, params, callerRequestContext);
       }
     } else if (this.activeStreams.has(token)) {
       // The stream is already open immediately call get

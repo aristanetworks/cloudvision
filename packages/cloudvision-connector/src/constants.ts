@@ -71,4 +71,8 @@ export const CONNECTED = 'connected';
 export const DISCONNECTED = 'disconnected';
 export const ID = 'cloudvision-connector';
 
-export const DEFAULT_CONTEXT: RequestContext = { command: 'NO_COMMAND' };
+export const DEFAULT_CONTEXT: RequestContext = {
+  command: 'NO_COMMAND',
+  token: 'NO_TOKEN',
+  encodedParams: 'NO_PARAMS',
+};

@@ -21,17 +21,19 @@ import Connector from '../src/Connector';
 import {
   ACTIVE_CODE,
   APP_DATASET_TYPE,
-  DEVICE_DATASET_TYPE,
+  DEFAULT_CONTEXT,
   DEVICES_DATASET_ID,
+  DEVICE_DATASET_TYPE,
+  EOF_CODE,
   GET,
   GET_DATASETS,
+  SEARCH,
   SEARCH_SUBSCRIBE,
   SEARCH_TYPE_ANY,
-  SEARCH,
   SERVICE_REQUEST,
   SUBSCRIBE,
 } from '../src/constants';
-import { makeToken } from '../src/utils';
+import { makeToken, sanitizeOptions, sanitizeSearchOptions, toBinaryKey } from '../src/utils';
 import {
   CloudVisionParams,
   CloudVisionStatus,
@@ -39,9 +41,13 @@ import {
   Options,
   PublishRequest,
   Query,
+  QueryParams,
+  RequestContext,
   SearchOptions,
+  SearchParams,
   ServiceRequest,
   SubscriptionIdentifier,
+  WsCommand,
 } from '../types';
 
 const dataset = 'deviceFoo';
@@ -248,6 +254,39 @@ describe('getDatasets', () => {
   });
 });
 
+describe('WebSocket Not Running', () => {
+  const options = {};
+  const callback = jest.fn();
+  let conn: Connector;
+  let streamSpy: jest.SpyInstance;
+  let getSpy: jest.SpyInstance;
+
+  beforeEach(() => {
+    conn = new Connector();
+    // @ts-ignore
+    streamSpy = jest.spyOn(conn, 'stream');
+    getSpy = jest.spyOn(conn, 'getWithOptions');
+    conn.run('ws://localhost:8080');
+  });
+
+  afterEach(() => {
+    callback.mockClear();
+    streamSpy.mockClear();
+    getSpy.mockClear();
+  });
+
+  test('should call callback with default token if none specified', () => {
+    const subscriptionId = conn.getAndSubscribe(singlePathQuery, callback, options);
+
+    expect(callback).toHaveBeenNthCalledWith(2, null, undefined, { code: EOF_CODE }, undefined, {
+      command: SUBSCRIBE,
+      token: DEFAULT_CONTEXT.token,
+      encodedParams: toBinaryKey(singlePathQuery),
+    });
+    expect(subscriptionId).not.toBeNull();
+  });
+});
+
 describe('getAndSubscribe', () => {
   const options = {};
   const callback = jest.fn();
@@ -383,7 +422,11 @@ describe('getAndSubscribe', () => {
         RESULT,
         undefined,
         subscriptionId.subscribe.token,
-        { command: SUBSCRIBE },
+        {
+          command: SUBSCRIBE,
+          token: subscriptionId.subscribe.token,
+          encodedParams: toBinaryKey(singlePathQuery),
+        },
       );
     }
 
@@ -404,20 +447,20 @@ describe('getAndSubscribe', () => {
       // Send message
       conn.websocket.dispatchEvent(
         new MessageEvent('message', {
-          data: JSON.stringify({
-            token: subscriptionId.subscribe.token,
-            error: ERROR_MESSAGE,
-            status: ERROR_STATUS,
-          }),
+          data: JSON.stringify({ token: subscriptionId.subscribe.token, result: RESULT }),
         }),
       );
 
       expect(callback).toHaveBeenCalledWith(
-        expect.stringContaining(ERROR_MESSAGE),
+        null,
+        RESULT,
         undefined,
-        ERROR_STATUS,
         subscriptionId.subscribe.token,
-        { command: SUBSCRIBE },
+        {
+          command: SUBSCRIBE,
+          token: subscriptionId.subscribe.token,
+          encodedParams: toBinaryKey(singlePathQuery),
+        },
       );
     }
 
@@ -429,12 +472,37 @@ describe.each([
   ['getWithOptions', GET, 'get'],
   ['searchWithOptions', SEARCH, 'search', true],
 ])('Get Queries', (fn, command, wrpcFn, isSearch?) => {
-  const options = {};
+  const options = {} as Options & SearchOptions;
   const callback = jest.fn();
   let conn: Connector;
   let commandFnSpy: jest.SpyInstance;
   let connFn: (q: Query, cb: NotifCallback, o: Options) => string | null;
   const RESULT = { dataset: 'Dodgers' };
+
+  function createRequestContext(
+    c: string,
+    token: string,
+    query: Query,
+    o: Options & SearchOptions,
+  ): RequestContext {
+    const { start, end, versions } = sanitizeOptions(o);
+    let params: SearchParams | QueryParams = { query, start, end, versions };
+    if (isSearch) {
+      const sanitizedSearchOptions = sanitizeSearchOptions(o);
+      params = {
+        query,
+        start,
+        end,
+        search: sanitizedSearchOptions.search,
+        searchType: sanitizedSearchOptions.searchType,
+      };
+    }
+    return {
+      command: c as WsCommand,
+      token,
+      encodedParams: toBinaryKey(params),
+    };
+  }
 
   beforeEach(() => {
     conn = new Connector();
@@ -555,7 +623,13 @@ describe.each([
         }),
       );
 
-      expect(callback).toHaveBeenCalledWith(null, RESULT, undefined, token, { command });
+      expect(callback).toHaveBeenCalledWith(
+        null,
+        RESULT,
+        undefined,
+        token,
+        createRequestContext(command, token, rootQuery, options),
+      );
     }
 
     expect(token).not.toBeNull();
@@ -581,7 +655,7 @@ describe.each([
         undefined,
         ERROR_STATUS,
         token,
-        { command },
+        createRequestContext(command, token, rootQuery, options),
       );
     }
 
@@ -603,6 +677,31 @@ describe.each([
     o?: SearchOptions,
   ) => SubscriptionIdentifier | null;
   const RESULT = { dataset: 'Dodgers' };
+
+  function createRequestContext(
+    c: string,
+    token: string,
+    queryOrRequest: Query | ServiceRequest,
+    options: SearchOptions,
+  ): RequestContext {
+    let params: ServiceRequest | SearchParams | QueryParams = { query: queryOrRequest as Query };
+    if (isSearch && !isService) {
+      const sanitizedSearchOptions = sanitizeSearchOptions(options);
+      params = {
+        query: queryOrRequest as Query,
+        search: sanitizedSearchOptions.search,
+        searchType: sanitizedSearchOptions.searchType,
+      };
+    }
+    if (isService) {
+      params = queryOrRequest as ServiceRequest;
+    }
+    return {
+      command: c as WsCommand,
+      token,
+      encodedParams: toBinaryKey(params),
+    };
+  }
 
   beforeEach(() => {
     conn = new Connector();
@@ -717,7 +816,8 @@ describe.each([
   });
 
   test(`'${fn}' should call callback with data`, () => {
-    const subscriptionId = connFn.call(conn, isService ? serviceQuery : rootQuery, callback);
+    const q = isService ? serviceQuery : rootQuery;
+    const subscriptionId = connFn.call(conn, q, callback);
     if (subscriptionId) {
       // Send message
       conn.websocket.dispatchEvent(
@@ -726,16 +826,21 @@ describe.each([
         }),
       );
 
-      expect(callback).toHaveBeenCalledWith(null, RESULT, undefined, subscriptionId.token, {
-        command,
-      });
+      expect(callback).toHaveBeenCalledWith(
+        null,
+        RESULT,
+        undefined,
+        subscriptionId.token,
+        createRequestContext(command, subscriptionId.token, q, { search: '' }),
+      );
     }
 
     expect(subscriptionId).not.toBeNull();
   });
 
   test(`'${fn}' should call callback with error`, () => {
-    const subscriptionId = connFn.call(conn, isService ? serviceQuery : rootQuery, callback);
+    const q = isService ? serviceQuery : rootQuery;
+    const subscriptionId = connFn.call(conn, q, callback);
 
     if (subscriptionId) {
       // Send message
@@ -754,7 +859,7 @@ describe.each([
         undefined,
         ERROR_STATUS,
         subscriptionId.token,
-        { command },
+        createRequestContext(command, subscriptionId.token, q, { search: '' }),
       );
     }
 
