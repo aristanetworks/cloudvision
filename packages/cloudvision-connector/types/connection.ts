@@ -5,8 +5,12 @@ export interface EventCallback {
   (requestContext: RequestContext, ...args: any[]): void;
 }
 
+export type ContextCommand = WsCommand | 'connection' | 'NO_COMMAND';
+
 export interface RequestContext {
-  command: WsCommand | 'connection' | 'NO_COMMAND';
+  command: ContextCommand;
+  encodedParams: string;
+  token: string;
 }
 
 export interface ConnectionCallback {

@@ -15,12 +15,17 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+import { toBinaryKey } from '../src';
 import { DEFAULT_CONTEXT, GET } from '../src/constants';
 import Emitter from '../src/emitter';
 import { EventCallback, RequestContext } from '../types';
 
 describe('Emitter', () => {
-  const requestContext: RequestContext = { command: GET };
+  const requestContext: RequestContext = {
+    command: GET,
+    token: 'Best Team',
+    encodedParams: toBinaryKey('Dodgers'),
+  };
 
   test('should remove itself from callback during emit', () => {
     const emitter = new Emitter();

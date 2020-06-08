@@ -24,6 +24,7 @@ import {
   ACTIVE_CODE,
   APP_DATASET_TYPE,
   CLOSE,
+  DEFAULT_CONTEXT,
   DEVICES_DATASET_ID,
   DEVICE_DATASET_TYPE,
   GET,
@@ -42,6 +43,7 @@ import {
   makeToken,
   sanitizeOptions,
   sanitizeSearchOptions,
+  toBinaryKey,
   validateOptions,
   validateQuery,
 } from './utils';
@@ -177,7 +179,11 @@ export default class Connector extends Wrpc {
       if (status && status.code === ACTIVE_CODE) {
         this.getWithOptions(query, callback, sanitizedOptions);
       } else {
-        subscribeNotifCallback(err, result, status, token, { command: SUBSCRIBE });
+        subscribeNotifCallback(err, result, status, token, {
+          command: SUBSCRIBE,
+          token: token || DEFAULT_CONTEXT.token,
+          encodedParams: toBinaryKey(query),
+        });
       }
     };
 
