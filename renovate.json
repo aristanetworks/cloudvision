@@ -10,7 +10,7 @@
     {
       "updateTypes": ["minor", "patch", "pin", "digest"],
       "automerge": true,
-      "automergeType": "branch"
+      "automergeType": "pr"
     }
   ],
   "schedule": ["after 10pm and before 5am on every weekday", "every weekend"]
