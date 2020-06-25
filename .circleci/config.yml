@@ -19,7 +19,7 @@ commands:
         type: boolean
         default: true
     steps:
-      - run: run.py --access-token $GITHUB_TOKEN --branch master --owner aristanetworks --repo cloudvision --enforce_admins << parameters.enforce >>
+      - run: run.py --access-token $GITHUB_TOKEN --branch trunk --owner aristanetworks --repo cloudvision --enforce_admins << parameters.enforce >>
 parameters:
   deploy_version:
     type: boolean
