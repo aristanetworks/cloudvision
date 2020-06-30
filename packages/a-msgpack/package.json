@@ -68,7 +68,7 @@
     "eslint-config-arista-js": "1.1.23",
     "eslint-config-arista-ts": "1.1.8",
     "eslint-plugin-arista": "0.1.32",
-    "eslint-plugin-import": "2.21.2",
+    "eslint-plugin-import": "2.22.0",
     "jest": "26.0.1",
     "js-yaml": "3.14.0",
     "prettier": "2.0.5",
