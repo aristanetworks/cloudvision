@@ -3,8 +3,6 @@ toc:
     file: readme-parts/GettingStarted.md
   - name: Getting Data
     file: readme-parts/GettingData.md
-  - name: Data Model
-    file: external_docs/data_model.md
   - name: API
     description: |
       High level class abstractions for CloudVision API WebSocket requets.
