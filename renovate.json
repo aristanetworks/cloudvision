@@ -4,7 +4,6 @@
     ":semanticCommits",
     ":semanticCommitTypeAll(chore)"
   ],
-  "assignees": ["rufman"],
   "labels": ["dependencies"],
   "packageRules": [
     {
