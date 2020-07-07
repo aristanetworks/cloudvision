@@ -7,8 +7,11 @@ const mockWebSocket = require('mock-socket').WebSocket;
 // TextDecoder implementation that matches the lib dom API
 class TextDE {
   private decoder = new util.TextDecoder();
+
   readonly encoding = 'utf-8';
+
   readonly fatal = false;
+
   readonly ignoreBOM = true;
 
   decode(input?: Uint8Array): string {
