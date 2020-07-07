@@ -146,7 +146,7 @@ describe('Emitter', () => {
     emitter.bind(event, requestContext, callbackWithUnbind);
     emitter.bind(event2, requestContext, fakeCallback1);
 
-    // @ts-ignore
+    // @ts-ignore Accessing private attribute for easier testing
     expect(emitter.events.size).toBe(2);
     expect(emitter.getRequestContextMap().size).toBe(2);
   });
@@ -165,7 +165,7 @@ describe('Emitter', () => {
     emitter.bind(event, requestContext, callbackWithUnbind);
     emitter.bind(event2, requestContext, fakeCallback1);
 
-    // @ts-ignore
+    // @ts-ignore Accessing private attribute for easier testing
     expect(emitter.events.size).toBe(2);
     expect(emitter.getEventsMap().size).toBe(2);
   });

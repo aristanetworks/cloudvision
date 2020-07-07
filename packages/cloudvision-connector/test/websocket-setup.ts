@@ -1,8 +1,7 @@
 // A setup script to load a mock websocket for tests
 
+import { WebSocket } from 'mock-socket';
 import util from 'util';
-
-const mockWebSocket = require('mock-socket').WebSocket;
 
 // TextDecoder implementation that matches the lib dom API
 class TextDE {
@@ -19,7 +18,8 @@ class TextDE {
   }
 }
 
-global.WebSocket = mockWebSocket;
+// @ts-ignore temp ignore to test
+global.WebSocket = WebSocket;
 
 global.TextDecoder = TextDE;
 global.TextEncoder = util.TextEncoder;

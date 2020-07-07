@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/naming-convention */
+
 import { PathElements } from '../../types/neat';
 
 import { Bool, Float32, Float64, Int, Nil, Pointer, Str } from './NeatTypes';

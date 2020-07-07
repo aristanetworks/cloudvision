@@ -11,7 +11,7 @@ describe.each([
   [createDataView, new Int8Array(), DataView],
 ])('typedArrays', (fn, input, type) => {
   test(`should return the type ${type.name} for ${fn.name}`, () => {
-    // @ts-ignore
+    // @ts-ignore Easier than typing everything
     expect(fn.call(undefined, input)).toBeInstanceOf(type);
   });
 });

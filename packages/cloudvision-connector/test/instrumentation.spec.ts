@@ -64,7 +64,7 @@ interface CommandFunction {
 
 const query: QueryParams = { query: [] };
 
-function stringifyMessage(msg: object) {
+function stringifyMessage(msg: Record<string, unknown>) {
   return JSON.stringify(msg);
 }
 
@@ -110,9 +110,9 @@ describe.each<[WsCommand, WrpcMethod, boolean]>([
         end: endSpy,
       },
     });
-    // @ts-ignore
+    // @ts-ignore Easier than to type everything
     commandFn = wrpc[fn];
-    // @ts-ignore
+    // @ts-ignore Easier than to type everything
     polymorphicCommandFn = wrpc[fn];
     wrpc.run('ws://localhost:8080');
     ws = wrpc.websocket;
@@ -484,7 +484,7 @@ describe.each<[WsCommand, 'stream' | 'get']>([
         end: endSpy,
       },
     });
-    // @ts-ignore
+    // @ts-ignore Easier than to type everything
     commandFn = wrpc[fn];
     wrpc.run('ws://localhost:8080');
     ws = wrpc.websocket;
@@ -506,7 +506,7 @@ describe.each<[WsCommand, 'stream' | 'get']>([
   });
 
   test(`'${fn} + ${command}' should not send instrumentation info message if socket is not running`, () => {
-    // @ts-ignore
+    // @ts-ignore Easier than to type everything
     const subscriptionId = commandFn.call(wrpc, command, query, callbackSpy);
 
     expect(callbackSpy).toHaveBeenCalledWith('Connection is down');
@@ -522,7 +522,7 @@ describe.each<[WsCommand, 'stream' | 'get']>([
   test(`'${fn} + ${command}' should send instrumentation message if socket is running, but command is not instrumented`, () => {
     ws.dispatchEvent(new MessageEvent('open', {}));
 
-    // @ts-ignore
+    // @ts-ignore Easier than to type everything
     const subscriptionId = commandFn.call(wrpc, command, query, callbackSpy);
     if (subscriptionId && subscriptionId.token) {
       const token = subscriptionId.token;

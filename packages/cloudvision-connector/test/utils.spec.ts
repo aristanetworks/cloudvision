@@ -236,7 +236,7 @@ describe('validateQuery', () => {
   test('should pass validation if query is an array with elements', () => {
     const query = [{}];
 
-    // @ts-ignore
+    // @ts-ignore explicity testings an invalid input
     expect(validateQuery(query, spyCallback)).toBe(true);
     expect(spyCallback).not.toHaveBeenCalled();
   });
@@ -258,7 +258,7 @@ describe('validateQuery', () => {
   test('should fail validation if query is not an array', () => {
     const query = {};
 
-    // @ts-ignore
+    // @ts-ignore explicity testings an invalid input
     expect(validateQuery(query, spyCallback)).toBe(false);
     expect(spyCallback).toHaveBeenCalledTimes(1);
   });
@@ -266,7 +266,7 @@ describe('validateQuery', () => {
   test('should fail validation if query is undefined', () => {
     const query = undefined;
 
-    // @ts-ignore
+    // @ts-ignore explicity testings an invalid input
     expect(validateQuery(query, spyCallback)).toBe(false);
     expect(spyCallback).toHaveBeenCalledTimes(1);
   });
@@ -554,9 +554,9 @@ describe('validateResponse', () => {
 
   test('should log an error for a response with a non array type for notifications', () => {
     const response: CloudVisionNotifs = {
-      // @ts-ignore
+      // @ts-ignore explicity testings an invalid input
       dataset: { name: 'Max', type: APP_DATASET_TYPE },
-      // @ts-ignore
+      // @ts-ignore explicity testings an invalid input
       notifications: { lastName: 'Muncy' },
     };
     validateResponse(response, {}, token, false);
@@ -569,7 +569,7 @@ describe('validateResponse', () => {
   });
 
   test('should log an error for a response without notifications', () => {
-    // @ts-ignore
+    // @ts-ignore explicity testings an invalid input
     const response: CloudVisionNotifs = { dataset: { name: 'Max', type: 'beast' } };
     validateResponse(response, {}, token, false);
     expect(log).toHaveBeenCalledWith(
@@ -581,21 +581,21 @@ describe('validateResponse', () => {
   });
 
   test('should log an error for a response without type for dataset', () => {
-    // @ts-ignore
+    // @ts-ignore explicity testings an invalid input
     const response: CloudVisionNotifs = { dataset: { name: 'Max' } };
     validateResponse(response, {}, token, false);
     expect(log).toHaveBeenCalledWith(ERROR, "No key 'type' found in dataset", undefined, token);
   });
 
   test('should log an error for a response without name for dataset', () => {
-    // @ts-ignore
+    // @ts-ignore explicity testings an invalid input
     const response: CloudVisionNotifs = { dataset: {} };
     validateResponse(response, {}, token, false);
     expect(log).toHaveBeenCalledWith(ERROR, "No key 'name' found in dataset", undefined, token);
   });
 
   test('should not log an error for a status response', () => {
-    // @ts-ignore
+    // @ts-ignore explicity testings an invalid input
     const response: CloudVisionNotifs = {};
     validateResponse(response, { code: 1101 }, token, false);
     expect(log).not.toHaveBeenCalledWith();
