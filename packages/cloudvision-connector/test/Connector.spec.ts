@@ -263,7 +263,6 @@ describe('WebSocket Not Running', () => {
 
   beforeEach(() => {
     conn = new Connector();
-    // @ts-ignore
     streamSpy = jest.spyOn(conn, 'stream');
     getSpy = jest.spyOn(conn, 'getWithOptions');
     conn.run('ws://localhost:8080');
@@ -297,7 +296,6 @@ describe('getAndSubscribe', () => {
 
   beforeEach(() => {
     conn = new Connector();
-    // @ts-ignore
     streamSpy = jest.spyOn(conn, 'stream');
     getSpy = jest.spyOn(conn, 'getWithOptions');
     conn.run('ws://localhost:8080');
@@ -324,7 +322,7 @@ describe('getAndSubscribe', () => {
   test('should handle invalid query', () => {
     const query = undefined;
 
-    // @ts-ignore
+    // @ts-ignore Explicity testing invalid query
     const subscriptionId = conn.getAndSubscribe(query, callback, options);
 
     expect(streamSpy).not.toHaveBeenCalled();
@@ -506,9 +504,9 @@ describe.each([
 
   beforeEach(() => {
     conn = new Connector();
-    // @ts-ignore
+    // @ts-ignore Easier than typing everything
     connFn = conn[fn];
-    // @ts-ignore
+    // @ts-ignore Easier than typing everything
     commandFnSpy = jest.spyOn(conn, wrpcFn);
     conn.run('ws://localhost:8080');
     conn.websocket.dispatchEvent(new MessageEvent('open', {}));
@@ -539,7 +537,7 @@ describe.each([
   test(`'${fn}' should handle invalid query`, () => {
     const query = undefined;
 
-    // @ts-ignore
+    // @ts-ignore Easier than typing everything
     const token = connFn.call(conn, query, callback, options);
 
     expect(commandFnSpy).not.toHaveBeenCalled();
@@ -705,9 +703,9 @@ describe.each([
 
   beforeEach(() => {
     conn = new Connector();
-    // @ts-ignore
+    // @ts-ignore Easier than typing everything
     connFn = conn[fn];
-    // @ts-ignore
+    // @ts-ignore Easier than typing everything
     commandFnSpy = jest.spyOn(conn, 'stream');
     conn.run('ws://localhost:8080');
     conn.websocket.dispatchEvent(new MessageEvent('open', {}));
@@ -738,7 +736,7 @@ describe.each([
 
   test(`'${fn}' should handle invalid query`, () => {
     const query = undefined;
-    // @ts-ignore
+    // @ts-ignore Easier than typing everything
     const subscriptionId = connFn.call(conn, query, callback);
 
     expect(commandFnSpy).not.toHaveBeenCalled();

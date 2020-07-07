@@ -1,6 +1,6 @@
 import { Bool, Float32, Float64, Int, Nil, Pointer, Str } from '../src/neat/NeatTypes';
 
-export type Element = string | number | object | unknown[] | boolean;
+export type Element = string | number | Record<string, unknown> | {} | unknown[] | boolean;
 export type PathElements = readonly Element[];
 
 /**

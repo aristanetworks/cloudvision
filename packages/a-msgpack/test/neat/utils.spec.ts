@@ -1,4 +1,5 @@
 /* eslint-env jest */
+/* eslint-disable @typescript-eslint/naming-convention */
 
 import { encode } from '../../src';
 import { Bool, Float32, Float64, Int, Nil, Pointer, Str } from '../../src/neat/NeatTypes';

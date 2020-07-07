@@ -91,7 +91,7 @@ jest.mock('../src/logger', () => {
 
 jest.spyOn(console, 'groupCollapsed').mockImplementation();
 
-function stringifyMessage(msg: object) {
+function stringifyMessage(msg: Record<string, unknown>) {
   return JSON.stringify(msg);
 }
 
@@ -259,9 +259,9 @@ describe.each<[WsCommand, WrpcMethod, boolean]>([
   beforeEach(() => {
     jest.resetAllMocks();
     wrpc = new Wrpc();
-    // @ts-ignore
+    // @ts-ignore Easier than to type everything
     commandFn = wrpc[fn];
-    // @ts-ignore
+    // @ts-ignore Easier than to type everything
     polymorphicCommandFn = wrpc[fn];
     wrpc.run('ws://localhost:8080');
     ws = wrpc.websocket;
@@ -599,9 +599,9 @@ describe.each<[WsCommand, WrpcMethod, boolean]>([
       batchResults: true,
       debugMode: true,
     });
-    // @ts-ignore
+    // @ts-ignore Easier than to type everything
     commandFn = wrpc[fn];
-    // @ts-ignore
+    // @ts-ignore Easier than to type everything
     polymorphicCommandFn = wrpc[fn];
     wrpc.run('ws://localhost:8080');
     ws = wrpc.websocket;

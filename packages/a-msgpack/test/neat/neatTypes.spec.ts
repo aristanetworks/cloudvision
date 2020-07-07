@@ -71,27 +71,27 @@ describe('NEAT types', () => {
   });
 
   test('Nil', () => {
-    // Explicitly test that nill will always return null regardless of what args are passed
-    // @ts-ignore
+    // Explicitly test that nil will always return null regardless of what args are passed
+    // @ts-ignore Explicitly test nil
     expect(new Nil(1).value).toEqual(null);
-    // @ts-ignore
+    // @ts-ignore Explicitly test nil
     expect(new Nil(true).value).toEqual(null);
-    // @ts-ignore
+    // @ts-ignore Explicitly test nil
     expect(new Nil([]).value).toEqual(null);
-    // @ts-ignore
+    // @ts-ignore Explicitly test nil
     expect(new Nil(false).value).toEqual(null);
-    // @ts-ignore
+    // @ts-ignore Explicitly test nil
     expect(new Nil({}).value).toEqual(null);
 
-    // @ts-ignore
+    // @ts-ignore Explicitly test nil
     expect(new Nil(1).toString()).toEqual('null');
-    // @ts-ignore
+    // @ts-ignore Explicitly test nil
     expect(new Nil(true).toString()).toEqual('null');
-    // @ts-ignore
+    // @ts-ignore Explicitly test nil
     expect(new Nil([]).toString()).toEqual('null');
-    // @ts-ignore
+    // @ts-ignore Explicitly test nil
     expect(new Nil(false).toString()).toEqual('null');
-    // @ts-ignore
+    // @ts-ignore Explicitly test nil
     expect(new Nil({}).toString()).toEqual('null');
   });
 
