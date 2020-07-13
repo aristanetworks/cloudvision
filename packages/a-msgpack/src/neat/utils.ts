@@ -20,13 +20,22 @@ interface PointerNeatType {
   delimiter: string;
 }
 
-export function isNeatType(value: unknown): boolean {
+export function isBaseNeatType(value: unknown): boolean {
   if (typeof value === 'object' && value !== null) {
     if (Object.keys(value).length === 2 && 'type' in value && 'value' in value) {
       const neatValue = value as BasicNeatType;
       return [Bool.type, Float32.type, Float64.type, Int.type, Nil.type, Str.type].includes(
         neatValue.type,
       );
+    }
+  }
+  return false;
+}
+
+export function isNeatType(value: unknown): boolean {
+  if (typeof value === 'object' && value !== null) {
+    if (isBaseNeatType(value)) {
+      return true;
     }
     if (
       Object.keys(value).length === 3 &&

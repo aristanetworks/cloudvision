@@ -19,17 +19,16 @@ import { ExtensionCodec } from '../ExtensionCodec';
 import { decode } from '../decode';
 import { encode } from '../encode';
 
-import { Pointer } from './NeatTypes';
+import { Pointer, Wildcard } from './NeatTypes';
 
-type PointerEncoder = (data: unknown) => Uint8Array | null;
+type PointerEncoder = (data: Pointer) => Uint8Array;
 type PointerDecoder = (buffer: Uint8Array) => Pointer;
+type WildcardEncoder = (data: unknown) => null;
+type WildcardDecoder = (buffer: Uint8Array) => Wildcard;
 
 export function encodePointer(codec: ExtensionCodec): PointerEncoder {
-  return (data: unknown): Uint8Array | null => {
-    if (data instanceof Pointer) {
-      return encode(data.value, { extensionCodec: codec });
-    }
-    return null;
+  return (data: Pointer): Uint8Array => {
+    return encode(data.value, { extensionCodec: codec });
   };
 }
 
@@ -40,5 +39,17 @@ export function decodePointer(codec: ExtensionCodec): PointerDecoder {
       return new Pointer(pointer);
     }
     return new Pointer();
+  };
+}
+
+export function encodeWildcard(): WildcardEncoder {
+  return (): null => {
+    return null;
+  };
+}
+
+export function decodeWildcard(): WildcardDecoder {
+  return (): Wildcard => {
+    return new Wildcard();
   };
 }

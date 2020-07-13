@@ -77,6 +77,7 @@ interface YamlTest {
   pointer: Element[];
   complex: [object, unknown][];
   bytes: number[];
+  wildcard: string;
 }
 
 function createComplexMap(complexArr: unknown[]) {
@@ -140,6 +141,7 @@ describe('NEAT codec', () => {
   const stringTests: YamlTest[] = [];
   const nilTests: YamlTest[] = [];
   const bytesTests: YamlTest[] = [];
+  const wildcardTests: YamlTest[] = [];
 
   tests.tests.forEach((test: YamlTest) => {
     if (test.bool !== undefined) {
@@ -168,6 +170,8 @@ describe('NEAT codec', () => {
       complexTests.push(test);
     } else if (test.bytes !== undefined) {
       bytesTests.push(test);
+    } else if (test.wildcard !== undefined) {
+      wildcardTests.push(test);
     } else {
       nilTests.push(test);
     }
@@ -399,6 +403,13 @@ describe('NEAT codec', () => {
       expect(msgpackCustomCodec.decode(new Uint8Array(test.out))).toEqual(
         new NeatTypes.Pointer(test.pointer),
       );
+    });
+  });
+
+  test('should properly encode/decode wildcards', () => {
+    wildcardTests.forEach((test) => {
+      expect(msgpackCustomCodec.encode(new NeatTypes.Wildcard())).toEqual(new Uint8Array(test.out));
+      expect(msgpackCustomCodec.decode(new Uint8Array(test.out))).toEqual(new NeatTypes.Wildcard());
     });
   });
 
