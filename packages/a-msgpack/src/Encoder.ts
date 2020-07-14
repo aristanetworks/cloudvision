@@ -2,7 +2,7 @@ import JSBI from 'jsbi';
 
 import { NeatType } from '../types/neat';
 
-import { ExtData, WRITE_ONLY_HEADER } from './ExtData';
+import { ExtData } from './ExtData';
 import { ExtensionCodec, ExtensionCodecType } from './ExtensionCodec';
 import { Bool, Float32, Float64, Int, Str } from './neat/NeatTypes';
 import { isBaseNeatType, sortMapByKey } from './neat/utils';
@@ -360,13 +360,11 @@ export class Encoder {
 
   encodeExtension(ext: ExtData): void {
     this.encodeExtensionHeader(ext);
-    if (ext.data !== WRITE_ONLY_HEADER) {
-      this.encodeExtensionData(ext.data);
-    }
+    this.encodeExtensionData(ext.data);
   }
 
   encodeExtensionHeader(ext: ExtData): void {
-    const size = ext.data === WRITE_ONLY_HEADER ? 0 : ext.data.length;
+    const size = ext.data.length;
     if (size === 1) {
       // fixext 1
       this.writeU8(0xd4);

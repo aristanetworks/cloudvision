@@ -1,9 +1,9 @@
 // ExtensionCodec to handle MessagePack extensions
 
-import { ExtData, WRITE_ONLY_HEADER } from './ExtData';
+import { ExtData } from './ExtData';
 
 export type ExtensionDecoderType = (data: Uint8Array, extensionType: number) => unknown;
-export type ExtensionEncoderType<T> = (input: T) => Uint8Array | null;
+export type ExtensionEncoderType<T> = (input: T) => Uint8Array;
 export type ExtensionIdentifier = (ext: unknown) => boolean;
 
 export interface ExtensionCodecType {
@@ -50,7 +50,7 @@ export class ExtensionCodec implements ExtensionCodecType {
     }
     const encoder = this.encoders[type];
     const data = encoder(object);
-    return new ExtData(type, data || WRITE_ONLY_HEADER);
+    return new ExtData(type, data);
   }
 
   public decode(data: Uint8Array, type: number): unknown {

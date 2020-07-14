@@ -23,8 +23,8 @@ import { Pointer, Wildcard } from './NeatTypes';
 
 type PointerEncoder = (data: Pointer) => Uint8Array;
 type PointerDecoder = (buffer: Uint8Array) => Pointer;
-type WildcardEncoder = (data: unknown) => null;
-type WildcardDecoder = (buffer: Uint8Array) => Wildcard;
+type WildcardEncoder = () => Uint8Array;
+type WildcardDecoder = () => Wildcard;
 
 export function encodePointer(codec: ExtensionCodec): PointerEncoder {
   return (data: Pointer): Uint8Array => {
@@ -43,8 +43,8 @@ export function decodePointer(codec: ExtensionCodec): PointerDecoder {
 }
 
 export function encodeWildcard(): WildcardEncoder {
-  return (): null => {
-    return null;
+  return (): Uint8Array => {
+    return new Uint8Array();
   };
 }
 
