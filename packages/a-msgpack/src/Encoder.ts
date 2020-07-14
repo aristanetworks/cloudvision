@@ -359,11 +359,6 @@ export class Encoder {
   }
 
   encodeExtension(ext: ExtData): void {
-    this.encodeExtensionHeader(ext);
-    this.encodeExtensionData(ext.data);
-  }
-
-  encodeExtensionHeader(ext: ExtData): void {
     const size = ext.data.length;
     if (size === 1) {
       // fixext 1
@@ -394,10 +389,7 @@ export class Encoder {
       this.writeU32(size);
     }
     this.writeI8(ext.type);
-  }
-
-  encodeExtensionData(data: Uint8Array): void {
-    this.writeU8a(data);
+    this.writeU8a(ext.data);
   }
 
   writeU8(value: number): void {
