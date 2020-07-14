@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.4.0](https://github.com/aristanetworks/cloudvision/compare/v4.3.1...v4.4.0) (2020-07-14)
+
+
+### Features
+
+* **a-msgpack:** add Wildcard support ([#124](https://github.com/aristanetworks/cloudvision/issues/124)) ([09d75d7](https://github.com/aristanetworks/cloudvision/commit/09d75d7d80faab8fe70f707e82529f8d5c213d42))
+
+
+
+
+
 ## [4.3.1](https://github.com/aristanetworks/cloudvision/compare/v4.3.0...v4.3.1) (2020-07-07)
 
 **Note:** Version bump only for package root
