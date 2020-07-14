@@ -17,10 +17,11 @@
 
 import { ExtensionCodec } from '../ExtensionCodec';
 
-import { Bool, Float32, Float64, Int, Nil, Pointer, Str } from './NeatTypes';
-import { decodePointer, encodePointer } from './extensions';
+import { Bool, Float32, Float64, Int, Nil, Pointer, Str, Wildcard } from './NeatTypes';
+import { decodePointer, decodeWildcard, encodePointer, encodeWildcard } from './extensions';
 
 export const POINTER_TYPE = 0;
+export const WILDCARD_TYPE = 1;
 
 export const NeatTypes = {
   Bool,
@@ -30,12 +31,21 @@ export const NeatTypes = {
   Nil,
   Pointer,
   Str,
+  Wildcard,
 };
 
 export const Codec = new ExtensionCodec();
 
 Codec.register({
   type: POINTER_TYPE,
+  identifier: (data: unknown) => data instanceof Pointer,
   encode: encodePointer(Codec),
   decode: decodePointer(Codec),
+});
+
+Codec.register({
+  type: WILDCARD_TYPE,
+  identifier: (data: unknown) => data instanceof Wildcard,
+  encode: encodeWildcard(),
+  decode: decodeWildcard(),
 });

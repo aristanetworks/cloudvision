@@ -5,8 +5,8 @@ import { NeatType } from '../types/neat';
 import { ExtData } from './ExtData';
 import { ExtensionCodec, ExtensionCodecType } from './ExtensionCodec';
 import { Bool, Float32, Float64, Int, Str } from './neat/NeatTypes';
-import { isNeatType, sortMapByKey } from './neat/utils';
-import { isJsbi } from './utils/data';
+import { isBaseNeatType, sortMapByKey } from './neat/utils';
+import { isJsbi, isPlainObject } from './utils/data';
 import { setInt64, setUint64 } from './utils/int';
 import { ensureUint8Array } from './utils/typedArrays';
 import {
@@ -192,11 +192,7 @@ export class Encoder {
   }
 
   encodeObject(object: unknown, depth: number): void {
-    // try to encode objects with custom codec first of non-primitives
-    const ext = this.extensionCodec.tryToEncode(object);
-    if (ext != null) {
-      this.encodeExtension(ext);
-    } else if (Array.isArray(object)) {
+    if (Array.isArray(object)) {
       if (isJsbi(object)) {
         this.encodeJSBI(object as JSBI);
       } else {
@@ -209,10 +205,14 @@ export class Encoder {
     } else if (object instanceof Map) {
       this.encodeMap(object, depth);
     } else if (typeof object === 'object') {
-      if (isNeatType(object)) {
+      if (isBaseNeatType(object)) {
         this.encodeNeatClass(object as NeatType);
-      } else {
+      } else if (isPlainObject(object as object)) {
+        // Find out if it is a plain object
         this.encodePlainObject(object as Record<string, unknown>, depth);
+      } else {
+        // Otherwise try to encode objects with custom codec of non-primitives
+        this.encodeExtension(this.extensionCodec.encode(object));
       }
     } else if (typeof object === 'function') {
       this.encodeNil();

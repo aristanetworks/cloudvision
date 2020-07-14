@@ -2,7 +2,7 @@
 
 import JSBI from 'jsbi';
 
-import { Bool, Float32, Float64, Int, Nil, Pointer, Str } from '../../src/neat/NeatTypes';
+import { Bool, Float32, Float64, Int, Nil, Pointer, Str, Wildcard } from '../../src/neat/NeatTypes';
 
 describe('NEAT types', () => {
   const maxInt = Number.MAX_SAFE_INTEGER;
@@ -138,5 +138,31 @@ describe('NEAT types', () => {
     expect(new Str(undefined).toString()).toEqual('');
     expect(new Str({ hello: 'world' }).toString()).toEqual(JSON.stringify({ hello: 'world' }));
     expect(new Str([1, 2]).toString()).toEqual('[1,2]');
+  });
+
+  test('Wildcard', () => {
+    const wildcardValue = '*';
+    // Explicitly test that Wildcard will always return null regardless of what args are passed
+    // @ts-ignore Explicitly test wildcard
+    expect(new Wildcard(1).value).toEqual(null);
+    // @ts-ignore Explicitly test wildcard
+    expect(new Wildcard(true).value).toEqual(null);
+    // @ts-ignore Explicitly test wildcard
+    expect(new Wildcard([]).value).toEqual(null);
+    // @ts-ignore Explicitly test wildcard
+    expect(new Wildcard(false).value).toEqual(null);
+    // @ts-ignore Explicitly test wildcard
+    expect(new Wildcard({}).value).toEqual(null);
+
+    // @ts-ignore Explicitly test wildcard
+    expect(new Wildcard(1).toString()).toEqual(wildcardValue);
+    // @ts-ignore Explicitly test wildcard
+    expect(new Wildcard(true).toString()).toEqual(wildcardValue);
+    // @ts-ignore Explicitly test wildcard
+    expect(new Wildcard([]).toString()).toEqual(wildcardValue);
+    // @ts-ignore Explicitly test wildcard
+    expect(new Wildcard(false).toString()).toEqual(wildcardValue);
+    // @ts-ignore Explicitly test wildcard
+    expect(new Wildcard({}).toString()).toEqual(wildcardValue);
   });
 });

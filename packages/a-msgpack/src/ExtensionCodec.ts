@@ -3,11 +3,11 @@
 import { ExtData } from './ExtData';
 
 export type ExtensionDecoderType = (data: Uint8Array, extensionType: number) => unknown;
-
-export type ExtensionEncoderType = (input: unknown) => Uint8Array | null;
+export type ExtensionEncoderType<T> = (input: T) => Uint8Array;
+export type ExtensionIdentifier = (ext: unknown) => boolean;
 
 export interface ExtensionCodecType {
-  tryToEncode(object: unknown): ExtData | null;
+  encode(object: unknown): ExtData;
   decode(data: Uint8Array, extType: number): unknown;
 }
 
@@ -15,34 +15,42 @@ export class ExtensionCodec implements ExtensionCodecType {
   public static readonly defaultCodec: ExtensionCodecType = new ExtensionCodec();
 
   // custom extensions
-  private readonly encoders: ExtensionEncoderType[] = [];
+  private readonly encoders: ExtensionEncoderType<any>[] = [];
 
   private readonly decoders: ExtensionDecoderType[] = [];
 
-  public register({
+  private readonly identifiers: ExtensionIdentifier[] = [];
+
+  public register<EncodeType>({
     type,
+    identifier,
     encode,
     decode,
   }: {
     type: number;
-    encode: ExtensionEncoderType;
+    identifier: ExtensionIdentifier;
+    encode: ExtensionEncoderType<EncodeType>;
     decode: ExtensionDecoderType;
   }): void {
     this.encoders[type] = encode;
     this.decoders[type] = decode;
+    this.identifiers.push(identifier);
   }
 
-  public tryToEncode(object: unknown): ExtData | null {
-    // custom extensions
-    for (let i = 0; i < this.encoders.length; i++) {
-      const encoder = this.encoders[i];
-      const data = encoder(object);
-      if (data != null) {
-        const type = i;
-        return new ExtData(type, data);
+  public encode(object: unknown): ExtData {
+    let type = null;
+    for (let i = 0; i < this.identifiers.length; i++) {
+      const id = this.identifiers[i];
+      if (id(object)) {
+        type = i;
       }
     }
-    return null;
+    if (type === null) {
+      throw new Error(`Unrecognized object: ${Object.prototype.toString.apply(object)}`);
+    }
+    const encoder = this.encoders[type];
+    const data = encoder(object);
+    return new ExtData(type, data);
   }
 
   public decode(data: Uint8Array, type: number): unknown {

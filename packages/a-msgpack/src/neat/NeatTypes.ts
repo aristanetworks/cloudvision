@@ -234,3 +234,24 @@ export class Pointer {
       .join(this.delimiter);
   }
 }
+
+export class Wildcard {
+  public static type: '*' = '*';
+
+  public value: null;
+
+  public type: '*';
+
+  /**
+   * A class to represent a Wildcard type.
+   * A Wildcard is a type that matches 1 or more path elements
+   */
+  public constructor() {
+    this.type = Wildcard.type;
+    this.value = null;
+  }
+
+  public toString(): string {
+    return '*';
+  }
+}
