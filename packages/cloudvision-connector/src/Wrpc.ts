@@ -19,6 +19,7 @@ import {
   CloseParams,
   CloudVisionBatchedResult,
   CloudVisionMessage,
+  CloudVisionMetaData,
   CloudVisionParams,
   CloudVisionPublishRequest,
   CloudVisionResult,
@@ -43,8 +44,10 @@ import {
   CLOSE,
   CONNECTED,
   DISCONNECTED,
+  EOF,
   EOF_CODE,
   ERROR,
+  GET_REQUEST_COMPLETED,
   ID,
   PAUSE,
   PAUSED_CODE,
@@ -508,7 +511,14 @@ export default class Wrpc {
         this.resume({ token }, cb);
         return;
       }
+
       this.events.emit(token, null, msg.result, status);
+      if (
+        msg.result?.metadata &&
+        (msg.result.metadata as CloudVisionMetaData<string>)[GET_REQUEST_COMPLETED] === EOF
+      ) {
+        this.events.emit(token, null, null, { message: GET_REQUEST_COMPLETED, code: EOF_CODE });
+      }
     };
   }
 

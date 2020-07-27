@@ -19,13 +19,11 @@ import { PathElements } from 'a-msgpack';
 
 import Connector from '../src/Connector';
 import {
-  ACTIVE_CODE,
   APP_DATASET_TYPE,
-  DEFAULT_CONTEXT,
   DEVICES_DATASET_ID,
   DEVICE_DATASET_TYPE,
-  EOF_CODE,
   GET,
+  GET_AND_SUBSCRIBE,
   GET_DATASETS,
   SEARCH,
   SEARCH_SUBSCRIBE,
@@ -84,10 +82,6 @@ const multiplePathQuery: Query = [
 const SEARCH_OPTIONS: SearchOptions = {
   search: '',
   searchType: SEARCH_TYPE_ANY,
-};
-const ACTIVE_STATUS: CloudVisionStatus = {
-  code: ACTIVE_CODE,
-  message: 'Active',
 };
 const ERROR_MESSAGE = 'error';
 const ERROR_STATUS: CloudVisionStatus = {
@@ -251,218 +245,6 @@ describe('getDatasets', () => {
       { types: [APP_DATASET_TYPE, DEVICE_DATASET_TYPE] },
       expect.any(Function),
     );
-  });
-});
-
-describe('WebSocket Not Running', () => {
-  const options = {};
-  const callback = jest.fn();
-  let conn: Connector;
-  let streamSpy: jest.SpyInstance;
-  let getSpy: jest.SpyInstance;
-
-  beforeEach(() => {
-    conn = new Connector();
-    streamSpy = jest.spyOn(conn, 'stream');
-    getSpy = jest.spyOn(conn, 'getWithOptions');
-    conn.run('ws://localhost:8080');
-  });
-
-  afterEach(() => {
-    callback.mockClear();
-    streamSpy.mockClear();
-    getSpy.mockClear();
-  });
-
-  test('should call callback with default token if none specified', () => {
-    const subscriptionId = conn.getAndSubscribe(singlePathQuery, callback, options);
-
-    expect(callback).toHaveBeenNthCalledWith(2, null, undefined, { code: EOF_CODE }, undefined, {
-      command: SUBSCRIBE,
-      token: DEFAULT_CONTEXT.token,
-      encodedParams: toBinaryKey(singlePathQuery),
-    });
-    expect(subscriptionId).not.toBeNull();
-  });
-});
-
-describe('getAndSubscribe', () => {
-  const options = {};
-  const callback = jest.fn();
-  let conn: Connector;
-  let streamSpy: jest.SpyInstance;
-  let getSpy: jest.SpyInstance;
-  const RESULT = { dataset: 'Dodgers' };
-
-  beforeEach(() => {
-    conn = new Connector();
-    streamSpy = jest.spyOn(conn, 'stream');
-    getSpy = jest.spyOn(conn, 'getWithOptions');
-    conn.run('ws://localhost:8080');
-    conn.websocket.dispatchEvent(new MessageEvent('open', {}));
-  });
-
-  afterEach(() => {
-    callback.mockClear();
-    streamSpy.mockClear();
-    getSpy.mockClear();
-  });
-
-  test('should handle empty query', () => {
-    const query: Query = [];
-
-    const subscriptionId = conn.getAndSubscribe(query, callback, options);
-
-    expect(streamSpy).not.toHaveBeenCalled();
-    expect(getSpy).not.toHaveBeenCalled();
-    expect(callback).toHaveBeenCalledTimes(1);
-    expect(subscriptionId).toBeNull();
-  });
-
-  test('should handle invalid query', () => {
-    const query = undefined;
-
-    // @ts-ignore Explicity testing invalid query
-    const subscriptionId = conn.getAndSubscribe(query, callback, options);
-
-    expect(streamSpy).not.toHaveBeenCalled();
-    expect(getSpy).not.toHaveBeenCalled();
-    expect(callback).toHaveBeenCalledTimes(1);
-    expect(subscriptionId).toBeNull();
-  });
-
-  test('should handle invalid options', () => {
-    const subscriptionId = conn.getAndSubscribe(singlePathQuery, callback, { start: 4, end: 1 });
-
-    expect(streamSpy).not.toHaveBeenCalled();
-    expect(getSpy).not.toHaveBeenCalled();
-    expect(callback).toHaveBeenCalledTimes(1);
-    expect(subscriptionId).toBeNull();
-  });
-
-  test('should handle multiple paths', () => {
-    const subscriptionId = conn.getAndSubscribe(multiplePathQuery, callback, options);
-
-    expect(callback).not.toHaveBeenCalled();
-    expect(getSpy).not.toHaveBeenCalled();
-    expect(streamSpy).toHaveBeenCalledWith(
-      SUBSCRIBE,
-      { query: multiplePathQuery },
-      expect.any(Function),
-    );
-    expect(subscriptionId).not.toBeNull();
-  });
-
-  test('should handle single path', () => {
-    const subscriptionId = conn.getAndSubscribe(singlePathQuery, callback, options);
-
-    expect(callback).not.toHaveBeenCalled();
-    expect(getSpy).not.toHaveBeenCalled();
-    expect(streamSpy).toHaveBeenCalledWith(
-      SUBSCRIBE,
-      { query: singlePathQuery },
-      expect.any(Function),
-    );
-    expect(subscriptionId).not.toBeNull();
-  });
-
-  test('should handle root path', () => {
-    const subscriptionId = conn.getAndSubscribe(rootQuery, callback, options);
-
-    expect(callback).not.toHaveBeenCalled();
-    expect(getSpy).not.toHaveBeenCalled();
-    expect(streamSpy).toHaveBeenCalledWith(SUBSCRIBE, { query: rootQuery }, expect.any(Function));
-    expect(subscriptionId).not.toBeNull();
-  });
-
-  test('should call getWithOptions after steam ACK', () => {
-    const subscriptionId = conn.getAndSubscribe(singlePathQuery, callback, options);
-
-    if (subscriptionId && subscriptionId.subscribe) {
-      // Send ACK
-      conn.websocket.dispatchEvent(
-        new MessageEvent('message', {
-          data: JSON.stringify({ token: subscriptionId.subscribe.token, status: ACTIVE_STATUS }),
-        }),
-      );
-
-      expect(callback).not.toHaveBeenCalled();
-      expect(getSpy).toHaveBeenCalledWith(singlePathQuery, expect.any(Function), {
-        start: undefined,
-        end: undefined,
-        versions: undefined,
-      });
-    }
-
-    expect(subscriptionId).not.toBeNull();
-  });
-
-  test('should call callback with data after ACK', () => {
-    const subscriptionId = conn.getAndSubscribe(singlePathQuery, callback, options);
-
-    if (subscriptionId && subscriptionId.subscribe) {
-      // Send ACK
-      conn.websocket.dispatchEvent(
-        new MessageEvent('message', {
-          data: JSON.stringify({ token: subscriptionId.subscribe.token, status: ACTIVE_STATUS }),
-        }),
-      );
-
-      // Send message
-      conn.websocket.dispatchEvent(
-        new MessageEvent('message', {
-          data: JSON.stringify({ token: subscriptionId.subscribe.token, result: RESULT }),
-        }),
-      );
-
-      expect(callback).toHaveBeenCalledWith(
-        null,
-        RESULT,
-        undefined,
-        subscriptionId.subscribe.token,
-        {
-          command: SUBSCRIBE,
-          token: subscriptionId.subscribe.token,
-          encodedParams: toBinaryKey(singlePathQuery),
-        },
-      );
-    }
-
-    expect(subscriptionId).not.toBeNull();
-  });
-
-  test('should call callback with error after ACK', () => {
-    const subscriptionId = conn.getAndSubscribe(singlePathQuery, callback, options);
-
-    if (subscriptionId && subscriptionId.subscribe) {
-      // Send ACK
-      conn.websocket.dispatchEvent(
-        new MessageEvent('message', {
-          data: JSON.stringify({ token: subscriptionId.subscribe.token, status: ACTIVE_STATUS }),
-        }),
-      );
-
-      // Send message
-      conn.websocket.dispatchEvent(
-        new MessageEvent('message', {
-          data: JSON.stringify({ token: subscriptionId.subscribe.token, result: RESULT }),
-        }),
-      );
-
-      expect(callback).toHaveBeenCalledWith(
-        null,
-        RESULT,
-        undefined,
-        subscriptionId.subscribe.token,
-        {
-          command: SUBSCRIBE,
-          token: subscriptionId.subscribe.token,
-          encodedParams: toBinaryKey(singlePathQuery),
-        },
-      );
-    }
-
-    expect(subscriptionId).not.toBeNull();
   });
 });
 
@@ -662,17 +444,19 @@ describe.each([
 });
 
 describe.each([
+  ['getAndSubscribe', GET_AND_SUBSCRIBE],
   ['subscribe', SUBSCRIBE],
   ['searchSubscribe', SEARCH_SUBSCRIBE, true],
   ['runStreamingService', SERVICE_REQUEST, false, true],
 ])('Subscribe Queries', (fn, command, isSearch?, isService?) => {
   const callback = jest.fn();
+  const options = {} as Options & SearchOptions;
   let conn: Connector;
   let commandFnSpy: jest.SpyInstance;
   let connFn: (
     q: Query | ServiceRequest,
     cb: NotifCallback,
-    o?: SearchOptions,
+    o?: SearchOptions | Options,
   ) => SubscriptionIdentifier | null;
   const RESULT = { dataset: 'Dodgers' };
 
@@ -680,15 +464,24 @@ describe.each([
     c: string,
     token: string,
     queryOrRequest: Query | ServiceRequest,
-    options: SearchOptions,
+    o: SearchOptions | Options,
   ): RequestContext {
     let params: ServiceRequest | SearchParams | QueryParams = { query: queryOrRequest as Query };
     if (isSearch && !isService) {
-      const sanitizedSearchOptions = sanitizeSearchOptions(options);
+      const sanitizedSearchOptions = sanitizeSearchOptions(o as SearchOptions);
       params = {
         query: queryOrRequest as Query,
         search: sanitizedSearchOptions.search,
         searchType: sanitizedSearchOptions.searchType,
+      };
+    }
+    if (command === GET_AND_SUBSCRIBE) {
+      const sanitizedOptions = sanitizeOptions(o as Options);
+      params = {
+        query: queryOrRequest as Query,
+        start: sanitizedOptions.start,
+        end: sanitizedOptions.end,
+        versions: sanitizedOptions.versions,
       };
     }
     if (isService) {
@@ -744,12 +537,44 @@ describe.each([
     expect(subscriptionId).toBeNull();
   });
 
+  test(`'${fn}' should handle invalid options`, () => {
+    const subscriptionId = connFn.call(conn, isService ? serviceQuery : singlePathQuery, callback, {
+      start: 10,
+      end: 5,
+    });
+    if (isSearch) {
+      expect(subscriptionId).not.toBeNull();
+      expect(callback).not.toHaveBeenCalled();
+      expect(commandFnSpy).toHaveBeenCalledWith(
+        command,
+        { query: singlePathQuery, ...SEARCH_OPTIONS },
+        expect.any(Function),
+      );
+    } else if (isService) {
+      expect(subscriptionId).not.toBeNull();
+      expect(callback).not.toHaveBeenCalled();
+      expect(commandFnSpy).toHaveBeenCalledWith(command, serviceQuery, expect.any(Function));
+    } else if (command === GET_AND_SUBSCRIBE) {
+      expect(commandFnSpy).not.toHaveBeenCalled();
+      expect(callback).toHaveBeenCalledTimes(1);
+      expect(subscriptionId).toBeNull();
+    } else {
+      expect(subscriptionId).not.toBeNull();
+      expect(callback).not.toHaveBeenCalled();
+      expect(commandFnSpy).toHaveBeenCalledWith(
+        command,
+        { query: singlePathQuery },
+        expect.any(Function),
+      );
+    }
+  });
+
   test(`'${fn}' should handle multiple paths`, () => {
     // Service does not support multiple path query;
     if (isService) {
       return;
     }
-    const subscriptionId = connFn.call(conn, multiplePathQuery, callback);
+    const subscriptionId = connFn.call(conn, multiplePathQuery, callback, options);
 
     expect(callback).not.toHaveBeenCalled();
     if (isSearch) {
@@ -769,7 +594,12 @@ describe.each([
   });
 
   test(`'${fn}' should handle single path`, () => {
-    const subscriptionId = connFn.call(conn, isService ? serviceQuery : singlePathQuery, callback);
+    const subscriptionId = connFn.call(
+      conn,
+      isService ? serviceQuery : singlePathQuery,
+      callback,
+      options,
+    );
     expect(callback).not.toHaveBeenCalled();
     if (isSearch) {
       expect(commandFnSpy).toHaveBeenCalledWith(
@@ -794,7 +624,7 @@ describe.each([
     if (isService) {
       return;
     }
-    const subscriptionId = connFn.call(conn, rootQuery, callback);
+    const subscriptionId = connFn.call(conn, rootQuery, callback, options);
 
     expect(callback).not.toHaveBeenCalled();
     if (isSearch) {
@@ -815,7 +645,7 @@ describe.each([
 
   test(`'${fn}' should call callback with data`, () => {
     const q = isService ? serviceQuery : rootQuery;
-    const subscriptionId = connFn.call(conn, q, callback);
+    const subscriptionId = connFn.call(conn, q, callback, options);
     if (subscriptionId) {
       // Send message
       conn.websocket.dispatchEvent(
@@ -838,7 +668,7 @@ describe.each([
 
   test(`'${fn}' should call callback with error`, () => {
     const q = isService ? serviceQuery : rootQuery;
-    const subscriptionId = connFn.call(conn, q, callback);
+    const subscriptionId = connFn.call(conn, q, callback, options);
 
     if (subscriptionId) {
       // Send message

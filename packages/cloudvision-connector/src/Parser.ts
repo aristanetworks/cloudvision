@@ -296,6 +296,7 @@ export function decodeNotifications(
   if (batchResults) {
     const batch: CloudVisionBatchedNotifications = {
       dataset: result.dataset,
+      metadata: result.metadata || {},
       notifications: {},
     };
 
@@ -308,6 +309,7 @@ export function decodeNotifications(
 
   const notif: CloudVisionNotifs = {
     dataset: result.dataset,
+    metadata: result.metadata || {},
     notifications: [],
   };
   for (let i = 0; i < result.notifications.length; i += 1) {
