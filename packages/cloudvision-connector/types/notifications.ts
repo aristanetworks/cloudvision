@@ -4,6 +4,7 @@ import { RequestContext } from './connection';
 import { DatasetObject } from './params';
 
 export interface CloudVisionDatasets {
+  metadata: CloudVisionMetaData<unknown>;
   datasets: DatasetObject[];
 }
 
@@ -38,6 +39,10 @@ export interface CloudVisionDeletes<K> {
   [key: string]: { key: K };
 }
 
+export interface CloudVisionMetaData<V> {
+  [key: string]: V;
+}
+
 /** @deprecated: Use `CloudVisionDeletes`. */
 export type CloudVisionDelete<K> = CloudVisionDeletes<K>;
 
@@ -64,16 +69,19 @@ export type RawNotification = CloudVisionNotification<
 
 export interface CloudVisionNotifs {
   dataset: DatasetObject;
+  metadata: CloudVisionMetaData<unknown>;
   notifications: ConvertedNotification[];
 }
 
 export interface CloudVisionRawNotifs {
   dataset: DatasetObject;
+  metadata?: CloudVisionMetaData<unknown>;
   notifications: RawNotification[];
 }
 
 export interface CloudVisionBatchedNotifications {
   dataset: DatasetObject;
+  metadata: CloudVisionMetaData<unknown>;
   notifications: {
     [path: string]: ConvertedNotification[];
   };

@@ -43,10 +43,13 @@ export const PAUSED_CODE = 1002;
  */
 export const RESPONSE_COMPLETED = 'RESPONSE_COMPLETED';
 
+export const GET_REQUEST_COMPLETED = 'GetRequest';
+
 export const CLOSE = 'close';
 export const DEVICES_DATASET_ID = 'DEVICES_DATASET_ID';
 export const GET = 'get';
 export const GET_DATASETS = 'getDatasets';
+export const GET_AND_SUBSCRIBE = 'getAndSubscribe';
 export const PAUSE = 'pause';
 export const PUBLISH = 'publish';
 export const RESUME = 'resume';
