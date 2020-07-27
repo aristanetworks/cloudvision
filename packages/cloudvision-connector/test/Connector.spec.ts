@@ -464,11 +464,11 @@ describe.each([
     c: string,
     token: string,
     queryOrRequest: Query | ServiceRequest,
-    options: SearchOptions | Options,
+    o: SearchOptions | Options,
   ): RequestContext {
     let params: ServiceRequest | SearchParams | QueryParams = { query: queryOrRequest as Query };
     if (isSearch && !isService) {
-      const sanitizedSearchOptions = sanitizeSearchOptions(options as SearchOptions);
+      const sanitizedSearchOptions = sanitizeSearchOptions(o as SearchOptions);
       params = {
         query: queryOrRequest as Query,
         search: sanitizedSearchOptions.search,
@@ -476,7 +476,7 @@ describe.each([
       };
     }
     if (command === GET_AND_SUBSCRIBE) {
-      const sanitizedOptions = sanitizeOptions(options as Options);
+      const sanitizedOptions = sanitizeOptions(o as Options);
       params = {
         query: queryOrRequest as Query,
         start: sanitizedOptions.start,

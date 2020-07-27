@@ -50,7 +50,6 @@ import {
   thirdNotif,
   thirdNotifPublishRaw,
 } from './fixtures';
-import { __metadata } from 'tslib';
 
 describe('encode/decode path elements', () => {
   test('encodePathElementsAndKeysInQuery just path elements', () => {
@@ -85,7 +84,6 @@ describe('Parser', () => {
   describe('parse', () => {
     const batchedResult: CloudVisionBatchedNotifications = {
       dataset: { type: DEVICE_DATASET_TYPE, name: 'Dodgers' },
-      metadata: {},
       notifications: {
         [JSON.stringify(path1)]: [
           expectedThirdNotif,
@@ -99,7 +97,6 @@ describe('Parser', () => {
 
     const rawResult: CloudVisionNotifs = {
       dataset: { type: DEVICE_DATASET_TYPE, name: 'Dodgers' },
-      metadata: {},
       notifications: [
         expectedThirdNotif,
         expectedFirstNotif,
@@ -244,7 +241,6 @@ describe('decodeNotifications', () => {
     };
     const expectedNotif: CloudVisionBatchedNotifications = {
       dataset: { type: DEVICE_DATASET_TYPE, name: 'device1' },
-      metadata: {},
       notifications: {
         [JSON.stringify(path1)]: [expectedThirdNotif, expectedFirstNotif, expectedFourthNotif],
         [JSON.stringify(path2)]: [expectedSecondNotif],
@@ -264,7 +260,6 @@ describe('decodeNotifications', () => {
     };
     const expectedNotif: CloudVisionBatchedNotifications = {
       dataset: { type: DEVICE_DATASET_TYPE, name: 'device1' },
-      metadata: {},
       notifications: {
         [JSON.stringify(path1)]: [expectedThirdNotif, expectedFirstNotif],
       },
@@ -283,29 +278,8 @@ describe('decodeNotifications', () => {
     };
     const expectedNotif: CloudVisionBatchedNotifications = {
       dataset: { type: DEVICE_DATASET_TYPE, name: 'device1' },
-      metadata: {},
       notifications: {
         [JSON.stringify([])]: [expectedRootNotif],
-      },
-    };
-
-    const batchedNotif = decodeNotifications(notif, true);
-
-    expect(batchedNotif).toEqual(expectedNotif);
-    expect(batchedNotif).not.toBe(expectedNotif);
-  });
-
-  test('should properly decode metadata when batched', () => {
-    const notif: CloudVisionRawNotifs = {
-      dataset: { type: DEVICE_DATASET_TYPE, name: 'device1' },
-      metadata: { Dodgers: 'Rule!' },
-      notifications: [firstNotif, thirdNotif],
-    };
-    const expectedNotif: CloudVisionBatchedNotifications = {
-      dataset: { type: DEVICE_DATASET_TYPE, name: 'device1' },
-      metadata: { Dodgers: 'Rule!' },
-      notifications: {
-        [JSON.stringify(path1)]: [expectedThirdNotif, expectedFirstNotif],
       },
     };
 
@@ -322,7 +296,6 @@ describe('decodeNotifications', () => {
     };
     const expectedNotif: CloudVisionNotifs = {
       dataset: { type: DEVICE_DATASET_TYPE, name: 'device1' },
-      metadata: {},
       notifications: [
         expectedThirdNotif,
         expectedFirstNotif,
@@ -344,25 +317,6 @@ describe('decodeNotifications', () => {
     };
     const expectedNotif: CloudVisionNotifs = {
       dataset: { type: DEVICE_DATASET_TYPE, name: 'device1' },
-      metadata: {},
-      notifications: [expectedThirdNotif, expectedFirstNotif],
-    };
-
-    const batchedNotif = decodeNotifications(notif, false);
-
-    expect(batchedNotif).toEqual(expectedNotif);
-    expect(batchedNotif).not.toBe(expectedNotif);
-  });
-
-  test('should properly decode metadata when not batched', () => {
-    const notif: CloudVisionRawNotifs = {
-      dataset: { type: DEVICE_DATASET_TYPE, name: 'device1' },
-      metadata: { Dodgers: 'Rule!' },
-      notifications: [firstNotif, thirdNotif],
-    };
-    const expectedNotif: CloudVisionNotifs = {
-      dataset: { type: DEVICE_DATASET_TYPE, name: 'device1' },
-      metadata: { Dodgers: 'Rule!' },
       notifications: [expectedThirdNotif, expectedFirstNotif],
     };
 
@@ -379,7 +333,6 @@ describe('decodeNotifications', () => {
     };
     const expectedNotif: CloudVisionBatchedNotifications = {
       dataset: { type: DEVICE_DATASET_TYPE, name: 'device1' },
-      metadata: {},
       notifications: {
         [JSON.stringify(path1)]: [expectedFirstNotif, expectedSixthNotif],
       },
@@ -398,7 +351,6 @@ describe('decodeNotifications', () => {
     };
     const expectedNotif: CloudVisionNotifs = {
       dataset: { type: DEVICE_DATASET_TYPE, name: 'device1' },
-      metadata: {},
       notifications: [
         expectedThirdNotif,
         expectedFirstNotif,
