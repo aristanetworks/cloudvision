@@ -27,6 +27,7 @@ import {
   ERROR,
   GET,
   GET_DATASETS,
+  GET_REQUEST_COMPLETED,
   ID,
   PAUSE,
   PAUSED_CODE,
@@ -49,6 +50,7 @@ import {
   StreamCommand,
   SubscriptionIdentifier,
   WsCommand,
+  CloudVisionMetaData,
 } from '../types';
 
 interface PolymorphicCommandFunction {
@@ -1256,6 +1258,48 @@ describe.each<[StreamCommand, 'stream']>([
       );
       expect(eventsEmitterUnbindSpy).toHaveBeenCalledTimes(1);
       expect(eventsEmitterUnbindSpy).toHaveBeenCalledWith(token, expect.any(Function));
+      expect(sendSpy).toHaveBeenCalledTimes(1);
+      expect(token).not.toBeNull();
+    }
+    expect(subscriptionId).not.toBeNull();
+  });
+
+  test(`'${fn} + ${command}' should call callback and not unbind on get request EOF`, () => {
+    const METADATA: CloudVisionMetaData<string> = { [GET_REQUEST_COMPLETED]: EOF };
+    const EOF_STATUS: CloudVisionStatus = { code: EOF_CODE, message: GET_REQUEST_COMPLETED };
+    const RESULT_WITH_META = { ...RESULT, metadata: METADATA };
+    ws.dispatchEvent(new MessageEvent('open', {}));
+
+    const subscriptionId = commandFn.call(wrpc, command, query, callbackSpy);
+    if (subscriptionId && subscriptionId.token) {
+      const token = subscriptionId.token;
+      const requestContext = createRequestContext(command, token, query);
+      ws.dispatchEvent(
+        new MessageEvent('message', {
+          data: stringifyMessage({ token, result: RESULT_WITH_META }),
+        }),
+      );
+
+      expect(callbackSpy).toHaveBeenCalledTimes(2);
+      expect(callbackSpy).toHaveBeenNthCalledWith(
+        1,
+        null,
+        RESULT_WITH_META,
+        undefined,
+        token,
+        requestContext,
+      );
+      expect(callbackSpy).toHaveBeenNthCalledWith(2, null, null, EOF_STATUS, token, requestContext);
+      expect(eventsEmitterSpy).toHaveBeenCalledTimes(2);
+      expect(eventsEmitterSpy).toHaveBeenNthCalledWith(1, token, null, RESULT_WITH_META, undefined);
+      expect(eventsEmitterSpy).toHaveBeenNthCalledWith(2, token, null, null, EOF_STATUS);
+      expect(eventsEmitterBindSpy).toHaveBeenCalledTimes(1);
+      expect(eventsEmitterBindSpy).toHaveBeenCalledWith(
+        token,
+        requestContext,
+        expect.any(Function),
+      );
+      expect(eventsEmitterUnbindSpy).toHaveBeenCalledTimes(0);
       expect(sendSpy).toHaveBeenCalledTimes(1);
       expect(token).not.toBeNull();
     }

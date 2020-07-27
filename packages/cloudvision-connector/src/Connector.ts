@@ -1,10 +1,6 @@
 import {
   AppParams,
-  CloudVisionBatchedResult,
   CloudVisionParams,
-  CloudVisionResult,
-  CloudVisionServiceResult,
-  CloudVisionStatus,
   DatasetType,
   NotifCallback,
   Options,
@@ -21,21 +17,20 @@ import {
 
 import Wrpc from './Wrpc';
 import {
-  ACTIVE_CODE,
   APP_DATASET_TYPE,
   CLOSE,
-  DEFAULT_CONTEXT,
   DEVICES_DATASET_ID,
   DEVICE_DATASET_TYPE,
   GET,
+  GET_AND_SUBSCRIBE,
   GET_DATASETS,
   ID,
   PAUSE,
   PUBLISH,
   SEARCH,
   SEARCH_SUBSCRIBE,
-  SUBSCRIBE,
   SERVICE_REQUEST,
+  SUBSCRIBE,
 } from './constants';
 import {
   makeNotifCallback,
@@ -43,7 +38,6 @@ import {
   makeToken,
   sanitizeOptions,
   sanitizeSearchOptions,
-  toBinaryKey,
   validateOptions,
   validateQuery,
 } from './utils';
@@ -147,10 +141,7 @@ export default class Connector extends Wrpc {
     query: Query,
     callback: NotifCallback,
     options: Options,
-  ): {
-    subscribe: SubscriptionIdentifier | null;
-    get: string;
-  } | null {
+  ): SubscriptionIdentifier | null {
     if (!validateQuery(query, callback)) {
       return null;
     }
@@ -167,30 +158,8 @@ export default class Connector extends Wrpc {
       end: sanitizedOptions.end,
       versions: sanitizedOptions.versions,
     };
-    const getToken = makeToken(GET, params);
 
-    const subscribeAckCallback = (
-      err: string | null,
-      result?: CloudVisionBatchedResult | CloudVisionResult | CloudVisionServiceResult,
-      status?: CloudVisionStatus,
-      token?: string,
-    ): void => {
-      const subscribeNotifCallback = makeNotifCallback(callback);
-      if (status && status.code === ACTIVE_CODE) {
-        this.getWithOptions(query, callback, sanitizedOptions);
-      } else {
-        subscribeNotifCallback(err, result, status, token, {
-          command: SUBSCRIBE,
-          token: token || DEFAULT_CONTEXT.token,
-          encodedParams: toBinaryKey(query),
-        });
-      }
-    };
-
-    return {
-      subscribe: this.stream(SUBSCRIBE, { query }, subscribeAckCallback),
-      get: getToken,
-    };
+    return this.stream(GET_AND_SUBSCRIBE, params, makeNotifCallback(callback));
   }
 
   /**

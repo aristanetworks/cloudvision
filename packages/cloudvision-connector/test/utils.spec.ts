@@ -351,6 +351,7 @@ describe('makeNotifCallback', () => {
     const notifCallback = makeNotifCallback(callbackSpy);
     const notif: CloudVisionNotifs = {
       dataset: { name: 'device1', type: DEVICE_DATASET_TYPE },
+      metadata: {},
       notifications: [
         { path_elements: ['path1'], timestamp: 101000002000000 },
         { path_elements: ['path1'], timestamp: 103000004000000 },
@@ -376,6 +377,7 @@ describe('makeNotifCallback', () => {
           name: 'app1',
         },
       ],
+      metadata: {},
     };
 
     notifCallback(null, notif, undefined, token, requestContext);
@@ -540,10 +542,12 @@ describe('validateResponse', () => {
   test('should not log an error for a valid response', () => {
     const notifResponse: CloudVisionNotifs = {
       dataset: { name: 'Max', type: APP_DATASET_TYPE },
+      metadata: {},
       notifications: [{ path_elements: ['Muncy'], timestamp: 1 }],
     };
     const datasetResponse: CloudVisionDatasets = {
       datasets: [{ name: 'Max', type: APP_DATASET_TYPE }],
+      metadata: {},
     };
 
     validateResponse(notifResponse, {}, token, false);

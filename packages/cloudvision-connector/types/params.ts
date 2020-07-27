@@ -4,16 +4,17 @@ import {
   APP_DATASET_TYPE,
   CLOSE,
   DEVICE_DATASET_TYPE,
-  GET_DATASETS,
   GET,
+  GET_AND_SUBSCRIBE,
+  GET_DATASETS,
   PAUSE,
   PUBLISH,
   RESUME,
+  SEARCH,
   SEARCH_SUBSCRIBE,
   SEARCH_TYPE_ANY,
   SEARCH_TYPE_IP,
   SEARCH_TYPE_MAC,
-  SEARCH,
   SERVICE_REQUEST,
   SUBSCRIBE,
 } from '../src/constants';
@@ -23,7 +24,11 @@ export type GetCommand = typeof GET | typeof GET_DATASETS | typeof SEARCH;
 /** @deprecated: Use `GetCommand`. */
 export type GetCommands = GetCommand;
 
-export type StreamCommand = typeof SERVICE_REQUEST | typeof SEARCH_SUBSCRIBE | typeof SUBSCRIBE;
+export type StreamCommand =
+  | typeof SERVICE_REQUEST
+  | typeof SEARCH_SUBSCRIBE
+  | typeof SUBSCRIBE
+  | typeof GET_AND_SUBSCRIBE;
 
 /** @deprecated: Use `StreamCommand`. */
 export type StreamCommands = StreamCommand;
