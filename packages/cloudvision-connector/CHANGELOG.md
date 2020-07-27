@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.5.0](https://github.com/aristanetworks/cloudvision/compare/v4.4.0...v4.5.0) (2020-07-27)
+
+
+### Features
+
+* **cloudvision-connector:** add server getAndSubscribe ([#134](https://github.com/aristanetworks/cloudvision/issues/134)) ([ee7b861](https://github.com/aristanetworks/cloudvision/commit/ee7b861f6015f9c90dba3fce7f83fc94795b0252))
+
+
+
+
+
 # [4.4.0](https://github.com/aristanetworks/cloudvision/compare/v4.3.1...v4.4.0) (2020-07-14)
 
 **Note:** Version bump only for package cloudvision-connector
