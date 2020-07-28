@@ -57,6 +57,8 @@ export default class Connector extends Wrpc {
 
   public static GET: typeof GET = GET;
 
+  public static GET_AND_SUBSCRIBE: typeof GET_AND_SUBSCRIBE = GET_AND_SUBSCRIBE;
+
   public static ID: typeof ID = ID;
 
   public static PAUSE: typeof PAUSE = PAUSE;
