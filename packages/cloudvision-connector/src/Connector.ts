@@ -69,6 +69,8 @@ export default class Connector extends Wrpc {
 
   public static SEARCH: typeof SEARCH = SEARCH;
 
+  public static SERVICE_REQUEST: typeof SERVICE_REQUEST = SERVICE_REQUEST;
+
   public static SUBSCRIBE: typeof SUBSCRIBE = SUBSCRIBE;
 
   /**
