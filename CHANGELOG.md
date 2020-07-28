@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.5.2](https://github.com/aristanetworks/cloudvision/compare/v4.5.1...v4.5.2) (2020-07-28)
+
+
+### Bug Fixes
+
+* **cloudvision-connector:** add service request to Conenctor ([#139](https://github.com/aristanetworks/cloudvision/issues/139)) ([972440f](https://github.com/aristanetworks/cloudvision/commit/972440fb85fe1bf0f0a0df9f89a74e26f54be2bb))
+
+
+
+
+
 ## [4.5.1](https://github.com/aristanetworks/cloudvision/compare/v4.5.0...v4.5.1) (2020-07-28)
 
 
