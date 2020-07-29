@@ -9,7 +9,7 @@ export interface CloudVisionDatasets {
 }
 
 export interface CloudVisionStatus {
-  code: number;
+  code?: number;
 
   message?: string;
 }
