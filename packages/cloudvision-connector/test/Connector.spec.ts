@@ -31,9 +31,8 @@ import {
   SERVICE_REQUEST,
   SUBSCRIBE,
 } from '../src/constants';
-import { makeToken, sanitizeOptions, sanitizeSearchOptions, toBinaryKey } from '../src/utils';
+import { sanitizeOptions, sanitizeSearchOptions, toBinaryKey } from '../src/utils';
 import {
-  CloudVisionParams,
   CloudVisionStatus,
   NotifCallback,
   Options,
@@ -90,18 +89,6 @@ const ERROR_STATUS: CloudVisionStatus = {
 };
 
 jest.spyOn(console, 'groupCollapsed').mockImplementation();
-
-describe('getCommandToken', () => {
-  test('should return the proper token', () => {
-    const conn = new Connector();
-    const command = GET;
-    const params: CloudVisionParams = {
-      hello: true,
-    };
-
-    expect(conn.getCommandToken(command, params)).toEqual(makeToken(command, params));
-  });
-});
 
 describe('closeSubscriptions', () => {
   const streamCallback = jest.fn();
@@ -186,7 +173,7 @@ describe('runStreamingService', () => {
 
     const streamIdentifier = conn.runStreamingService(request, spyCallback);
     if (streamIdentifier !== null) {
-      expect(streamIdentifier.token).toBe('582204119');
+      expect(streamIdentifier.token).toEqual(expect.any(String));
       expect(typeof streamIdentifier.callback).toBe('function');
     }
     expect(conn.runStreamingService).toHaveBeenCalledTimes(1);
