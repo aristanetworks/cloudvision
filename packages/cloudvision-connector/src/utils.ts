@@ -17,7 +17,6 @@
 
 import { encode, decode, Codec } from 'a-msgpack';
 import { fromByteArray, toByteArray } from 'base64-js';
-import MurmurHash3 from 'imurmurhash';
 
 import {
   CloseParams,
@@ -25,8 +24,6 @@ import {
   CloudVisionBatchedResult,
   CloudVisionDatasets,
   CloudVisionNotifs,
-  CloudVisionParams,
-  CloudVisionPublishRequest,
   CloudVisionResult,
   CloudVisionServiceResult,
   CloudVisionStatus,
@@ -37,9 +34,7 @@ import {
   RequestContext,
   SearchOptions,
   SearchType,
-  ServiceRequest,
   SubscriptionIdentifier,
-  WsCommand,
 } from '../types';
 
 import { ALL_SEARCH_TYPES, EOF_CODE, ERROR, SEARCH_TYPE_ANY } from './constants';
@@ -55,15 +50,6 @@ export interface ExplicitOptions extends Options {
   start: number | undefined;
 
   versions?: number;
-}
-
-/**
- * Definition for an instance of MurmurHash3, rather than the module.
- */
-interface MurmurHash {
-  hash(value: string): MurmurHash;
-  reset(seed?: number): MurmurHash;
-  result(): number;
 }
 
 /**
@@ -155,47 +141,6 @@ export function validateQuery(query: Query, callback: NotifCallback, allowEmpty 
   }
 
   return true;
-}
-
-/**
- * Recursively hashes an object, given an object and a hashState.
- */
-function hashObjectHelper<T extends {}>(object: T, hashState: MurmurHash): string {
-  const objKeys = Object.keys(object) as (keyof T)[];
-  for (let i = 0; i < objKeys.length; i += 1) {
-    const key = objKeys[i];
-    const value = object[key];
-    if (value && typeof value === 'object') {
-      hashState.hash(key.toString()).hash(hashObjectHelper(value, hashState));
-    } else {
-      hashState.hash(key + '' + value);
-    }
-  }
-
-  return hashState.result().toString();
-}
-
-/**
- * Creates a unique hash given an object.
- */
-export function hashObject(object: {}): string {
-  const hashState = MurmurHash3();
-  return hashObjectHelper(object, hashState);
-}
-
-/**
- * Generates token based on the [[WsCommand]] and params ([[CloudVisionParams]],
- * [[CloudVisionPublishRequest]], [[ServiceRequest]]) of a request. This is
- * used to map requests to responses when dispatching response callbacks.
- */
-export function makeToken(
-  command: WsCommand,
-  params: CloudVisionParams | CloudVisionPublishRequest | ServiceRequest,
-): string {
-  return hashObject({
-    command,
-    params,
-  });
 }
 
 /**

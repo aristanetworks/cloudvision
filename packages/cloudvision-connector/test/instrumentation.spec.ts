@@ -52,7 +52,7 @@ jest.mock('../src/logger', () => {
   return { log: jest.fn() };
 });
 
-type WrpcMethod = 'get' | 'pause' | 'publish' | 'requestService' | 'resume' | 'search';
+type WrpcMethod = 'get' | 'publish' | 'requestService' | 'search';
 
 interface PolymorphicCommandFunction {
   (command: WsCommand, params: CloudVisionParams, callback: NotifCallback): string;
@@ -102,7 +102,6 @@ describe.each<[WsCommand, WrpcMethod, boolean]>([
     wrpc = new Wrpc({
       batchResults: false,
       debugMode: false,
-      pauseStreams: false,
       instrumentationConfig: {
         commands: [GET, PUBLISH, SEARCH, SERVICE_REQUEST, GET_DATASETS],
         start: startSpy,
@@ -297,7 +296,6 @@ describe.each<[StreamCommand, 'stream']>([
     wrpc = new Wrpc({
       batchResults: false,
       debugMode: false,
-      pauseStreams: false,
       instrumentationConfig: {
         commands: [SUBSCRIBE, SERVICE_REQUEST, SEARCH_SUBSCRIBE],
         start: startSpy,
@@ -345,7 +343,6 @@ describe.each<[StreamCommand, 'stream']>([
     if (subscriptionId && subscriptionId.token) {
       const token = subscriptionId.token;
       const requestContext = createRequestContext(command, token, query);
-      expect(wrpc.streams).not.toContain(token);
       expect(callbackSpy).not.toHaveBeenCalled();
       expect(eventsEmitterSpy).not.toHaveBeenCalled();
       expect(eventsEmitterUnbindSpy).not.toHaveBeenCalled();
@@ -426,7 +423,6 @@ describe.each<[StreamCommand, 'stream']>([
           params: query,
         }),
       );
-      expect(wrpc.streams).toContain(token);
       expect(callbackSpy).toHaveBeenCalledTimes(1);
       expect(callbackSpy).toHaveBeenCalledWith(
         null,
@@ -476,7 +472,6 @@ describe.each<[WsCommand, 'stream' | 'get']>([
     wrpc = new Wrpc({
       batchResults: false,
       debugMode: false,
-      pauseStreams: false,
       instrumentationConfig: {
         commands: [PUBLISH],
         start: startSpy,
@@ -527,7 +522,6 @@ describe.each<[WsCommand, 'stream' | 'get']>([
     if (subscriptionId && subscriptionId.token) {
       const token = subscriptionId.token;
       const requestContext = createRequestContext(command, token, query);
-      expect(wrpc.streams).not.toContain(token);
       expect(callbackSpy).not.toHaveBeenCalled();
       expect(eventsEmitterSpy).not.toHaveBeenCalled();
       expect(eventsEmitterUnbindSpy).not.toHaveBeenCalled();

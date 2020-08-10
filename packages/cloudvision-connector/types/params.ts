@@ -7,9 +7,7 @@ import {
   GET,
   GET_AND_SUBSCRIBE,
   GET_DATASETS,
-  PAUSE,
   PUBLISH,
-  RESUME,
   SEARCH,
   SEARCH_SUBSCRIBE,
   SEARCH_TYPE_ANY,
@@ -33,13 +31,7 @@ export type StreamCommand =
 /** @deprecated: Use `StreamCommand`. */
 export type StreamCommands = StreamCommand;
 
-export type WsCommand =
-  | GetCommand
-  | StreamCommand
-  | typeof CLOSE
-  | typeof PAUSE
-  | typeof PUBLISH
-  | typeof RESUME;
+export type WsCommand = GetCommand | StreamCommand | typeof CLOSE | typeof PUBLISH;
 
 export type DatasetType = typeof APP_DATASET_TYPE | typeof DEVICE_DATASET_TYPE;
 
@@ -142,18 +134,4 @@ export interface CloseParams {
   [token: string]: boolean;
 }
 
-export interface PauseParams {
-  pauseStreams: boolean;
-}
-
-export interface ResumeParams {
-  token: string;
-}
-
-export type CloudVisionParams =
-  | AppParams
-  | CloseParams
-  | PauseParams
-  | QueryParams
-  | ResumeParams
-  | SearchParams;
+export type CloudVisionParams = AppParams | CloseParams | QueryParams | SearchParams;

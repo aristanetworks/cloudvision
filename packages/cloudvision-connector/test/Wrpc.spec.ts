@@ -24,22 +24,18 @@ import {
   CLOSE,
   EOF,
   EOF_CODE,
-  ERROR,
   GET,
   GET_DATASETS,
   GET_REQUEST_COMPLETED,
   ID,
-  PAUSE,
-  PAUSED_CODE,
   PUBLISH,
-  RESUME,
   SEARCH,
   SEARCH_SUBSCRIBE,
   SERVICE_REQUEST,
   SUBSCRIBE,
 } from '../src/constants';
 import { log } from '../src/logger';
-import { makeToken, toBinaryKey } from '../src/utils';
+import { toBinaryKey } from '../src/utils';
 import {
   CloudVisionParams,
   CloudVisionQueryMessage,
@@ -78,7 +74,7 @@ interface PostedMessage {
       };
 }
 
-type WrpcMethod = 'get' | 'pause' | 'publish' | 'requestService' | 'resume' | 'search';
+type WrpcMethod = 'get' | 'publish' | 'requestService' | 'search';
 
 const query: QueryParams = { query: [] };
 
@@ -115,7 +111,6 @@ describe('open/close/connection', () => {
   let connectionEmitterCloseSpy: jest.SpyInstance;
   let connectionEmitterSpy: jest.SpyInstance;
   let connectionEmitterUnbindSpy: jest.SpyInstance;
-  let activeStreamsClearSpy: jest.SpyInstance;
   let onCloseSpy: jest.SpyInstance;
   const connectionSpy = jest.fn();
 
@@ -132,8 +127,6 @@ describe('open/close/connection', () => {
     connectionEmitterCloseSpy = jest.spyOn(wrpc.connectionEmitter, 'close');
     connectionEmitterSpy = jest.spyOn(wrpc.connectionEmitter, 'emit');
     connectionEmitterUnbindSpy = jest.spyOn(wrpc.connectionEmitter, 'unbind');
-    // @ts-ignore: Need to access private member
-    activeStreamsClearSpy = jest.spyOn(wrpc.activeStreams, 'clear');
   });
 
   test('should set isRunning and emit connection event on WS open messages', () => {
@@ -203,7 +196,6 @@ describe('open/close/connection', () => {
 
     expect(wrpc.isRunning).toBe(false);
     expect(eventsEmitterCloseSpy).toHaveBeenCalledTimes(1);
-    expect(activeStreamsClearSpy).toHaveBeenCalledTimes(1);
     expect(connectionEmitterCloseSpy).not.toHaveBeenCalled();
     expect(onCloseSpy).not.toHaveBeenCalled();
     expect(connectionEmitterSpy).toHaveBeenCalledTimes(1);
@@ -239,8 +231,6 @@ describe.each<[WsCommand, WrpcMethod, boolean]>([
   [PUBLISH, 'publish', false],
   [SEARCH, 'search', false],
   [SERVICE_REQUEST, 'requestService', false],
-  [RESUME, 'resume', false],
-  [PAUSE, 'pause', false],
 ])('Call Commands', (command, fn, polymorphic) => {
   let wrpc: Wrpc;
   let ws: WebSocket;
@@ -571,8 +561,6 @@ describe.each<[WsCommand, WrpcMethod, boolean]>([
   [PUBLISH, 'publish', false],
   [SEARCH, 'search', false],
   [SERVICE_REQUEST, 'requestService', false],
-  [RESUME, 'resume', false],
-  [PAUSE, 'pause', false],
 ])('Call Commands in debug mode', (command, fn, polymorphic) => {
   let NOW = 0;
   let wrpc: Wrpc;
@@ -597,7 +585,6 @@ describe.each<[WsCommand, WrpcMethod, boolean]>([
     NOW = Date.now();
     Date.now = jest.fn(() => NOW);
     wrpc = new Wrpc({
-      pauseStreams: false,
       batchResults: true,
       debugMode: true,
     });
@@ -708,100 +695,6 @@ describe.each<[WsCommand, WrpcMethod, boolean]>([
     expect(token).not.toBeNull();
   });
 
-  test(`'${fn} + ${command}' should send message and 'postMessage' to window only once`, () => {
-    ws.dispatchEvent(new MessageEvent('open', {}));
-
-    const params: CloudVisionParams = {};
-    let token;
-    if (polymorphic) {
-      token = polymorphicCommandFn.call(wrpc, command, params, callbackSpy);
-    } else {
-      token = commandFn.call(wrpc, {}, callbackSpy);
-    }
-    const expectedMessage: CloudVisionQueryMessage = {
-      token,
-      command,
-      params,
-    };
-    const expectedPostedMessage: PostedMessage = {
-      request: expectedMessage,
-      source: ID,
-      timestamp: NOW,
-    };
-
-    // second call
-    if (polymorphic) {
-      token = polymorphicCommandFn.call(wrpc, command, params, callbackSpy);
-    } else {
-      token = commandFn.call(wrpc, {}, callbackSpy);
-    }
-
-    if (token) {
-      expect(postMessageSpy).toHaveBeenCalledWith(expectedPostedMessage, '*');
-      expect(callbackSpy).not.toHaveBeenCalled();
-      expect(eventsEmitterSpy).not.toHaveBeenCalled();
-      expect(eventsEmitterUnbindSpy).not.toHaveBeenCalled();
-      expect(eventsEmitterBindSpy).toHaveBeenCalledTimes(2);
-      expect(sendSpy).toHaveBeenCalledTimes(1);
-      expect(sendSpy).toHaveBeenCalledWith(
-        Parser.stringify({
-          token,
-          command,
-          params: {},
-        }),
-      );
-      expect(token).not.toBeNull();
-    }
-    expect(token).not.toBeNull();
-  });
-
-  test(`'${fn} + ${command}' should call callback and 'postMessage' to window on message only once for multiple callbacks`, () => {
-    ws.dispatchEvent(new MessageEvent('open', {}));
-
-    const params: CloudVisionParams = {};
-    let token;
-    if (polymorphic) {
-      token = polymorphicCommandFn.call(wrpc, command, params, callbackSpy);
-    } else {
-      token = commandFn.call(wrpc, {}, callbackSpy);
-    }
-    const expectedPostedMessage: PostedMessage = {
-      response: { token, result: RESULT },
-      source: ID,
-      timestamp: NOW,
-    };
-
-    // second call
-    if (polymorphic) {
-      token = polymorphicCommandFn.call(wrpc, command, params, callbackSpy);
-    } else {
-      token = commandFn.call(wrpc, {}, callbackSpy);
-    }
-
-    if (token) {
-      postMessageSpy.mockClear();
-      ws.dispatchEvent(
-        new MessageEvent('message', { data: stringifyMessage({ token, result: RESULT }) }),
-      );
-
-      expect(postMessageSpy).toHaveBeenCalledTimes(1);
-      expect(postMessageSpy).toHaveBeenCalledWith(expectedPostedMessage, '*');
-      expect(callbackSpy).toHaveBeenCalledTimes(1);
-      expect(callbackSpy).toHaveBeenCalledWith(
-        null,
-        RESULT,
-        undefined,
-        token,
-        createRequestContext(command, token, params),
-      );
-      expect(eventsEmitterSpy).toHaveBeenCalledTimes(1);
-      expect(eventsEmitterUnbindSpy).not.toHaveBeenCalled();
-      expect(eventsEmitterBindSpy).toHaveBeenCalledTimes(2);
-      expect(token).not.toBeNull();
-    }
-    expect(token).not.toBeNull();
-  });
-
   test(`'${fn} + ${command}' should call callback and 'postMessage' to window with error on error message`, () => {
     ws.dispatchEvent(new MessageEvent('open', {}));
 
@@ -846,55 +739,6 @@ describe.each<[WsCommand, WrpcMethod, boolean]>([
         requestContext,
         expect.any(Function),
       );
-      expect(token).not.toBeNull();
-    }
-    expect(token).not.toBeNull();
-  });
-
-  test(`'${fn} + ${command}' should call callback and 'postMessage' to window with error on error message for each callback`, () => {
-    ws.dispatchEvent(new MessageEvent('open', {}));
-
-    const params: CloudVisionParams = {};
-    let token;
-    if (polymorphic) {
-      token = polymorphicCommandFn.call(wrpc, command, params, callbackSpy);
-    } else {
-      token = commandFn.call(wrpc, {}, callbackSpy);
-    }
-    const expectedPostedMessage: PostedMessage = {
-      response: { token, error: ERROR_MESSAGE, status: ERROR_STATUS },
-      source: ID,
-      timestamp: NOW,
-    };
-
-    // second call
-    if (polymorphic) {
-      token = polymorphicCommandFn.call(wrpc, command, params, callbackSpy);
-    } else {
-      token = commandFn.call(wrpc, {}, callbackSpy);
-    }
-
-    if (token) {
-      postMessageSpy.mockClear();
-      ws.dispatchEvent(
-        new MessageEvent('message', {
-          data: stringifyMessage({ token, error: ERROR_MESSAGE, status: ERROR_STATUS }),
-        }),
-      );
-
-      expect(postMessageSpy).toHaveBeenCalledTimes(1);
-      expect(postMessageSpy).toHaveBeenCalledWith(expectedPostedMessage, '*');
-      expect(callbackSpy).toHaveBeenCalledTimes(2);
-      expect(callbackSpy).toHaveBeenCalledWith(
-        ERROR_MESSAGE,
-        undefined,
-        ERROR_STATUS,
-        token,
-        createRequestContext(command, token, params),
-      );
-      expect(eventsEmitterSpy).toHaveBeenCalledTimes(1);
-      expect(eventsEmitterUnbindSpy).toHaveBeenCalledTimes(2);
-      expect(eventsEmitterBindSpy).toHaveBeenCalledTimes(2);
       expect(token).not.toBeNull();
     }
     expect(token).not.toBeNull();
@@ -1002,7 +846,6 @@ describe.each<[StreamCommand, 'stream']>([
     const subscriptionId = commandFn.call(wrpc, command, query, callbackSpy);
     if (subscriptionId && subscriptionId.token) {
       const token = subscriptionId.token;
-      expect(wrpc.streams).not.toContain(token);
       expect(callbackSpy).not.toHaveBeenCalled();
       expect(eventsEmitterSpy).not.toHaveBeenCalled();
       expect(eventsEmitterUnbindSpy).not.toHaveBeenCalled();
@@ -1045,7 +888,6 @@ describe.each<[StreamCommand, 'stream']>([
           params: query,
         }),
       );
-      expect(wrpc.streams).toContain(token);
       expect(callbackSpy).toHaveBeenCalledTimes(1);
       expect(callbackSpy).toHaveBeenCalledWith(
         null,
@@ -1065,93 +907,6 @@ describe.each<[StreamCommand, 'stream']>([
       expect(eventsEmitterUnbindSpy).not.toHaveBeenCalled();
       expect(token).not.toBeNull();
     }
-    expect(subscriptionId).not.toBeNull();
-  });
-
-  test(`'${fn} + ${command}' should send subscribe message only once`, () => {
-    const callbackSpyTwo = jest.fn();
-    ws.dispatchEvent(new MessageEvent('open', {}));
-
-    const subscriptionId = commandFn.call(wrpc, command, query, callbackSpy);
-    if (subscriptionId && subscriptionId.token) {
-      const token = subscriptionId.token;
-      // Active the stream
-      ws.dispatchEvent(
-        new MessageEvent('message', {
-          data: stringifyMessage({ token, status: ACTIVE_STATUS }),
-        }),
-      );
-      const subscriptionIdTwo = commandFn.call(wrpc, command, query, callbackSpyTwo);
-      if (subscriptionIdTwo && subscriptionIdTwo.token) {
-        const tokenTwo = subscriptionIdTwo.token;
-        expect(wrpc.streams).toContain(token);
-        expect(callbackSpy).toHaveBeenCalledTimes(1);
-        expect(callbackSpyTwo).toHaveBeenCalledTimes(1);
-        expect(eventsEmitterSpy).toHaveBeenCalledTimes(1);
-        expect(eventsEmitterUnbindSpy).not.toHaveBeenCalled();
-        expect(eventsEmitterBindSpy).toHaveBeenCalledTimes(2);
-        expect(eventsEmitterBindSpy).toHaveBeenCalledWith(
-          token,
-          createRequestContext(command, token, query),
-          expect.any(Function),
-        );
-        expect(sendSpy).toHaveBeenCalledTimes(1);
-        expect(sendSpy).toHaveBeenCalledWith(
-          Parser.stringify({
-            token,
-            command,
-            params: query,
-          }),
-        );
-        expect(subscriptionId).not.toBeNull();
-        expect(subscriptionId).not.toBe(subscriptionIdTwo);
-        expect(token).toBe(tokenTwo);
-      }
-      expect(subscriptionIdTwo).not.toBeNull();
-    }
-    expect(subscriptionId).not.toBeNull();
-  });
-
-  test(`'${fn} + ${command}' should send subscribe message only once for simultaneous requests`, () => {
-    const callbackSpyTwo = jest.fn();
-    ws.dispatchEvent(new MessageEvent('open', {}));
-
-    const subscriptionId = commandFn.call(wrpc, command, query, callbackSpy);
-    const subscriptionIdTwo = commandFn.call(wrpc, command, query, callbackSpyTwo);
-    if (subscriptionId && subscriptionId.token && subscriptionIdTwo && subscriptionIdTwo.token) {
-      const token = subscriptionId.token;
-      const tokenTwo = subscriptionIdTwo.token;
-      // Active the stream
-      ws.dispatchEvent(
-        new MessageEvent('message', {
-          data: stringifyMessage({ token, status: ACTIVE_STATUS }),
-        }),
-      );
-
-      expect(wrpc.streams).toContain(token);
-      expect(callbackSpy).toHaveBeenCalledTimes(1);
-      expect(callbackSpyTwo).toHaveBeenCalledTimes(1);
-      expect(eventsEmitterSpy).toHaveBeenCalledTimes(1);
-      expect(eventsEmitterUnbindSpy).not.toHaveBeenCalled();
-      expect(eventsEmitterBindSpy).toHaveBeenCalledTimes(2);
-      expect(eventsEmitterBindSpy).toHaveBeenCalledWith(
-        token,
-        createRequestContext(command, token, query),
-        expect.any(Function),
-      );
-      expect(sendSpy).toHaveBeenCalledTimes(1);
-      expect(sendSpy).toHaveBeenCalledWith(
-        Parser.stringify({
-          token,
-          command,
-          params: query,
-        }),
-      );
-      expect(subscriptionId).not.toBeNull();
-      expect(subscriptionId).not.toBe(subscriptionIdTwo);
-      expect(token).toBe(tokenTwo);
-    }
-    expect(subscriptionIdTwo).not.toBeNull();
     expect(subscriptionId).not.toBeNull();
   });
 
@@ -1408,8 +1163,8 @@ describe.each<[StreamCommand, 'stream']>([
 
 describe.each<[StreamCommand, 'stream']>([
   [SUBSCRIBE, 'stream'],
-  [SEARCH_SUBSCRIBE, 'stream'],
-  [SERVICE_REQUEST, 'stream'],
+  // [SEARCH_SUBSCRIBE, 'stream'],
+  // [SERVICE_REQUEST, 'stream'],
 ])('Close Stream Commands', (command, fn) => {
   let wrpc: Wrpc;
   let ws: WebSocket;
@@ -1424,13 +1179,7 @@ describe.each<[StreamCommand, 'stream']>([
   const callbackSpyTwo = jest.fn();
   const closeCallback = jest.fn();
   const ERROR_MESSAGE = 'error';
-  const ERROR_STATUS: CloudVisionStatus = {
-    code: 3,
-    message: ERROR_MESSAGE,
-  };
   const ACTIVE_STATUS: CloudVisionStatus = { code: ACTIVE_CODE };
-  const EOF_STATUS: CloudVisionStatus = { code: EOF_CODE };
-  const RESULT = { dataset: 'Dodgers' };
 
   beforeEach(() => {
     jest.resetAllMocks();
@@ -1482,7 +1231,6 @@ describe.each<[StreamCommand, 'stream']>([
       const token = wrpc.closeStream(subscriptionId, closeCallback);
 
       if (token) {
-        expect(wrpc.streamInClosingState.get(subscriptionId.token)).toEqual(token);
         expect(closeCallback).not.toHaveBeenCalled();
         expect(callbackSpy).not.toHaveBeenCalled();
         expect(eventsEmitterSpy).not.toHaveBeenCalled();
@@ -1504,7 +1252,6 @@ describe.each<[StreamCommand, 'stream']>([
       const token = wrpc.closeStream(subscriptionId, closeCallback);
 
       if (token) {
-        expect(wrpc.streamInClosingState.get(subscriptionId.token)).toEqual(undefined);
         expect(closeCallback).toHaveBeenCalledTimes(1);
         expect(closeCallback).toHaveBeenCalledWith(ERROR_MESSAGE, undefined, undefined, token);
         expect(callbackSpy).not.toHaveBeenCalled();
@@ -1533,169 +1280,6 @@ describe.each<[StreamCommand, 'stream']>([
       expect(eventsEmitterUnbindSpy).toHaveBeenCalledTimes(1);
       expect(eventsEmitterBindSpy).not.toHaveBeenCalled();
       expect(sendSpy).not.toHaveBeenCalled();
-    });
-
-    test(`'${fn} + ${command}' should remove stream from closing map when EOF is received`, () => {
-      const token = wrpc.closeStream(subscriptionId, closeCallback);
-
-      if (token) {
-        const requestContext = createRequestContext(CLOSE, token, subscriptionId);
-        expect(wrpc.streamInClosingState.get(subscriptionId.token)).toEqual(token);
-        ws.dispatchEvent(
-          new MessageEvent('message', {
-            data: stringifyMessage({ token, status: EOF_STATUS, error: EOF }),
-          }),
-        );
-
-        expect(wrpc.streamInClosingState).not.toContain(token);
-        expect(closeCallback).toHaveBeenCalledTimes(1);
-        expect(closeCallback).toHaveBeenCalledWith(
-          EOF,
-          undefined,
-          EOF_STATUS,
-          token,
-          requestContext,
-        );
-        expect(callbackSpy).not.toHaveBeenCalled();
-        expect(eventsEmitterSpy).toHaveBeenCalledTimes(1);
-        expect(eventsEmitterSpy).toHaveBeenCalledWith(token, EOF, undefined, EOF_STATUS);
-        expect(eventsEmitterUnbindSpy).toHaveBeenCalledTimes(1);
-        expect(eventsEmitterUnbindSpy).toHaveBeenCalledWith(
-          subscriptionId.token,
-          subscriptionId.callback,
-        );
-        expect(eventsEmitterBindSpy).toHaveBeenCalledTimes(1);
-        expect(eventsEmitterBindSpy).toHaveBeenCalledWith(
-          token,
-          requestContext,
-          expect.any(Function),
-        );
-      }
-      expect(token).not.toBeNull();
-    });
-
-    test(`'${fn} + ${command}' should remove stream from closing map when any error is received`, () => {
-      const token = wrpc.closeStream(subscriptionId, closeCallback);
-
-      if (token) {
-        const requestContext = createRequestContext(CLOSE, token, subscriptionId);
-        expect(wrpc.streamInClosingState.get(subscriptionId.token)).toEqual(token);
-        ws.dispatchEvent(
-          new MessageEvent('message', {
-            data: stringifyMessage({ token, error: ERROR_MESSAGE, status: ERROR_STATUS }),
-          }),
-        );
-
-        expect(wrpc.streamInClosingState).not.toContain(token);
-        expect(closeCallback).toHaveBeenCalledTimes(1);
-        expect(closeCallback).toHaveBeenCalledWith(
-          ERROR_MESSAGE,
-          undefined,
-          ERROR_STATUS,
-          token,
-          requestContext,
-        );
-        expect(callbackSpy).not.toHaveBeenCalled();
-        expect(eventsEmitterSpy).toHaveBeenCalledTimes(1);
-        expect(eventsEmitterSpy).toHaveBeenCalledWith(
-          token,
-          ERROR_MESSAGE,
-          undefined,
-          ERROR_STATUS,
-        );
-        expect(eventsEmitterUnbindSpy).toHaveBeenCalledTimes(1);
-        expect(eventsEmitterUnbindSpy).toHaveBeenCalledWith(
-          subscriptionId.token,
-          subscriptionId.callback,
-        );
-        expect(eventsEmitterBindSpy).toHaveBeenCalledTimes(1);
-        expect(eventsEmitterBindSpy).toHaveBeenCalledWith(
-          token,
-          requestContext,
-          expect.any(Function),
-        );
-      }
-      expect(token).not.toBeNull();
-    });
-
-    test(`'${fn} + ${command}' should reopen a stream if a stream with the same token is requested while closing`, () => {
-      const token = wrpc.closeStream(subscriptionId, closeCallback);
-
-      expect(wrpc.streamInClosingState.get(subscriptionId.token)).toEqual(token);
-      const subscriptionIdNew = commandFn.call(wrpc, command, query, callbackSpyTwo);
-
-      if (token && subscriptionIdNew && subscriptionIdNew.token) {
-        const requestContext = createRequestContext(command, subscriptionIdNew.token, query);
-        expect(callbackSpy).not.toHaveBeenCalled();
-        expect(eventsEmitterSpy).not.toHaveBeenCalled();
-        expect(eventsEmitterUnbindSpy).toHaveBeenCalledTimes(1);
-        expect(eventsEmitterUnbindSpy).toHaveBeenCalledWith(
-          subscriptionId.token,
-          subscriptionId.callback,
-        );
-        expect(eventsEmitterBindSpy).toHaveBeenCalledTimes(2);
-
-        // complete the close process
-        sendSpy.mockClear();
-        ws.dispatchEvent(
-          new MessageEvent('message', {
-            data: stringifyMessage({ token, status: EOF_STATUS, error: EOF }),
-          }),
-        );
-        expect(closeCallback).toHaveBeenCalledTimes(1);
-        expect(sendSpy).toHaveBeenCalledTimes(1);
-        expect(sendSpy).toHaveBeenCalledWith(
-          Parser.stringify({
-            token: subscriptionIdNew.token,
-            command,
-            params: query,
-          }),
-        );
-
-        eventsEmitterSpy.mockClear();
-        // Active the stream
-        ws.dispatchEvent(
-          new MessageEvent('message', {
-            data: stringifyMessage({ token: subscriptionIdNew.token, status: ACTIVE_STATUS }),
-          }),
-        );
-        expect(eventsEmitterSpy).toHaveBeenCalledWith(
-          subscriptionIdNew.token,
-          null,
-          undefined,
-          ACTIVE_STATUS,
-        );
-        expect(callbackSpyTwo).toHaveBeenCalledWith(
-          null,
-          undefined,
-          ACTIVE_STATUS,
-          subscriptionIdNew.token,
-          requestContext,
-        );
-
-        eventsEmitterSpy.mockClear();
-        // send a message
-        ws.dispatchEvent(
-          new MessageEvent('message', {
-            data: stringifyMessage({ token: subscriptionIdNew.token, result: RESULT }),
-          }),
-        );
-        expect(eventsEmitterSpy).toHaveBeenCalledWith(
-          subscriptionIdNew.token,
-          null,
-          RESULT,
-          undefined,
-        );
-        expect(callbackSpyTwo).toHaveBeenCalledWith(
-          null,
-          RESULT,
-          undefined,
-          subscriptionIdNew.token,
-          requestContext,
-        );
-      }
-      expect(token).not.toBeNull();
-      expect(subscriptionIdNew).not.toBeNull();
     });
   });
 
@@ -1797,303 +1381,5 @@ describe.each<[StreamCommand, 'stream']>([
       expect(eventsEmitterBindSpy).not.toHaveBeenCalled();
       expect(sendSpy).not.toHaveBeenCalled();
     });
-
-    test(`'${fn} + ${command}' should remove stream from closing map when EOF is received`, () => {
-      const streams = [subscriptionId, subscriptionIdTwo];
-      const token = wrpc.closeStreams(streams, closeCallback);
-
-      if (token) {
-        const requestContext = createRequestContext(CLOSE, token, streams);
-        expect(wrpc.streamInClosingState.get(subscriptionId.token)).toEqual(token);
-        ws.dispatchEvent(
-          new MessageEvent('message', {
-            data: stringifyMessage({ token, status: EOF_STATUS, error: EOF }),
-          }),
-        );
-
-        expect(wrpc.streamInClosingState).not.toContain(token);
-        expect(closeCallback).toHaveBeenCalledTimes(1);
-        expect(closeCallback).toHaveBeenCalledWith(
-          EOF,
-          undefined,
-          EOF_STATUS,
-          token,
-          requestContext,
-        );
-        expect(callbackSpy).not.toHaveBeenCalled();
-        expect(eventsEmitterSpy).toHaveBeenCalledTimes(1);
-        expect(eventsEmitterSpy).toHaveBeenCalledWith(token, EOF, undefined, EOF_STATUS);
-        expect(eventsEmitterUnbindSpy).toHaveBeenCalledTimes(2);
-        expect(eventsEmitterUnbindSpy).toHaveBeenNthCalledWith(
-          1,
-          subscriptionId.token,
-          subscriptionId.callback,
-        );
-        expect(eventsEmitterUnbindSpy).toHaveBeenNthCalledWith(
-          2,
-          subscriptionIdTwo.token,
-          subscriptionIdTwo.callback,
-        );
-        expect(eventsEmitterBindSpy).toHaveBeenCalledTimes(1);
-        expect(eventsEmitterBindSpy).toHaveBeenCalledWith(
-          token,
-          requestContext,
-          expect.any(Function),
-        );
-      }
-      expect(token).not.toBeNull();
-    });
-
-    test(`'${fn} + ${command}' should remove stream from closing map when any error is received`, () => {
-      const streams = [subscriptionId, subscriptionIdTwo];
-      const token = wrpc.closeStreams(streams, closeCallback);
-
-      if (token) {
-        const requestContext = createRequestContext(CLOSE, token, streams);
-        expect(wrpc.streamInClosingState.get(subscriptionId.token)).toEqual(token);
-        ws.dispatchEvent(
-          new MessageEvent('message', {
-            data: stringifyMessage({ token, error: ERROR_MESSAGE, status: ERROR_STATUS }),
-          }),
-        );
-
-        expect(wrpc.streamInClosingState).not.toContain(token);
-        expect(closeCallback).toHaveBeenCalledTimes(1);
-        expect(closeCallback).toHaveBeenCalledWith(
-          ERROR_MESSAGE,
-          undefined,
-          ERROR_STATUS,
-          token,
-          requestContext,
-        );
-        expect(callbackSpy).not.toHaveBeenCalled();
-        expect(eventsEmitterSpy).toHaveBeenCalledTimes(1);
-        expect(eventsEmitterSpy).toHaveBeenCalledWith(
-          token,
-          ERROR_MESSAGE,
-          undefined,
-          ERROR_STATUS,
-        );
-        expect(eventsEmitterUnbindSpy).toHaveBeenCalledTimes(2);
-        expect(eventsEmitterUnbindSpy).toHaveBeenNthCalledWith(
-          1,
-          subscriptionId.token,
-          subscriptionId.callback,
-        );
-        expect(eventsEmitterUnbindSpy).toHaveBeenNthCalledWith(
-          2,
-          subscriptionIdTwo.token,
-          subscriptionIdTwo.callback,
-        );
-        expect(eventsEmitterBindSpy).toHaveBeenCalledTimes(1);
-        expect(eventsEmitterBindSpy).toHaveBeenCalledWith(
-          token,
-          requestContext,
-          expect.any(Function),
-        );
-      }
-      expect(token).not.toBeNull();
-    });
-
-    test(`'${fn} + ${command}' should reopen a stream if a stream with the same token is requested while closing`, () => {
-      const streams = [subscriptionId, subscriptionIdTwo];
-      const token = wrpc.closeStreams(streams, closeCallback);
-
-      expect(wrpc.streamInClosingState.get(subscriptionId.token)).toEqual(token);
-      const subscriptionIdNew = commandFn.call(wrpc, command, query, callbackSpyTwo);
-
-      if (token && subscriptionIdNew && subscriptionIdNew.token) {
-        const requestContext = createRequestContext(command, subscriptionIdNew.token, query);
-        expect(callbackSpy).not.toHaveBeenCalled();
-        expect(eventsEmitterSpy).not.toHaveBeenCalled();
-        expect(eventsEmitterUnbindSpy).toHaveBeenCalledTimes(2);
-        expect(eventsEmitterUnbindSpy).toHaveBeenNthCalledWith(
-          1,
-          subscriptionId.token,
-          subscriptionId.callback,
-        );
-        expect(eventsEmitterUnbindSpy).toHaveBeenNthCalledWith(
-          2,
-          subscriptionIdTwo.token,
-          subscriptionIdTwo.callback,
-        );
-        expect(eventsEmitterBindSpy).toHaveBeenCalledTimes(2);
-
-        // complete the close process
-        sendSpy.mockClear();
-        ws.dispatchEvent(
-          new MessageEvent('message', {
-            data: stringifyMessage({ token, status: EOF_STATUS, error: EOF }),
-          }),
-        );
-        expect(closeCallback).toHaveBeenCalledTimes(1);
-        expect(sendSpy).toHaveBeenCalledTimes(1);
-        expect(sendSpy).toHaveBeenCalledWith(
-          Parser.stringify({
-            token: subscriptionIdNew.token,
-            command,
-            params: query,
-          }),
-        );
-
-        eventsEmitterSpy.mockClear();
-        // Active the stream
-        ws.dispatchEvent(
-          new MessageEvent('message', {
-            data: stringifyMessage({ token: subscriptionIdNew.token, status: ACTIVE_STATUS }),
-          }),
-        );
-        expect(eventsEmitterSpy).toHaveBeenCalledWith(
-          subscriptionIdNew.token,
-          null,
-          undefined,
-          ACTIVE_STATUS,
-        );
-        expect(callbackSpyTwo).toHaveBeenCalledWith(
-          null,
-          undefined,
-          ACTIVE_STATUS,
-          subscriptionIdNew.token,
-          requestContext,
-        );
-
-        eventsEmitterSpy.mockClear();
-        // send a message
-        ws.dispatchEvent(
-          new MessageEvent('message', {
-            data: stringifyMessage({ token: subscriptionIdNew.token, result: RESULT }),
-          }),
-        );
-        expect(eventsEmitterSpy).toHaveBeenCalledWith(
-          subscriptionIdNew.token,
-          null,
-          RESULT,
-          undefined,
-        );
-        expect(callbackSpyTwo).toHaveBeenCalledWith(
-          null,
-          RESULT,
-          undefined,
-          subscriptionIdNew.token,
-          requestContext,
-        );
-      }
-      expect(token).not.toBeNull();
-      expect(subscriptionIdNew).not.toBeNull();
-    });
-  });
-});
-
-describe('enableOptions', () => {
-  let wrpc: Wrpc;
-  let ws: WebSocket;
-  let sendSpy: jest.SpyInstance;
-  let eventsEmitterSpy: jest.SpyInstance;
-  const ERROR_MESSAGE = 'error';
-  const ERROR_STATUS: CloudVisionStatus = {
-    code: 3,
-    message: ERROR_MESSAGE,
-  };
-  const PAUSE_STATUS: CloudVisionStatus = {
-    code: PAUSED_CODE,
-  };
-
-  beforeEach(() => {
-    jest.resetAllMocks();
-    wrpc = new Wrpc({
-      pauseStreams: true,
-      batchResults: true,
-      debugMode: false,
-    });
-    wrpc.run('ws://localhost:8080');
-    ws = wrpc.websocket;
-    sendSpy = jest.spyOn(ws, 'send');
-    eventsEmitterSpy = jest.spyOn(wrpc.eventsEmitter, 'emit');
-  });
-
-  afterEach(() => {
-    sendSpy.mockClear();
-    eventsEmitterSpy.mockClear();
-  });
-
-  test('should enable options on WS open', () => {
-    const token = makeToken(PAUSE, { pauseStreams: true });
-    ws.dispatchEvent(new MessageEvent('open', {}));
-
-    expect(sendSpy).toHaveBeenCalledTimes(1);
-    expect(sendSpy).toHaveBeenCalledWith(
-      Parser.stringify({
-        token,
-        command: PAUSE,
-        params: { pauseStreams: true },
-      }),
-    );
-  });
-
-  test('should log error on enable options error', () => {
-    const token = makeToken(PAUSE, { pauseStreams: true });
-    ws.dispatchEvent(new MessageEvent('open', {}));
-
-    ws.dispatchEvent(
-      new MessageEvent('message', {
-        data: stringifyMessage({ token, error: ERROR_MESSAGE, status: ERROR_STATUS }),
-      }),
-    );
-
-    expect(log).toHaveBeenCalledTimes(1);
-    expect(log).toHaveBeenCalledWith(ERROR, ERROR_MESSAGE, ERROR_STATUS, token);
-  });
-
-  test('should resume as soon as server sends back pause status', () => {
-    const token = 'some request';
-    ws.dispatchEvent(new MessageEvent('open', {}));
-
-    ws.dispatchEvent(
-      new MessageEvent('message', {
-        data: stringifyMessage({ token, status: PAUSE_STATUS }),
-      }),
-    );
-
-    expect(log).not.toHaveBeenCalled();
-    expect(eventsEmitterSpy).not.toHaveBeenCalled();
-  });
-
-  test('should log resume call error but not on other messages', () => {
-    const token = 'some request';
-    const resumeToken = makeToken(RESUME, { token });
-    ws.dispatchEvent(new MessageEvent('open', {}));
-
-    ws.dispatchEvent(
-      new MessageEvent('message', {
-        data: stringifyMessage({ token, status: PAUSE_STATUS }),
-      }),
-    );
-
-    ws.dispatchEvent(
-      new MessageEvent('message', {
-        data: stringifyMessage({ token: resumeToken, result: {} }),
-      }),
-    );
-
-    expect(log).not.toHaveBeenCalled();
-    expect(eventsEmitterSpy).toHaveBeenCalledTimes(1);
-    expect(eventsEmitterSpy).toHaveBeenCalledWith(resumeToken, null, {}, undefined);
-
-    eventsEmitterSpy.mockClear();
-    ws.dispatchEvent(
-      new MessageEvent('message', {
-        data: stringifyMessage({ token: resumeToken, status: ERROR_STATUS, error: ERROR_MESSAGE }),
-      }),
-    );
-
-    expect(log).toHaveBeenCalledTimes(1);
-    expect(log).toHaveBeenCalledWith(ERROR, ERROR_MESSAGE, ERROR_STATUS);
-    expect(eventsEmitterSpy).toHaveBeenCalledTimes(1);
-    expect(eventsEmitterSpy).toHaveBeenCalledWith(
-      resumeToken,
-      ERROR_MESSAGE,
-      undefined,
-      ERROR_STATUS,
-    );
   });
 });

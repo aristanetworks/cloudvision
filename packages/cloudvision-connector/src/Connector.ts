@@ -1,6 +1,5 @@
 import {
   AppParams,
-  CloudVisionParams,
   DatasetType,
   NotifCallback,
   Options,
@@ -12,7 +11,6 @@ import {
   SearchParams,
   ServiceRequest,
   SubscriptionIdentifier,
-  WsCommand,
 } from '../types';
 
 import Wrpc from './Wrpc';
@@ -25,7 +23,6 @@ import {
   GET_AND_SUBSCRIBE,
   GET_DATASETS,
   ID,
-  PAUSE,
   PUBLISH,
   SEARCH,
   SEARCH_SUBSCRIBE,
@@ -35,7 +32,6 @@ import {
 import {
   makeNotifCallback,
   makePublishCallback,
-  makeToken,
   sanitizeOptions,
   sanitizeSearchOptions,
   validateOptions,
@@ -60,8 +56,6 @@ export default class Connector extends Wrpc {
   public static GET_AND_SUBSCRIBE: typeof GET_AND_SUBSCRIBE = GET_AND_SUBSCRIBE;
 
   public static ID: typeof ID = ID;
-
-  public static PAUSE: typeof PAUSE = PAUSE;
 
   public static PUBLISH: typeof PUBLISH = PUBLISH;
 
@@ -191,13 +185,6 @@ export default class Connector extends Wrpc {
   public getDevices(callback: NotifCallback): string | null {
     const deviceType: typeof DEVICE_DATASET_TYPE[] = [DEVICE_DATASET_TYPE];
     return this.get(GET_DATASETS, { types: deviceType }, makeNotifCallback(callback));
-  }
-
-  /**
-   * Generates the unique token that the request can be referenced by.
-   */
-  public getCommandToken(command: WsCommand, params: CloudVisionParams): string {
-    return makeToken(command, params);
   }
 
   /**
