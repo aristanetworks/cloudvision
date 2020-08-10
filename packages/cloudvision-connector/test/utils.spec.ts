@@ -35,13 +35,11 @@ import Emitter from '../src/emitter';
 import { log } from '../src/logger';
 import {
   createCloseParams,
-  hashObject,
   invalidParamMsg,
   isMicroSeconds,
   isValidArg,
   makeNotifCallback,
   makePublishCallback,
-  makeToken,
   sanitizeOptions,
   sanitizeSearchOptions,
   toBinaryKey,
@@ -53,7 +51,6 @@ import {
   CloseParams,
   CloudVisionDatasets,
   CloudVisionNotifs,
-  CloudVisionParams,
   CloudVisionServiceResult,
   CloudVisionStatus,
   Options,
@@ -269,55 +266,6 @@ describe('validateQuery', () => {
     // @ts-ignore explicity testings an invalid input
     expect(validateQuery(query, spyCallback)).toBe(false);
     expect(spyCallback).toHaveBeenCalledTimes(1);
-  });
-});
-
-describe('hashObject', () => {
-  test('should return equal hashes for equal objects', () => {
-    const creators = [
-      () => ({ a: 1, b: 2, c: 'test' }),
-      () => ({ a: { b: { c: { d: 1, e: 'hello' }, f: 89 } } }),
-    ];
-    creators.forEach((creator) => {
-      expect(hashObject(creator())).toEqual(hashObject(creator()));
-    });
-  });
-
-  test('should return different hashes for different simple objects', () => {
-    expect(hashObject({ a: 'silver' })).not.toEqual(hashObject({ a: 'gold' }));
-    expect(hashObject({ a: 'silver' })).not.toEqual(hashObject({ b: 'silver' }));
-    expect(hashObject({ a: 1, b: 2 })).not.toEqual(hashObject({ a: 2, b: 1 }));
-  });
-
-  test('should return different hashes for different deep objects', () => {
-    expect(hashObject({ a: { b: 'c' } })).not.toEqual(hashObject({ a: { d: 'e' } }));
-    expect(hashObject({ a: { b: 'c' } })).not.toEqual(hashObject({ a: { b: 7 } }));
-    expect(hashObject({ a: { b: 'c' } })).not.toEqual(hashObject({ a: { c: 'b' } }));
-    expect(hashObject({ a: { b: [1, 2, 3] } })).not.toEqual(hashObject({ a: { b: [1, 23] } }));
-  });
-
-  test('should return different hashes for deep objects differing only in top-level key', () => {
-    const apples = { apples: { count: 5 } };
-    const oranges = { oranges: { count: 5 } };
-
-    expect(hashObject(apples)).not.toEqual(hashObject(oranges));
-  });
-});
-
-describe('makeToken', () => {
-  test('should make token using hashObject', () => {
-    const command = GET;
-    const params: CloudVisionParams = {
-      hello: true,
-    };
-    const expectedToken = hashObject({
-      command,
-      params,
-    });
-
-    const token = makeToken(command, params);
-
-    expect(token).toBe(expectedToken);
   });
 });
 

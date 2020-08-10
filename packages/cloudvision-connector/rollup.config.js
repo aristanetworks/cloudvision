@@ -21,7 +21,7 @@ const external = Object.keys(packageJson.dependencies);
 const globals = {
   'a-msgpack': 'msgpack',
   'base64-js': 'base64-js',
-  'imurmurhash': 'MurmurHash3',
+  'uuid': 'uuid',
   'jsbi': 'JSBI',
 };
 

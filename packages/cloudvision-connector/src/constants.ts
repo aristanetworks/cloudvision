@@ -34,11 +34,6 @@ export const EOF_CODE = 1001;
 export const ACTIVE_CODE = 3001;
 
 /**
- * Status code for Paused (when the incoming results for a request have been paused).
- */
-export const PAUSED_CODE = 1002;
-
-/**
  * Error status sent when a request has finished streaming data.
  */
 export const RESPONSE_COMPLETED = 'RESPONSE_COMPLETED';
@@ -50,9 +45,7 @@ export const DEVICES_DATASET_ID = 'DEVICES_DATASET_ID';
 export const GET = 'get';
 export const GET_DATASETS = 'getDatasets';
 export const GET_AND_SUBSCRIBE = 'getAndSubscribe';
-export const PAUSE = 'pause';
 export const PUBLISH = 'publish';
-export const RESUME = 'resume';
 export const SUBSCRIBE = 'subscribe';
 export const SEARCH = 'alpha/search';
 export const SEARCH_SUBSCRIBE = 'alpha/searchSubscribe';

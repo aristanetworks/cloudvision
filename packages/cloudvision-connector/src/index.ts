@@ -42,4 +42,4 @@ export {
   EOF_CODE,
   GET_REQUEST_COMPLETED,
 } from './constants';
-export { fromBinaryKey, hashObject, toBinaryKey, sanitizeOptions } from './utils';
+export { fromBinaryKey, toBinaryKey, sanitizeOptions } from './utils';
