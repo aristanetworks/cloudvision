@@ -11,6 +11,10 @@
     "ci": "npm run check && npm run test && npm run build",
     "clean": "learn run clean",
     "lerna-version": "lerna version --conventional-commits --exact --no-push --yes",
+    "preinstall": "npx npm-force-resolutions",
     "test": "lerna run test:cov"
+  },
+  "resolutions": {
+    "dot-prop": "5.1.1"
   }
 }
