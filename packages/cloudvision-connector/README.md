@@ -262,7 +262,7 @@ window.fetch(
     // Handle JSON response
     return response.json();
   }
-)then(
+).then(
   (jsonResp) => {
     if (jsonResp.sessionId) {
       // We got a session id, so we are now logged in
