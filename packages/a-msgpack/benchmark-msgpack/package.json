@@ -17,21 +17,21 @@
   },
   "dependencies": {
     "@arista/prettier-config": "1.1.3",
-    "@msgpack/msgpack": "1.12.2",
+    "@msgpack/msgpack": "2.0.0",
     "benchmark": "2.1.4",
-    "lodash": "4.17.19",
+    "lodash": "4.17.20",
     "msgpack-js": "0.3.0",
     "msgpack-js-v5": "0.3.0-v5",
     "msgpack-lite": "0.1.26",
     "msgpack-unpack": "2.1.1",
     "msgpack5": "4.2.1",
     "notepack.io": "2.3.0",
-    "ts-node": "8.10.2",
+    "ts-node": "9.0.0",
     "tslib": "2.0.1",
-    "typescript": "3.9.7"
+    "typescript": "4.0.2"
   },
   "devDependencies": {
     "@types/benchmark": "1.0.33",
-    "@types/lodash": "4.14.159"
+    "@types/lodash": "4.14.161"
   }
 }
