@@ -15,6 +15,6 @@
     "test": "lerna run test:cov"
   },
   "resolutions": {
-    "dot-prop": "5.2.0"
+    "dot-prop": "5.3.0"
   }
 }
