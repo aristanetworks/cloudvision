@@ -71,7 +71,7 @@
     "eslint-plugin-import": "2.22.0",
     "jest": "26.4.2",
     "js-yaml": "3.14.0",
-    "prettier": "2.0.5",
+    "prettier": "2.1.1",
     "rimraf": "3.0.2",
     "rollup": "2.23.1",
     "rollup-plugin-terser": "7.0.2",
