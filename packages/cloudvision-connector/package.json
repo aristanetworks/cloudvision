@@ -76,7 +76,7 @@
     "jest": "26.4.2",
     "js-yaml": "3.14.0",
     "mock-socket": "9.0.3",
-    "prettier": "2.1.1",
+    "prettier": "2.1.2",
     "rimraf": "3.0.2",
     "rollup": "2.26.11",
     "rollup-plugin-terser": "7.0.2",
