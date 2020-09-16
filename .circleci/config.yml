@@ -38,11 +38,8 @@ jobs:
       name: cloudvision-builder
     steps:
       - checkout
-      - node/with-cache:
-          steps:
-            - run: npm install
-            - run: npm run bootstrap
-            - run: npm run ci
+      - node/install-packages:
+      - run: npm run ci
   open-branch:
     docker:
       - image: rufman/branch-protection-bot:release-v1.0.0
