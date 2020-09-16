@@ -11,6 +11,7 @@
     "ci": "npm run check && npm run test && npm run build",
     "clean": "lerna run clean",
     "lerna-version": "lerna version --conventional-commits --exact --no-push --yes",
+    "postinstall": "npm run bootstrap",
     "preinstall": "npx npm-force-resolutions",
     "test": "lerna run test:cov"
   }

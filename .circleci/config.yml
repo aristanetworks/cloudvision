@@ -1,6 +1,6 @@
 version: 2.1
 orbs:
-  node: circleci/node@1.1.6
+  node: circleci/node@4.0.0
 commands:
   configure:
     steps:
@@ -31,18 +31,14 @@ executors:
   cloudvision-builder:
     docker:
       - image: circleci/node:lts
-    working_directory: /home/circleci/build-dir
 jobs:
   build-and-test:
     executor:
       name: cloudvision-builder
     steps:
       - checkout
-      - node/with-cache:
-          steps:
-            - run: npm install
-            - run: npm run bootstrap
-            - run: npm run ci
+      - node/install-packages
+      - run: npm run ci
   open-branch:
     docker:
       - image: rufman/branch-protection-bot:release-v1.0.0
