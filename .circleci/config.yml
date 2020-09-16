@@ -38,7 +38,7 @@ jobs:
       name: cloudvision-builder
     steps:
       - checkout
-      - node/install-packages:
+      - node/install-packages
       - run: npm run ci
   open-branch:
     docker:
