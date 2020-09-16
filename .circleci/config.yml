@@ -31,7 +31,6 @@ executors:
   cloudvision-builder:
     docker:
       - image: circleci/node:lts
-    working_directory: /home/circleci/build-dir
 jobs:
   build-and-test:
     executor:
