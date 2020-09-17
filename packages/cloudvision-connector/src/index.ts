@@ -35,11 +35,20 @@ export { default as Parser } from './Parser';
 export {
   ACTIVE_CODE,
   APP_DATASET_TYPE,
+  CLOSE,
   CONNECTED,
   DEVICE_DATASET_TYPE,
   DISCONNECTED,
   EOF,
   EOF_CODE,
+  GET,
+  GET_AND_SUBSCRIBE,
+  GET_DATASETS,
   GET_REQUEST_COMPLETED,
+  PUBLISH,
+  SEARCH,
+  SEARCH_SUBSCRIBE,
+  SERVICE_REQUEST,
+  SUBSCRIBE,
 } from './constants';
 export { fromBinaryKey, toBinaryKey, sanitizeOptions } from './utils';
