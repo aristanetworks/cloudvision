@@ -32,5 +32,14 @@ export {
 
 export { default } from './Connector';
 export { default as Parser } from './Parser';
-export { ACTIVE_CODE, CONNECTED, DISCONNECTED, EOF_CODE } from './constants';
+export {
+  ACTIVE_CODE,
+  CLOSE,
+  CONNECTED,
+  DISCONNECTED,
+  EOF_CODE,
+  PUBLISH,
+  SERVICE_REQUEST,
+  SUBSCRIBE,
+} from './constants';
 export { fromBinaryKey, hashObject, toBinaryKey, sanitizeOptions } from './utils';
