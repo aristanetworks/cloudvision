@@ -57,12 +57,7 @@ jobs:
     steps:
       - checkout
       - configure
-      - run:
-          name: Install dependencies
-          command: npm install
-      - run:
-          name: Bootstrap
-          command: npm run bootstrap
+      - node/install-packages
       - run:
           name: Version packages and create commit
           command: npm run lerna-version
@@ -74,12 +69,7 @@ jobs:
       name: cloudvision-builder
     steps:
       - checkout
-      - run:
-          name: Install dependencies
-          command: npm install
-      - run:
-          name: Bootstrap
-          command: npm run bootstrap
+      - node/install-packages
       - run:
           name: Publish to NPM
           command: |
