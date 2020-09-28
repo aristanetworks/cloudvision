@@ -70,7 +70,7 @@
     "eslint": "6.8.0",
     "eslint-config-airbnb-base": "14.1.0",
     "eslint-config-arista-js": "1.1.29",
-    "eslint-config-arista-ts": "1.1.24",
+    "eslint-config-arista-ts": "1.2.0",
     "eslint-plugin-arista": "0.1.38",
     "eslint-plugin-import": "2.22.1",
     "jest": "26.4.2",
