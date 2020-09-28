@@ -72,7 +72,7 @@
     "eslint-config-arista-js": "1.1.29",
     "eslint-config-arista-ts": "1.1.24",
     "eslint-plugin-arista": "0.1.38",
-    "eslint-plugin-import": "2.22.0",
+    "eslint-plugin-import": "2.22.1",
     "jest": "26.4.2",
     "js-yaml": "3.14.0",
     "mock-socket": "9.0.3",
