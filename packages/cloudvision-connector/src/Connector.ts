@@ -1,6 +1,5 @@
 import {
-  AppParams,
-  ConfigParams,
+  DatasetsParams,
   DatasetType,
   NotifCallback,
   Options,
@@ -167,7 +166,7 @@ export default class Connector extends Wrpc {
    */
   public getApps(callback: NotifCallback): string | null {
     const appType: typeof APP_DATASET_TYPE[] = [APP_DATASET_TYPE];
-    const params: AppParams = { types: appType };
+    const params: DatasetsParams = { types: appType };
     return this.get(GET_DATASETS, params, makeNotifCallback(callback));
   }
 
@@ -176,7 +175,7 @@ export default class Connector extends Wrpc {
    */
   public getConfigs(callback: NotifCallback): string | null {
     const configType: typeof CONFIG_DATASET_TYPE[] = [CONFIG_DATASET_TYPE];
-    const params: ConfigParams = { types: configType };
+    const params: DatasetsParams = { types: configType };
     return this.get(GET_DATASETS, params, makeNotifCallback(callback));
   }
 
@@ -190,7 +189,7 @@ export default class Connector extends Wrpc {
       CONFIG_DATASET_TYPE,
       DEVICE_DATASET_TYPE,
     ];
-    const params: AppParams = { types: allDatasetTypes };
+    const params: DatasetsParams = { types: allDatasetTypes };
     return this.get(GET_DATASETS, params, makeNotifCallback(callback));
   }
 
@@ -199,7 +198,8 @@ export default class Connector extends Wrpc {
    */
   public getDevices(callback: NotifCallback): string | null {
     const deviceType: typeof DEVICE_DATASET_TYPE[] = [DEVICE_DATASET_TYPE];
-    return this.get(GET_DATASETS, { types: deviceType }, makeNotifCallback(callback));
+    const params: DatasetsParams = { types: deviceType };
+    return this.get(GET_DATASETS, params, makeNotifCallback(callback));
   }
 
   /**
