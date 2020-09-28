@@ -1,6 +1,5 @@
 import {
   DatasetsParams,
-  DatasetType,
   NotifCallback,
   Options,
   PublishCallback,
@@ -15,6 +14,7 @@ import {
 
 import Wrpc from './Wrpc';
 import {
+  ALL_DATASET_TYPES,
   APP_DATASET_TYPE,
   CLOSE,
   CONFIG_DATASET_TYPE,
@@ -180,16 +180,10 @@ export default class Connector extends Wrpc {
   }
 
   /**
-   * Returns a list of datasets. This will return data sets of type 'device',
-   * as well as type 'app' & type 'config'.
+   * Returns a list of datasets (datasets with type 'app', 'config' or 'device').
    */
   public getDatasets(callback: NotifCallback): string | null {
-    const allDatasetTypes: DatasetType[] = [
-      APP_DATASET_TYPE,
-      CONFIG_DATASET_TYPE,
-      DEVICE_DATASET_TYPE,
-    ];
-    const params: DatasetsParams = { types: allDatasetTypes };
+    const params: DatasetsParams = { types: ALL_DATASET_TYPES };
     return this.get(GET_DATASETS, params, makeNotifCallback(callback));
   }
 

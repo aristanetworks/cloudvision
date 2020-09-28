@@ -19,6 +19,7 @@ import { PathElements } from 'a-msgpack';
 
 import Connector from '../src/Connector';
 import {
+  ALL_DATASET_TYPES,
   APP_DATASET_TYPE,
   CONFIG_DATASET_TYPE,
   DEVICES_DATASET_ID,
@@ -240,7 +241,7 @@ describe('getDatasets', () => {
 
     expect(conn.get).toHaveBeenCalledWith(
       GET_DATASETS,
-      { types: [APP_DATASET_TYPE, CONFIG_DATASET_TYPE, DEVICE_DATASET_TYPE] },
+      { types: ALL_DATASET_TYPES },
       expect.any(Function),
     );
   });
