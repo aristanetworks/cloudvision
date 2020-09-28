@@ -27,7 +27,7 @@ export default class Instrumentation {
 
   private endFunction: (context: RequestContext) => void;
 
-  constructor(config?: InstrumentationConfig) {
+  public constructor(config?: InstrumentationConfig) {
     if (config) {
       this.enableInstrumentation = true;
     }
