@@ -7,13 +7,13 @@ import util from 'util';
 class TextDE {
   private decoder = new util.TextDecoder();
 
-  readonly encoding = 'utf-8';
+  public readonly encoding = 'utf-8';
 
-  readonly fatal = false;
+  public readonly fatal = false;
 
-  readonly ignoreBOM = true;
+  public readonly ignoreBOM = true;
 
-  decode(input?: Uint8Array): string {
+  public decode(input?: Uint8Array): string {
     return this.decoder.decode(input);
   }
 }
