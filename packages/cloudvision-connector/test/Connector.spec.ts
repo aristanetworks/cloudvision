@@ -20,6 +20,7 @@ import { PathElements } from 'a-msgpack';
 import Connector from '../src/Connector';
 import {
   APP_DATASET_TYPE,
+  CONFIG_DATASET_TYPE,
   DEVICES_DATASET_ID,
   DEVICE_DATASET_TYPE,
   GET,
@@ -199,7 +200,7 @@ describe('getDatasets', () => {
 
     expect(conn.get).toHaveBeenCalledWith(
       GET_DATASETS,
-      { types: [APP_DATASET_TYPE, DEVICE_DATASET_TYPE] },
+      { types: [APP_DATASET_TYPE, CONFIG_DATASET_TYPE, DEVICE_DATASET_TYPE] },
       expect.any(Function),
     );
   });
@@ -224,12 +225,22 @@ describe('getDatasets', () => {
     );
   });
 
+  test('should get all config type datasets', () => {
+    conn.getConfigs(spyCallback);
+
+    expect(conn.get).toHaveBeenCalledWith(
+      GET_DATASETS,
+      { types: [CONFIG_DATASET_TYPE] },
+      expect.any(Function),
+    );
+  });
+
   test('should get all datasets using `getWithOptions` ', () => {
     conn.getWithOptions(DEVICES_DATASET_ID, spyCallback, {});
 
     expect(conn.get).toHaveBeenCalledWith(
       GET_DATASETS,
-      { types: [APP_DATASET_TYPE, DEVICE_DATASET_TYPE] },
+      { types: [APP_DATASET_TYPE, CONFIG_DATASET_TYPE, DEVICE_DATASET_TYPE] },
       expect.any(Function),
     );
   });

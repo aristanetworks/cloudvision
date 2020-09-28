@@ -3,6 +3,7 @@ import { NeatType, PathElements } from 'a-msgpack';
 import {
   APP_DATASET_TYPE,
   CLOSE,
+  CONFIG_DATASET_TYPE,
   DEVICE_DATASET_TYPE,
   GET,
   GET_AND_SUBSCRIBE,
@@ -33,7 +34,10 @@ export type StreamCommands = StreamCommand;
 
 export type WsCommand = GetCommand | StreamCommand | typeof CLOSE | typeof PUBLISH;
 
-export type DatasetType = typeof APP_DATASET_TYPE | typeof DEVICE_DATASET_TYPE;
+export type DatasetType =
+  | typeof APP_DATASET_TYPE
+  | typeof CONFIG_DATASET_TYPE
+  | typeof DEVICE_DATASET_TYPE;
 
 /** @deprecated: Use `DatasetType`. */
 export type DatasetTypes = DatasetType;
@@ -118,6 +122,10 @@ export interface AppParams {
   types?: DatasetType[];
 }
 
+export interface ConfigParams {
+  types?: DatasetType[];
+}
+
 export interface SearchParams {
   query: Query;
   search: string;
@@ -134,4 +142,4 @@ export interface CloseParams {
   [token: string]: boolean;
 }
 
-export type CloudVisionParams = AppParams | CloseParams | QueryParams | SearchParams;
+export type CloudVisionParams = AppParams | CloseParams | ConfigParams | QueryParams | SearchParams;

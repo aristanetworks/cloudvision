@@ -21,6 +21,7 @@
 
 import {
   APP_DATASET_TYPE,
+  CONFIG_DATASET_TYPE,
   DEVICE_DATASET_TYPE,
   EOF,
   EOF_CODE,
@@ -323,6 +324,10 @@ describe('makeNotifCallback', () => {
         {
           type: APP_DATASET_TYPE,
           name: 'app1',
+        },
+        {
+          type: CONFIG_DATASET_TYPE,
+          name: 'config1',
         },
       ],
       metadata: {},

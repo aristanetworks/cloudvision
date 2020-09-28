@@ -1,5 +1,6 @@
 import {
   AppParams,
+  ConfigParams,
   DatasetType,
   NotifCallback,
   Options,
@@ -17,6 +18,7 @@ import Wrpc from './Wrpc';
 import {
   APP_DATASET_TYPE,
   CLOSE,
+  CONFIG_DATASET_TYPE,
   DEVICES_DATASET_ID,
   DEVICE_DATASET_TYPE,
   GET,
@@ -170,11 +172,24 @@ export default class Connector extends Wrpc {
   }
 
   /**
+   * Returns a list of configs (datasets with type == 'config').
+   */
+  public getConfigs(callback: NotifCallback): string | null {
+    const configType: typeof CONFIG_DATASET_TYPE[] = [CONFIG_DATASET_TYPE];
+    const params: ConfigParams = { types: configType };
+    return this.get(GET_DATASETS, params, makeNotifCallback(callback));
+  }
+
+  /**
    * Returns a list of datasets. This will return data sets of type 'device',
-   * as well as type 'app'.
+   * as well as type 'app' & type 'config'.
    */
   public getDatasets(callback: NotifCallback): string | null {
-    const allDatasetTypes: DatasetType[] = [APP_DATASET_TYPE, DEVICE_DATASET_TYPE];
+    const allDatasetTypes: DatasetType[] = [
+      APP_DATASET_TYPE,
+      CONFIG_DATASET_TYPE,
+      DEVICE_DATASET_TYPE,
+    ];
     const params: AppParams = { types: allDatasetTypes };
     return this.get(GET_DATASETS, params, makeNotifCallback(callback));
   }

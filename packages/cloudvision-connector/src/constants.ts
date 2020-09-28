@@ -52,6 +52,7 @@ export const SEARCH_SUBSCRIBE = 'alpha/searchSubscribe';
 export const SERVICE_REQUEST = 'serviceRequest';
 
 export const APP_DATASET_TYPE = 'app';
+export const CONFIG_DATASET_TYPE = 'config';
 export const DEVICE_DATASET_TYPE = 'device';
 
 export const SEARCH_TYPE_ANY = 'ANY';
