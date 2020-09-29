@@ -118,7 +118,7 @@ export interface QueryParams {
   versions?: number;
 }
 
-export interface DatasetsParams {
+export interface DatasetParams {
   types?: DatasetType[];
 }
 
@@ -138,4 +138,4 @@ export interface CloseParams {
   [token: string]: boolean;
 }
 
-export type CloudVisionParams = CloseParams | DatasetsParams | QueryParams | SearchParams;
+export type CloudVisionParams = CloseParams | DatasetParams | QueryParams | SearchParams;
