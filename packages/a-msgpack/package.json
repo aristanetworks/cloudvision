@@ -20,7 +20,7 @@
     "check": "npm run lint && npm run type-check && npm run prettier-check",
     "clean": "rimraf dist lib es",
     "docs": "typedoc --options typedoc-neo.json --plugin typedoc-neo-theme --theme ./node_modules/typedoc-neo-theme/bin/default --out docs/html",
-    "docs:md": "typedoc --plugin typedoc-plugin-markdown --theme markdown --out docs/md --hideSources --skipSidebar",
+    "docs:md": "typedoc --plugin typedoc-plugin-markdown --theme markdown --out docs/md --hideSources",
     "lint": "eslint --max-warnings 0 --ext .js,.ts *.js src/**/*.ts test/**/*.ts types/**/*.ts",
     "prepare": "npm run build",
     "prettier-check": "prettier -c *.js src/**/*.ts",
