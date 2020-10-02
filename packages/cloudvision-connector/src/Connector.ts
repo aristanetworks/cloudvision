@@ -1,6 +1,5 @@
 import {
-  AppParams,
-  DatasetType,
+  DatasetParams,
   NotifCallback,
   Options,
   PublishCallback,
@@ -15,8 +14,10 @@ import {
 
 import Wrpc from './Wrpc';
 import {
+  ALL_DATASET_TYPES,
   APP_DATASET_TYPE,
   CLOSE,
+  CONFIG_DATASET_TYPE,
   DEVICES_DATASET_ID,
   DEVICE_DATASET_TYPE,
   GET,
@@ -165,17 +166,24 @@ export default class Connector extends Wrpc {
    */
   public getApps(callback: NotifCallback): string | null {
     const appType: typeof APP_DATASET_TYPE[] = [APP_DATASET_TYPE];
-    const params: AppParams = { types: appType };
+    const params: DatasetParams = { types: appType };
     return this.get(GET_DATASETS, params, makeNotifCallback(callback));
   }
 
   /**
-   * Returns a list of datasets. This will return data sets of type 'device',
-   * as well as type 'app'.
+   * Returns a list of configs (datasets with type == 'config').
+   */
+  public getConfigs(callback: NotifCallback): string | null {
+    const configType: typeof CONFIG_DATASET_TYPE[] = [CONFIG_DATASET_TYPE];
+    const params: DatasetParams = { types: configType };
+    return this.get(GET_DATASETS, params, makeNotifCallback(callback));
+  }
+
+  /**
+   * Returns a list of datasets (datasets with type 'app', 'config' or 'device').
    */
   public getDatasets(callback: NotifCallback): string | null {
-    const allDatasetTypes: DatasetType[] = [APP_DATASET_TYPE, DEVICE_DATASET_TYPE];
-    const params: AppParams = { types: allDatasetTypes };
+    const params: DatasetParams = { types: ALL_DATASET_TYPES };
     return this.get(GET_DATASETS, params, makeNotifCallback(callback));
   }
 
@@ -184,7 +192,8 @@ export default class Connector extends Wrpc {
    */
   public getDevices(callback: NotifCallback): string | null {
     const deviceType: typeof DEVICE_DATASET_TYPE[] = [DEVICE_DATASET_TYPE];
-    return this.get(GET_DATASETS, { types: deviceType }, makeNotifCallback(callback));
+    const params: DatasetParams = { types: deviceType };
+    return this.get(GET_DATASETS, params, makeNotifCallback(callback));
   }
 
   /**

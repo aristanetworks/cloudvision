@@ -34,8 +34,10 @@ export { default } from './Connector';
 export { default as Parser } from './Parser';
 export {
   ACTIVE_CODE,
+  ALL_DATASET_TYPES,
   APP_DATASET_TYPE,
   CLOSE,
+  CONFIG_DATASET_TYPE,
   CONNECTED,
   DEVICE_DATASET_TYPE,
   DISCONNECTED,
