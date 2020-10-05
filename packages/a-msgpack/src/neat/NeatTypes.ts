@@ -86,11 +86,7 @@ export class Int {
         BI = BigInt;
       }
 
-      this.value =
-        parseInt(value, 10) > Number.MAX_SAFE_INTEGER ||
-        parseInt(value, 10) < Number.MAX_SAFE_INTEGER * -1
-          ? BI(value)
-          : parseInt(value, 10);
+      this.value = BI(value);
     } else if (typeof value === 'bigint' || isJsbi(value)) {
       this.value = value as bigint | JSBI;
     } else {
