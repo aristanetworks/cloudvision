@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.6.0](https://github.com/aristanetworks/cloudvision/compare/v4.5.5...v4.6.0) (2020-10-05)
+
+
+### Features
+
+* **cloudvision-connector:** add support for config dataset type ([#207](https://github.com/aristanetworks/cloudvision/issues/207)) ([5e9d570](https://github.com/aristanetworks/cloudvision/commit/5e9d57093c6f05b16fa7861470602dfd3ea73fee))
+
+
+
+
+
 ## [4.5.5](https://github.com/aristanetworks/cloudvision/compare/v4.5.4...v4.5.5) (2020-09-16)
 
 **Note:** Version bump only for package root
