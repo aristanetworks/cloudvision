@@ -87,8 +87,7 @@ export class Int {
       }
 
       this.value =
-        parseInt(value, 10) > Number.MAX_SAFE_INTEGER ||
-        parseInt(value, 10) < Number.MAX_SAFE_INTEGER * -1
+        parseInt(value, 10) > 0xffffffff || parseInt(value, 10) < -0x80000000
           ? BI(value)
           : parseInt(value, 10);
     } else if (typeof value === 'bigint' || isJsbi(value)) {
