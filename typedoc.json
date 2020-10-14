@@ -1,0 +1,14 @@
+
+{
+  "disableOutputCheck": true,
+  "exclude": ["**/test/**", "**/benchmark-msgpack/**"],
+  "excludeExternals": true,
+  "excludeNotExported": true,
+  "excludePrivate": true,
+  "external-modulemap": ".*/packages/([^/]+)/.*",
+  "hideGenerator": true,
+  "ignoreCompilerErrors": true,
+  "name": "CloudVision",
+  "out": "docs",
+  "readme": "README.md"
+}
