@@ -1,4 +1,3 @@
-
 {
   "disableOutputCheck": true,
   "exclude": ["**/test/**", "**/benchmark-msgpack/**"],
