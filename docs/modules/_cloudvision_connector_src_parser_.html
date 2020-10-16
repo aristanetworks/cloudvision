@@ -1,0 +1,358 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>&quot;cloudvision-connector/src/Parser&quot; | Cloudvision</title>
+	<meta name="description" content="Documentation for Cloudvision">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="../assets/js/search.json" data-base="..">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="../index.html" class="title">Cloudvision</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="../globals.html">Globals</a>
+				</li>
+				<li>
+					<a href="_cloudvision_connector_src_parser_.html">&quot;cloudvision-connector/src/Parser&quot;</a>
+				</li>
+			</ul>
+			<h1>Module &quot;cloudvision-connector/src/Parser&quot;</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<section class="tsd-panel-group tsd-index-group">
+				<h2>Index</h2>
+				<section class="tsd-panel tsd-index-panel">
+					<div class="tsd-index-content">
+						<section class="tsd-index-section ">
+							<h3>Classes</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-class tsd-parent-kind-module"><a href="../classes/_cloudvision_connector_src_parser_.parser.html" class="tsd-kind-icon">Parser</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Functions</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-function tsd-parent-kind-module"><a href="_cloudvision_connector_src_parser_.html#decodenotifications" class="tsd-kind-icon">decode<wbr>Notifications</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-module"><a href="_cloudvision_connector_src_parser_.html#decodepathelements" class="tsd-kind-icon">decode<wbr>Path<wbr>Elements</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-module"><a href="_cloudvision_connector_src_parser_.html#encodenotifications" class="tsd-kind-icon">encode<wbr>Notifications</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-module"><a href="_cloudvision_connector_src_parser_.html#encodepathelements" class="tsd-kind-icon">encode<wbr>Path<wbr>Elements</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-module"><a href="_cloudvision_connector_src_parser_.html#encodepathelementsandkeysinquery" class="tsd-kind-icon">encode<wbr>Path<wbr>Elements<wbr>And<wbr>Keys<wbr>InQuery</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-module"><a href="_cloudvision_connector_src_parser_.html#sorttimestamp" class="tsd-kind-icon">sort<wbr>Timestamp</a></li>
+							</ul>
+						</section>
+					</div>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Functions</h2>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-module">
+					<a name="decodenotifications" class="tsd-anchor"></a>
+					<h3>decode<wbr>Notifications</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-module">
+						<li class="tsd-signature tsd-kind-icon">decode<wbr>Notifications<span class="tsd-signature-symbol">(</span>result<span class="tsd-signature-symbol">: </span><a href="../interfaces/_cloudvision_connector_types_notifications_.cloudvisionrawnotifs.html" class="tsd-signature-type">CloudVisionRawNotifs</a>, batchResults<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/_cloudvision_connector_types_notifications_.cloudvisionbatchednotifications.html" class="tsd-signature-type">CloudVisionBatchedNotifications</a><span class="tsd-signature-symbol"> | </span><a href="../interfaces/_cloudvision_connector_types_notifications_.cloudvisionnotifs.html" class="tsd-signature-type">CloudVisionNotifs</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/albertseo/cloudvision/blob/711086c/packages/cloudvision-connector/src/Parser.ts#L290">packages/cloudvision-connector/src/Parser.ts:290</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Decodes the full result returned from the API server.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>result: <a href="../interfaces/_cloudvision_connector_types_notifications_.cloudvisionrawnotifs.html" class="tsd-signature-type">CloudVisionRawNotifs</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the raw notifications returned from the API server.</p>
+									</div>
+								</li>
+								<li>
+									<h5>batchResults: <span class="tsd-signature-type">boolean</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>if <code>true</code>, notifications will be batched by their path elements.
+											otherwise the notifications will just be decoded and returned in the same format as
+										the server sends them.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="../interfaces/_cloudvision_connector_types_notifications_.cloudvisionbatchednotifications.html" class="tsd-signature-type">CloudVisionBatchedNotifications</a><span class="tsd-signature-symbol"> | </span><a href="../interfaces/_cloudvision_connector_types_notifications_.cloudvisionnotifs.html" class="tsd-signature-type">CloudVisionNotifs</a></h4>
+							<p>the decoded result returned from the server</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-module">
+					<a name="decodepathelements" class="tsd-anchor"></a>
+					<h3>decode<wbr>Path<wbr>Elements</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-module">
+						<li class="tsd-signature tsd-kind-icon">decode<wbr>Path<wbr>Elements<span class="tsd-signature-symbol">(</span>pathElements<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="_a_msgpack_types_neat_.html#pathelements" class="tsd-signature-type">PathElements</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/albertseo/cloudvision/blob/711086c/packages/cloudvision-connector/src/Parser.ts#L103">packages/cloudvision-connector/src/Parser.ts:103</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Decodes NEAT encoded path elements.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>pathElements: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>an array of encoded path elements</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="_a_msgpack_types_neat_.html#pathelements" class="tsd-signature-type">PathElements</a></h4>
+							<p>an array of path elements</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-module">
+					<a name="encodenotifications" class="tsd-anchor"></a>
+					<h3>encode<wbr>Notifications</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-module">
+						<li class="tsd-signature tsd-kind-icon">encode<wbr>Notifications<span class="tsd-signature-symbol">(</span>request<span class="tsd-signature-symbol">: </span><a href="../interfaces/_cloudvision_connector_types_query_.publishrequest.html" class="tsd-signature-type">PublishRequest</a><span class="tsd-signature-symbol"> | </span><a href="../interfaces/_cloudvision_connector_types_query_.batchpublishrequest.html" class="tsd-signature-type">BatchPublishRequest</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/_cloudvision_connector_types_notifications_.cloudvisionrawnotifs.html" class="tsd-signature-type">CloudVisionRawNotifs</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/albertseo/cloudvision/blob/711086c/packages/cloudvision-connector/src/Parser.ts#L359">packages/cloudvision-connector/src/Parser.ts:359</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Encodes a full request that can be sent to the server.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>request: <a href="../interfaces/_cloudvision_connector_types_query_.publishrequest.html" class="tsd-signature-type">PublishRequest</a><span class="tsd-signature-symbol"> | </span><a href="../interfaces/_cloudvision_connector_types_query_.batchpublishrequest.html" class="tsd-signature-type">BatchPublishRequest</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>an unencoded request.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="../interfaces/_cloudvision_connector_types_notifications_.cloudvisionrawnotifs.html" class="tsd-signature-type">CloudVisionRawNotifs</a></h4>
+							<p>a NEAT encoded request that can be sent to the server.</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-module">
+					<a name="encodepathelements" class="tsd-anchor"></a>
+					<h3>encode<wbr>Path<wbr>Elements</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-module">
+						<li class="tsd-signature tsd-kind-icon">encode<wbr>Path<wbr>Elements<span class="tsd-signature-symbol">(</span>pathElements<span class="tsd-signature-symbol">: </span><a href="_a_msgpack_types_neat_.html#pathelements" class="tsd-signature-type">PathElements</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/albertseo/cloudvision/blob/711086c/packages/cloudvision-connector/src/Parser.ts#L54">packages/cloudvision-connector/src/Parser.ts:54</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Individually NEAT encodes path elements</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>pathElements: <a href="_a_msgpack_types_neat_.html#pathelements" class="tsd-signature-type">PathElements</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>an array of unencoded path elements</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h4>
+							<p>an array of encoded path elements</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-module">
+					<a name="encodepathelementsandkeysinquery" class="tsd-anchor"></a>
+					<h3>encode<wbr>Path<wbr>Elements<wbr>And<wbr>Keys<wbr>InQuery</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-module">
+						<li class="tsd-signature tsd-kind-icon">encode<wbr>Path<wbr>Elements<wbr>And<wbr>Keys<wbr>InQuery<span class="tsd-signature-symbol">(</span>query<span class="tsd-signature-symbol">: </span><a href="_cloudvision_connector_types_params_.html#query" class="tsd-signature-type">Query</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="_cloudvision_connector_types_params_.html#query" class="tsd-signature-type">Query</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/albertseo/cloudvision/blob/711086c/packages/cloudvision-connector/src/Parser.ts#L68">packages/cloudvision-connector/src/Parser.ts:68</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>NEAT encodes the path elements and keys in a <a href="_cloudvision_connector_types_params_.html#query">Query</a>.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>query: <a href="_cloudvision_connector_types_params_.html#query" class="tsd-signature-type">Query</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="_cloudvision_connector_types_params_.html#query" class="tsd-signature-type">Query</a></h4>
+							<p>the <a href="_cloudvision_connector_types_params_.html#query">Query</a> with encoded path elements and keys.</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-module">
+					<a name="sorttimestamp" class="tsd-anchor"></a>
+					<h3>sort<wbr>Timestamp</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-module">
+						<li class="tsd-signature tsd-kind-icon">sort<wbr>Timestamp<span class="tsd-signature-symbol">(</span>first<span class="tsd-signature-symbol">: </span><a href="_cloudvision_connector_types_notifications_.html#rawnotification" class="tsd-signature-type">RawNotification</a>, second<span class="tsd-signature-symbol">: </span><a href="_cloudvision_connector_types_notifications_.html#rawnotification" class="tsd-signature-type">RawNotification</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/albertseo/cloudvision/blob/711086c/packages/cloudvision-connector/src/Parser.ts#L252">packages/cloudvision-connector/src/Parser.ts:252</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Sort function to sort elements in an array by their GRPC timestamp.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>first: <a href="_cloudvision_connector_types_notifications_.html#rawnotification" class="tsd-signature-type">RawNotification</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The first element</p>
+									</div>
+								</li>
+								<li>
+									<h5>second: <a href="_cloudvision_connector_types_notifications_.html#rawnotification" class="tsd-signature-type">RawNotification</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the second element to compare against</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+						</li>
+					</ul>
+				</section>
+			</section>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class="globals  ">
+						<a href="../globals.html"><em>Globals</em></a>
+					</li>
+					<li class="current tsd-kind-module">
+						<a href="_cloudvision_connector_src_parser_.html">&quot;cloudvision-<wbr>connector/src/<wbr>Parser&quot;</a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+					<li class=" tsd-kind-class tsd-parent-kind-module">
+						<a href="../classes/_cloudvision_connector_src_parser_.parser.html" class="tsd-kind-icon">Parser</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module">
+						<a href="_cloudvision_connector_src_parser_.html#decodenotifications" class="tsd-kind-icon">decode<wbr>Notifications</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module">
+						<a href="_cloudvision_connector_src_parser_.html#decodepathelements" class="tsd-kind-icon">decode<wbr>Path<wbr>Elements</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module">
+						<a href="_cloudvision_connector_src_parser_.html#encodenotifications" class="tsd-kind-icon">encode<wbr>Notifications</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module">
+						<a href="_cloudvision_connector_src_parser_.html#encodepathelements" class="tsd-kind-icon">encode<wbr>Path<wbr>Elements</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module">
+						<a href="_cloudvision_connector_src_parser_.html#encodepathelementsandkeysinquery" class="tsd-kind-icon">encode<wbr>Path<wbr>Elements<wbr>And<wbr>Keys<wbr>InQuery</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module">
+						<a href="_cloudvision_connector_src_parser_.html#sorttimestamp" class="tsd-kind-icon">sort<wbr>Timestamp</a>
+					</li>
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer>
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-object-literal"><span class="tsd-kind-icon">Object literal</span></li>
+				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
+				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
+				<li class="tsd-kind-type-alias tsd-has-type-parameter"><span class="tsd-kind-icon">Type alias with type parameter</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
+				<li class="tsd-kind-interface tsd-has-type-parameter"><span class="tsd-kind-icon">Interface with type parameter</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="overlay"></div>
+<script src="../assets/js/main.js"></script>
+</body>
+</html>
