@@ -3,7 +3,11 @@
   "version": "4.6.0",
   "description": "A module to communicate with the CloudVision API server",
   "author": "extensions@arista.com",
-  "homepage": "http://www.arista.com",
+  "homepage": "https://aristanetworks.github.io/cloudvision/modules/cloudvision_connector.html",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aristanetworks/cloudvision.git"
+  },
   "license": "MIT",
   "main": "lib/cloudvision-connector.js",
   "unpkg": "dist/cloudvision-connector.js",
