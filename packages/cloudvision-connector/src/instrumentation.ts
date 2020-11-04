@@ -7,10 +7,10 @@ export interface InstrumentationConfig {
   end(context: RequestContext): void;
 }
 
-type Info = {
+interface Info {
   error?: string;
   message?: string;
-};
+}
 
 // Use empty function as a default placeholder
 /* istanbul ignore next */
