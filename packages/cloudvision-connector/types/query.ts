@@ -75,14 +75,14 @@ export interface CloudVisionPublishRequest {
   sync: boolean;
 }
 
-export interface CloudVisionQueryMessage {
-  command: WsCommand;
-  params: CloudVisionParams | CloudVisionPublishRequest | ServiceRequest;
-  token: string;
-}
-
 export interface ServiceRequest {
   body: {};
   method: string;
   service: string;
+}
+
+export interface CloudVisionQueryMessage {
+  command: WsCommand;
+  params: CloudVisionParams | CloudVisionPublishRequest | ServiceRequest;
+  token: string;
 }

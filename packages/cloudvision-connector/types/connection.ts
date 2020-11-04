@@ -1,16 +1,16 @@
 import { WsCommand } from './params';
 
-export interface EventCallback {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  (requestContext: RequestContext, ...args: any[]): void;
-}
-
 export type ContextCommand = WsCommand | 'connection' | 'NO_COMMAND';
 
 export interface RequestContext {
   command: ContextCommand;
   encodedParams: string;
   token: string;
+}
+
+export interface EventCallback {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (requestContext: RequestContext, ...args: any[]): void;
 }
 
 export interface ConnectionCallback {

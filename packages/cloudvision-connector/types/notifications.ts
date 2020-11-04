@@ -3,6 +3,10 @@ import { PathElements, Timestamp } from 'a-msgpack';
 import { RequestContext } from './connection';
 import { DatasetObject } from './params';
 
+export interface CloudVisionMetaData<V> {
+  [key: string]: V;
+}
+
 export interface CloudVisionDatasets {
   metadata: CloudVisionMetaData<unknown>;
   datasets: DatasetObject[];
@@ -37,10 +41,6 @@ export type CloudVisionUpdate<K, V> = CloudVisionUpdates<K, V>;
 
 export interface CloudVisionDeletes<K> {
   [key: string]: { key: K };
-}
-
-export interface CloudVisionMetaData<V> {
-  [key: string]: V;
 }
 
 /** @deprecated: Use `CloudVisionDeletes`. */
