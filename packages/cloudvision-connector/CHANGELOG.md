@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.6.1](https://github.com/aristanetworks/cloudvision/compare/v4.6.0...v4.6.1) (2020-11-04)
+
+**Note:** Version bump only for package cloudvision-connector
+
+
+
+
+
 # [4.6.0](https://github.com/aristanetworks/cloudvision/compare/v4.5.5...v4.6.0) (2020-10-05)
 
 

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.6.1](https://github.com/aristanetworks/cloudvision/compare/v4.6.0...v4.6.1) (2020-11-04)
+
+
+### Bug Fixes
+
+* **a-msgpack:** Always convert int64 to BigInt ([#224](https://github.com/aristanetworks/cloudvision/issues/224)) ([85c4c4e](https://github.com/aristanetworks/cloudvision/commit/85c4c4ed5642d89e44f5a5a705e4891d854c22fc))
+
+
+
+
+
 # [4.6.0](https://github.com/aristanetworks/cloudvision/compare/v4.5.5...v4.6.0) (2020-10-05)
 
 
