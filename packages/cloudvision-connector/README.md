@@ -353,9 +353,15 @@ NEAT is MessagePack with some alterations listed below:
 To try out the CloudVision Connector in your browser, simply run
 
 ```shell
-npm run clean-install
+npm install
+```
+at the root
+
+and then
+```shell
 npm run build:try
 ```
+in the **packages/cloudvision-connector** directory
 
 Then open **index.html** in your browser. In the developer console
 CloudVision Connector will be available as **window.CloudVisionConnector**.
@@ -363,7 +369,7 @@ CloudVision Connector will be available as **window.CloudVisionConnector**.
 ### Examples
 
 Create the connector: `conn = new window.CloudVisionConnector()`
-Connect to an API server: `conn.run('ws://example.cloudvision.api-server/api/v2/wrpc/')`
+Connect to an API server: `conn.run('ws://example.cloudvision.api-server/api/v3/wrpc/')`
 Run a query: `conn.getWithOptions(window.CloudVisionConnector.DEVICES_DATASET_ID
 , (err, res) => console.log(err, res))`
 
