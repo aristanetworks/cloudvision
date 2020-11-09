@@ -13,7 +13,7 @@ const config = {
   onwarn: (warning) => {
     throw new Error(warning.message);
   },
-  plugins: [nodeResolve(), typescript({ sourceMap: false })],
+  plugins: [typescript({ sourceMap: false })],
 };
 
 const external = Object.keys(packageJson.dependencies);
@@ -34,13 +34,16 @@ if (env === 'es' || env === 'cjs') {
     globals,
     indent: false,
   };
-  config.plugins.push(commonjs());
+  config.plugins.push(nodeResolve(), commonjs());
 }
 
 // Replace NODE_ENV variable
-if (env === 'development' || env === 'production' || env === 'try') {
+if (env === 'development' || env === 'production') {
   if (!process.env.INCLUDE_EXTERNAL) {
     config.external = external;
+    config.plugins.push(nodeResolve());
+  } else {
+    config.plugins.push(nodeResolve({ browser: true }));
   }
   config.output = {
     exports: 'named',
@@ -60,7 +63,7 @@ if (env === 'development' || env === 'production' || env === 'try') {
 }
 
 if (env === 'production') {
-  config.plugins.push(terser());
+  config.plugins.push(nodeResolve(), terser());
 }
 
 export default config;

@@ -338,15 +338,30 @@ const unbind2 = connector.connection(callback2)
 
 Callbacks will be called in the order in which they were added.
 
+## Data Endcoding
+Data returned from the CloudVision APi is both JSON and NEAT (more strict MessagePack) encoded. Additionally NEAT encoded values are base64 encoded for transport. The notification body is JSON encoded, while `key` and `value` attributes of the notification are NEAT encoded. The parser inside the cloudvision-connector library takes care of decoding and encoding notifications for you. Note that when notifications are decoded they are decoded into an object keyed key the notification key. Since keys can be non strings, the key is the base64 NEAT encoded value. The value of this object contains both the decoded `key` and `value`.
+
+## What is NEAT?
+NEAT is MessagePack with some alterations listed below:
+- All strings are binary encoded
+- Maps and Object keys are encoded in order of binary value of the key. This means `{ a: 'b', c: 'd' }` and `{ c: 'd', a: 'b' }` are encoded as the same NEAT value.
+- Support for pointer values via the `Pointer` extention type
+- Support for wildcard values via the `Wildcard` extention type
 
 ## Try it out
 
 To try out the CloudVision Connector in your browser, simply run
 
 ```shell
-npm run clean-install
+npm install
+```
+at the root
+
+and then
+```shell
 npm run build:try
 ```
+in the **packages/cloudvision-connector** directory
 
 Then open **index.html** in your browser. In the developer console
 CloudVision Connector will be available as **window.CloudVisionConnector**.
@@ -354,7 +369,7 @@ CloudVision Connector will be available as **window.CloudVisionConnector**.
 ### Examples
 
 Create the connector: `conn = new window.CloudVisionConnector()`
-Connect to an API server: `conn.run('ws://example.cloudvision.api-server/api/v2/wrpc/')`
+Connect to an API server: `conn.run('ws://example.cloudvision.api-server/api/v3/wrpc/')`
 Run a query: `conn.getWithOptions(window.CloudVisionConnector.DEVICES_DATASET_ID
 , (err, res) => console.log(err, res))`
 
