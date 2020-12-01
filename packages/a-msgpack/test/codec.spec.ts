@@ -424,6 +424,52 @@ describe('NEAT codec', () => {
     });
   });
 
+  test('should properly encode/decode a map value with non string keys', () => {
+    const aMap = new Map([[{ c: 'd' }, 'e']]);
+    const bMap = new Map([[{ d: 'd' }, 'e']]);
+    const testInput = new Map<string, unknown>([
+      ['a', aMap],
+      ['b', bMap],
+    ]);
+    const expectedDecodedValue = {
+      a: { 'gcQBY8QBZA==': { _key: { c: 'd' }, _value: 'e' } },
+      b: { 'gcQBZMQBZA==': { _key: { d: 'd' }, _value: 'e' } },
+    };
+    const testOutput = [
+      130,
+      196,
+      1,
+      97,
+      129,
+      129,
+      196,
+      1,
+      99,
+      196,
+      1,
+      100,
+      196,
+      1,
+      101,
+      196,
+      1,
+      98,
+      129,
+      129,
+      196,
+      1,
+      100,
+      196,
+      1,
+      100,
+      196,
+      1,
+      101,
+    ];
+    expect(msgpackCustomCodec.encode(testInput)).toEqual(new Uint8Array(testOutput));
+    expect(msgpackCustomCodec.decode(new Uint8Array(testOutput))).toEqual(expectedDecodedValue);
+  });
+
   test('should properly encode/decode map with complex key and undefined object value', () => {
     const testInput = [{ a: 'b', c: 'd' }, Object.create(null)];
     const testDecodedInput = [{ a: 'b', c: 'd' }, null];

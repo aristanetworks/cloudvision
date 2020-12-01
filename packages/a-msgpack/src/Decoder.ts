@@ -34,6 +34,7 @@ type StackMapState = {
   size: number;
   key: MapKeyType | null;
   keyStart: number;
+  keyEnd: number;
   serializedKey: string | null;
   readCount: number;
   map: Record<string, unknown>;
@@ -275,18 +276,16 @@ export class Decoder {
           }
         } else if (state.type === State.MAP_KEY) {
           // Map key
-          if (!isValidMapKeyType(object)) {
-            state.serializedKey = fromByteArray(this.bytes.slice(state.keyStart, this.pos));
-          }
-
+          state.keyEnd = this.pos;
           state.key = object;
           state.type = State.MAP_VALUE;
           continue DECODE;
         } else {
           // Map value
           if (!isValidMapKeyType(state.key)) {
+            const serializedKey = fromByteArray(this.bytes.slice(state.keyStart, state.keyEnd));
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            state.map[state.serializedKey!] = { _key: state.key, _value: object };
+            state.map[serializedKey!] = { _key: state.key, _value: object };
           } else {
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             state.map[state.key! as string] = object;
@@ -320,7 +319,8 @@ export class Decoder {
     this.stack.push({
       type: State.MAP_KEY,
       size,
-      keyStart: 1,
+      keyStart: this.pos,
+      keyEnd: this.pos,
       key: null,
       serializedKey: null,
       readCount: 0,
