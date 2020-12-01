@@ -58,6 +58,7 @@ jobs:
       - checkout
       - configure
       - node/install-packages
+      - run: npm run bootstrap
       - run:
           name: Version packages and create commit
           command: npm run lerna-version
