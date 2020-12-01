@@ -59,6 +59,7 @@ jobs:
       - configure
       - node/install-packages
       - run: npm run bootstrap
+      - run: git checkout package-lock.json
       - run:
           name: Version packages and create commit
           command: npm run lerna-version
