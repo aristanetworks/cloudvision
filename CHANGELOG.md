@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.6.2](https://github.com/aristanetworks/cloudvision/compare/v4.6.1...v4.6.2) (2020-12-01)
+
+
+### Bug Fixes
+
+* **a-msgpack:** properly key nested complex values ([#287](https://github.com/aristanetworks/cloudvision/issues/287)) ([0de0421](https://github.com/aristanetworks/cloudvision/commit/0de0421dfd868d29dcd4902a0c899ccd958a941f))
+
+
+
+
+
 ## [4.6.1](https://github.com/aristanetworks/cloudvision/compare/v4.6.0...v4.6.1) (2020-11-04)
 
 
