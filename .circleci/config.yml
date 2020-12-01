@@ -72,6 +72,7 @@ jobs:
     steps:
       - checkout
       - node/install-packages
+      - run: git checkout package-lock.json
       - run:
           name: Publish to NPM
           command: |
