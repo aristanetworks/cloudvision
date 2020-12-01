@@ -51,6 +51,17 @@ jobs:
     steps:
       - protect-branch:
           enforce: true
+  publish-docs:
+    executor:
+      name: cloudvision-builder
+    steps:
+      - checkout
+      - configure
+      - add_ssh_keys:
+          fingerprints:
+            - $DEPLOY_KEY_FINGERPRINT
+      - node/install-packages
+      - run: npm run docs
   version-packages:
     executor:
       name: cloudvision-builder
@@ -84,6 +95,12 @@ workflows:
     when: << pipeline.parameters.is_build >>
     jobs:
       - build-and-test
+      - publish-docs:
+          requires:
+            - build-and-test
+          filters:
+            branches:
+              only: trunk
   version-and-push:
     when: << pipeline.parameters.deploy_version >>
     jobs:
