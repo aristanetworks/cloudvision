@@ -1,0 +1,964 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>Decoder | CloudVision</title>
+	<meta name="description" content="Documentation for CloudVision">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="../assets/js/search.json" data-base="..">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="../index.html" class="title">CloudVision</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="../globals.html">Globals</a>
+				</li>
+				<li>
+					<a href="../modules/a_msgpack.html">a-msgpack</a>
+				</li>
+				<li>
+					<a href="a_msgpack.decoder.html">Decoder</a>
+				</li>
+			</ul>
+			<h1>Class Decoder</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-hierarchy">
+				<h3>Hierarchy</h3>
+				<ul class="tsd-hierarchy">
+					<li>
+						<span class="target">Decoder</span>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel-group tsd-index-group">
+				<h2>Index</h2>
+				<section class="tsd-panel tsd-index-panel">
+					<div class="tsd-index-content">
+						<section class="tsd-index-section ">
+							<h3>Constructors</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-constructor tsd-parent-kind-class"><a href="a_msgpack.decoder.html#constructor" class="tsd-kind-icon">constructor</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Properties</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="a_msgpack.decoder.html#bytes" class="tsd-kind-icon">bytes</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="a_msgpack.decoder.html#cachedkeydecoder" class="tsd-kind-icon">cached<wbr>Key<wbr>Decoder</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="a_msgpack.decoder.html#extensioncodec" class="tsd-kind-icon">extension<wbr>Codec</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="a_msgpack.decoder.html#maxarraylength" class="tsd-kind-icon">max<wbr>Array<wbr>Length</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="a_msgpack.decoder.html#maxbinlength" class="tsd-kind-icon">max<wbr>Bin<wbr>Length</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="a_msgpack.decoder.html#maxextlength" class="tsd-kind-icon">max<wbr>Ext<wbr>Length</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="a_msgpack.decoder.html#maxmaplength" class="tsd-kind-icon">max<wbr>Map<wbr>Length</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="a_msgpack.decoder.html#maxstrlength" class="tsd-kind-icon">max<wbr>Str<wbr>Length</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="a_msgpack.decoder.html#pos" class="tsd-kind-icon">pos</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="a_msgpack.decoder.html#stack" class="tsd-kind-icon">stack</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="a_msgpack.decoder.html#totalpos" class="tsd-kind-icon">total<wbr>Pos</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="a_msgpack.decoder.html#usejsbi" class="tsd-kind-icon">useJSBI</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="a_msgpack.decoder.html#view" class="tsd-kind-icon">view</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Methods</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="a_msgpack.decoder.html#createnoextrabyteserror" class="tsd-kind-icon">create<wbr>NoExtra<wbr>Bytes<wbr>Error</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="a_msgpack.decoder.html#decodebinary" class="tsd-kind-icon">decode<wbr>Binary</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="a_msgpack.decoder.html#decodeextension" class="tsd-kind-icon">decode<wbr>Extension</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="a_msgpack.decoder.html#decodesinglesync" class="tsd-kind-icon">decode<wbr>Single<wbr>Sync</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="a_msgpack.decoder.html#decodesync" class="tsd-kind-icon">decode<wbr>Sync</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="a_msgpack.decoder.html#decodeutf8string" class="tsd-kind-icon">decode<wbr>Utf8<wbr>String</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="a_msgpack.decoder.html#hasremaining" class="tsd-kind-icon">has<wbr>Remaining</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="a_msgpack.decoder.html#looku16" class="tsd-kind-icon">look<wbr>U16</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="a_msgpack.decoder.html#looku32" class="tsd-kind-icon">look<wbr>U32</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="a_msgpack.decoder.html#looku8" class="tsd-kind-icon">look<wbr>U8</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="a_msgpack.decoder.html#pusharraystate" class="tsd-kind-icon">push<wbr>Array<wbr>State</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="a_msgpack.decoder.html#pushmapstate" class="tsd-kind-icon">push<wbr>Map<wbr>State</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="a_msgpack.decoder.html#readf32" class="tsd-kind-icon">read<wbr>F32</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="a_msgpack.decoder.html#readf64" class="tsd-kind-icon">read<wbr>F64</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="a_msgpack.decoder.html#readi16" class="tsd-kind-icon">read<wbr>I16</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="a_msgpack.decoder.html#readi32" class="tsd-kind-icon">read<wbr>I32</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="a_msgpack.decoder.html#readi64" class="tsd-kind-icon">read<wbr>I64</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="a_msgpack.decoder.html#readi8" class="tsd-kind-icon">read<wbr>I8</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="a_msgpack.decoder.html#readu16" class="tsd-kind-icon">read<wbr>U16</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="a_msgpack.decoder.html#readu32" class="tsd-kind-icon">read<wbr>U32</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="a_msgpack.decoder.html#readu64" class="tsd-kind-icon">read<wbr>U64</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="a_msgpack.decoder.html#readu8" class="tsd-kind-icon">read<wbr>U8</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="a_msgpack.decoder.html#setbuffer" class="tsd-kind-icon">set<wbr>Buffer</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="a_msgpack.decoder.html#stateismapkey" class="tsd-kind-icon">state<wbr>IsMap<wbr>Key</a></li>
+							</ul>
+						</section>
+					</div>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Constructors</h2>
+				<section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class">
+					<a name="constructor" class="tsd-anchor"></a>
+					<h3>constructor</h3>
+					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Decoder<span class="tsd-signature-symbol">(</span>extensionCodec<span class="tsd-signature-symbol">?: </span><a href="../interfaces/a_msgpack.extensioncodectype.html" class="tsd-signature-type">ExtensionCodecType</a>, useJSBI<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span>, maxStrLength<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span>, maxBinLength<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span>, maxArrayLength<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span>, maxMapLength<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span>, maxExtLength<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span>, cachedKeyDecoder<span class="tsd-signature-symbol">?: </span><a href="a_msgpack.cachedkeydecoder.html" class="tsd-signature-type">CachedKeyDecoder</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="a_msgpack.decoder.html" class="tsd-signature-type">Decoder</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aristanetworks/cloudvision/blob/bfe7057/packages/a-msgpack/src/Decoder.ts#L85">packages/a-msgpack/src/Decoder.ts:85</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> extensionCodec: <a href="../interfaces/a_msgpack.extensioncodectype.html" class="tsd-signature-type">ExtensionCodecType</a><span class="tsd-signature-symbol"> = ExtensionCodec.defaultCodec</span></h5>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> useJSBI: <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = false</span></h5>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> maxStrLength: <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = DEFAULT_MAX_LENGTH</span></h5>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> maxBinLength: <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = DEFAULT_MAX_LENGTH</span></h5>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> maxArrayLength: <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = DEFAULT_MAX_LENGTH</span></h5>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> maxMapLength: <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = DEFAULT_MAX_LENGTH</span></h5>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> maxExtLength: <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = DEFAULT_MAX_LENGTH</span></h5>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> cachedKeyDecoder: <a href="a_msgpack.cachedkeydecoder.html" class="tsd-signature-type">CachedKeyDecoder</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> = sharedCachedKeyDecoder</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="a_msgpack.decoder.html" class="tsd-signature-type">Decoder</a></h4>
+						</li>
+					</ul>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Properties</h2>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="bytes" class="tsd-anchor"></a>
+					<h3>bytes</h3>
+					<div class="tsd-signature tsd-kind-icon">bytes<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Uint8Array</span><span class="tsd-signature-symbol"> = EMPTY_BYTES</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aristanetworks/cloudvision/blob/bfe7057/packages/a-msgpack/src/Decoder.ts#L67">packages/a-msgpack/src/Decoder.ts:67</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="cachedkeydecoder" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> cached<wbr>Key<wbr>Decoder</h3>
+					<div class="tsd-signature tsd-kind-icon">cached<wbr>Key<wbr>Decoder<span class="tsd-signature-symbol">:</span> <a href="a_msgpack.cachedkeydecoder.html" class="tsd-signature-type">CachedKeyDecoder</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aristanetworks/cloudvision/blob/bfe7057/packages/a-msgpack/src/Decoder.ts#L83">packages/a-msgpack/src/Decoder.ts:83</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="extensioncodec" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> extension<wbr>Codec</h3>
+					<div class="tsd-signature tsd-kind-icon">extension<wbr>Codec<span class="tsd-signature-symbol">:</span> <a href="../interfaces/a_msgpack.extensioncodectype.html" class="tsd-signature-type">ExtensionCodecType</a></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aristanetworks/cloudvision/blob/bfe7057/packages/a-msgpack/src/Decoder.ts#L81">packages/a-msgpack/src/Decoder.ts:81</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="maxarraylength" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> max<wbr>Array<wbr>Length</h3>
+					<div class="tsd-signature tsd-kind-icon">max<wbr>Array<wbr>Length<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aristanetworks/cloudvision/blob/bfe7057/packages/a-msgpack/src/Decoder.ts#L75">packages/a-msgpack/src/Decoder.ts:75</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="maxbinlength" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> max<wbr>Bin<wbr>Length</h3>
+					<div class="tsd-signature tsd-kind-icon">max<wbr>Bin<wbr>Length<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aristanetworks/cloudvision/blob/bfe7057/packages/a-msgpack/src/Decoder.ts#L73">packages/a-msgpack/src/Decoder.ts:73</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="maxextlength" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> max<wbr>Ext<wbr>Length</h3>
+					<div class="tsd-signature tsd-kind-icon">max<wbr>Ext<wbr>Length<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aristanetworks/cloudvision/blob/bfe7057/packages/a-msgpack/src/Decoder.ts#L79">packages/a-msgpack/src/Decoder.ts:79</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="maxmaplength" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> max<wbr>Map<wbr>Length</h3>
+					<div class="tsd-signature tsd-kind-icon">max<wbr>Map<wbr>Length<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aristanetworks/cloudvision/blob/bfe7057/packages/a-msgpack/src/Decoder.ts#L77">packages/a-msgpack/src/Decoder.ts:77</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="maxstrlength" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> max<wbr>Str<wbr>Length</h3>
+					<div class="tsd-signature tsd-kind-icon">max<wbr>Str<wbr>Length<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aristanetworks/cloudvision/blob/bfe7057/packages/a-msgpack/src/Decoder.ts#L71">packages/a-msgpack/src/Decoder.ts:71</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="pos" class="tsd-anchor"></a>
+					<h3>pos</h3>
+					<div class="tsd-signature tsd-kind-icon">pos<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 0</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aristanetworks/cloudvision/blob/bfe7057/packages/a-msgpack/src/Decoder.ts#L63">packages/a-msgpack/src/Decoder.ts:63</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="stack" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> stack</h3>
+					<div class="tsd-signature tsd-kind-icon">stack<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">StackState</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> = []</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aristanetworks/cloudvision/blob/bfe7057/packages/a-msgpack/src/Decoder.ts#L69">packages/a-msgpack/src/Decoder.ts:69</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="totalpos" class="tsd-anchor"></a>
+					<h3>total<wbr>Pos</h3>
+					<div class="tsd-signature tsd-kind-icon">total<wbr>Pos<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 0</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aristanetworks/cloudvision/blob/bfe7057/packages/a-msgpack/src/Decoder.ts#L61">packages/a-msgpack/src/Decoder.ts:61</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="usejsbi" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> useJSBI</h3>
+					<div class="tsd-signature tsd-kind-icon">useJSBI<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aristanetworks/cloudvision/blob/bfe7057/packages/a-msgpack/src/Decoder.ts#L85">packages/a-msgpack/src/Decoder.ts:85</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="view" class="tsd-anchor"></a>
+					<h3>view</h3>
+					<div class="tsd-signature tsd-kind-icon">view<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">DataView</span><span class="tsd-signature-symbol"> = EMPTY_VIEW</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aristanetworks/cloudvision/blob/bfe7057/packages/a-msgpack/src/Decoder.ts#L65">packages/a-msgpack/src/Decoder.ts:65</a></li>
+						</ul>
+					</aside>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Methods</h2>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="createnoextrabyteserror" class="tsd-anchor"></a>
+					<h3>create<wbr>NoExtra<wbr>Bytes<wbr>Error</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">create<wbr>NoExtra<wbr>Bytes<wbr>Error<span class="tsd-signature-symbol">(</span>posToShow<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Error</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aristanetworks/cloudvision/blob/bfe7057/packages/a-msgpack/src/Decoder.ts#L117">packages/a-msgpack/src/Decoder.ts:117</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>posToShow: <span class="tsd-signature-type">number</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Error</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="decodebinary" class="tsd-anchor"></a>
+					<h3>decode<wbr>Binary</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">decode<wbr>Binary<span class="tsd-signature-symbol">(</span>byteLength<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, headOffset<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Uint8Array</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aristanetworks/cloudvision/blob/bfe7057/packages/a-msgpack/src/Decoder.ts#L380">packages/a-msgpack/src/Decoder.ts:380</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>byteLength: <span class="tsd-signature-type">number</span></h5>
+								</li>
+								<li>
+									<h5>headOffset: <span class="tsd-signature-type">number</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Uint8Array</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="decodeextension" class="tsd-anchor"></a>
+					<h3>decode<wbr>Extension</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">decode<wbr>Extension<span class="tsd-signature-symbol">(</span>size<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, headOffset<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">unknown</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aristanetworks/cloudvision/blob/bfe7057/packages/a-msgpack/src/Decoder.ts#L397">packages/a-msgpack/src/Decoder.ts:397</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>size: <span class="tsd-signature-type">number</span></h5>
+								</li>
+								<li>
+									<h5>headOffset: <span class="tsd-signature-type">number</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">unknown</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="decodesinglesync" class="tsd-anchor"></a>
+					<h3>decode<wbr>Single<wbr>Sync</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">decode<wbr>Single<wbr>Sync<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">unknown</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aristanetworks/cloudvision/blob/bfe7057/packages/a-msgpack/src/Decoder.ts#L122">packages/a-msgpack/src/Decoder.ts:122</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">unknown</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="decodesync" class="tsd-anchor"></a>
+					<h3>decode<wbr>Sync</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">decode<wbr>Sync<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">unknown</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aristanetworks/cloudvision/blob/bfe7057/packages/a-msgpack/src/Decoder.ts#L130">packages/a-msgpack/src/Decoder.ts:130</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">unknown</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="decodeutf8string" class="tsd-anchor"></a>
+					<h3>decode<wbr>Utf8<wbr>String</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">decode<wbr>Utf8<wbr>String<span class="tsd-signature-symbol">(</span>byteLength<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, headerOffset<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aristanetworks/cloudvision/blob/bfe7057/packages/a-msgpack/src/Decoder.ts#L347">packages/a-msgpack/src/Decoder.ts:347</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>byteLength: <span class="tsd-signature-type">number</span></h5>
+								</li>
+								<li>
+									<h5>headerOffset: <span class="tsd-signature-type">number</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="hasremaining" class="tsd-anchor"></a>
+					<h3>has<wbr>Remaining</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">has<wbr>Remaining<span class="tsd-signature-symbol">(</span>size<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aristanetworks/cloudvision/blob/bfe7057/packages/a-msgpack/src/Decoder.ts#L113">packages/a-msgpack/src/Decoder.ts:113</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> size: <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 1</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="looku16" class="tsd-anchor"></a>
+					<h3>look<wbr>U16</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">look<wbr>U16<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aristanetworks/cloudvision/blob/bfe7057/packages/a-msgpack/src/Decoder.ts#L413">packages/a-msgpack/src/Decoder.ts:413</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="looku32" class="tsd-anchor"></a>
+					<h3>look<wbr>U32</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">look<wbr>U32<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aristanetworks/cloudvision/blob/bfe7057/packages/a-msgpack/src/Decoder.ts#L417">packages/a-msgpack/src/Decoder.ts:417</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="looku8" class="tsd-anchor"></a>
+					<h3>look<wbr>U8</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">look<wbr>U8<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aristanetworks/cloudvision/blob/bfe7057/packages/a-msgpack/src/Decoder.ts#L409">packages/a-msgpack/src/Decoder.ts:409</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="pusharraystate" class="tsd-anchor"></a>
+					<h3>push<wbr>Array<wbr>State</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">push<wbr>Array<wbr>State<span class="tsd-signature-symbol">(</span>size<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aristanetworks/cloudvision/blob/bfe7057/packages/a-msgpack/src/Decoder.ts#L331">packages/a-msgpack/src/Decoder.ts:331</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>size: <span class="tsd-signature-type">number</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="pushmapstate" class="tsd-anchor"></a>
+					<h3>push<wbr>Map<wbr>State</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">push<wbr>Map<wbr>State<span class="tsd-signature-symbol">(</span>size<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aristanetworks/cloudvision/blob/bfe7057/packages/a-msgpack/src/Decoder.ts#L312">packages/a-msgpack/src/Decoder.ts:312</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>size: <span class="tsd-signature-type">number</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="readf32" class="tsd-anchor"></a>
+					<h3>read<wbr>F32</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">read<wbr>F32<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aristanetworks/cloudvision/blob/bfe7057/packages/a-msgpack/src/Decoder.ts#L469">packages/a-msgpack/src/Decoder.ts:469</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="readf64" class="tsd-anchor"></a>
+					<h3>read<wbr>F64</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">read<wbr>F64<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aristanetworks/cloudvision/blob/bfe7057/packages/a-msgpack/src/Decoder.ts#L475">packages/a-msgpack/src/Decoder.ts:475</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="readi16" class="tsd-anchor"></a>
+					<h3>read<wbr>I16</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">read<wbr>I16<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aristanetworks/cloudvision/blob/bfe7057/packages/a-msgpack/src/Decoder.ts#L439">packages/a-msgpack/src/Decoder.ts:439</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="readi32" class="tsd-anchor"></a>
+					<h3>read<wbr>I32</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">read<wbr>I32<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aristanetworks/cloudvision/blob/bfe7057/packages/a-msgpack/src/Decoder.ts#L451">packages/a-msgpack/src/Decoder.ts:451</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="readi64" class="tsd-anchor"></a>
+					<h3>read<wbr>I64</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">read<wbr>I64<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">bigint</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">JSBI</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aristanetworks/cloudvision/blob/bfe7057/packages/a-msgpack/src/Decoder.ts#L463">packages/a-msgpack/src/Decoder.ts:463</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">bigint</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">JSBI</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="readi8" class="tsd-anchor"></a>
+					<h3>read<wbr>I8</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">read<wbr>I8<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aristanetworks/cloudvision/blob/bfe7057/packages/a-msgpack/src/Decoder.ts#L427">packages/a-msgpack/src/Decoder.ts:427</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="readu16" class="tsd-anchor"></a>
+					<h3>read<wbr>U16</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">read<wbr>U16<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aristanetworks/cloudvision/blob/bfe7057/packages/a-msgpack/src/Decoder.ts#L433">packages/a-msgpack/src/Decoder.ts:433</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="readu32" class="tsd-anchor"></a>
+					<h3>read<wbr>U32</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">read<wbr>U32<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aristanetworks/cloudvision/blob/bfe7057/packages/a-msgpack/src/Decoder.ts#L445">packages/a-msgpack/src/Decoder.ts:445</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="readu64" class="tsd-anchor"></a>
+					<h3>read<wbr>U64</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">read<wbr>U64<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">bigint</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">JSBI</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aristanetworks/cloudvision/blob/bfe7057/packages/a-msgpack/src/Decoder.ts#L457">packages/a-msgpack/src/Decoder.ts:457</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">bigint</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">JSBI</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="readu8" class="tsd-anchor"></a>
+					<h3>read<wbr>U8</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">read<wbr>U8<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aristanetworks/cloudvision/blob/bfe7057/packages/a-msgpack/src/Decoder.ts#L421">packages/a-msgpack/src/Decoder.ts:421</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="setbuffer" class="tsd-anchor"></a>
+					<h3>set<wbr>Buffer</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">set<wbr>Buffer<span class="tsd-signature-symbol">(</span>buffer<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ArrayLike</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">ArrayBuffer</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aristanetworks/cloudvision/blob/bfe7057/packages/a-msgpack/src/Decoder.ts#L107">packages/a-msgpack/src/Decoder.ts:107</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>buffer: <span class="tsd-signature-type">ArrayLike</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">ArrayBuffer</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="stateismapkey" class="tsd-anchor"></a>
+					<h3>state<wbr>IsMap<wbr>Key</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">state<wbr>IsMap<wbr>Key<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aristanetworks/cloudvision/blob/bfe7057/packages/a-msgpack/src/Decoder.ts#L372">packages/a-msgpack/src/Decoder.ts:372</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+						</li>
+					</ul>
+				</section>
+			</section>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class="globals  ">
+						<a href="../globals.html"><em>Globals</em></a>
+					</li>
+					<li class="current tsd-kind-module">
+						<a href="../modules/a_msgpack.html">a-<wbr>msgpack</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="../modules/cloudvision_connector.html">cloudvision-<wbr>connector</a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+				</ul>
+				<ul class="current">
+					<li class="current tsd-kind-module">
+						<a href="../modules/a_msgpack.html" class="tsd-kind-icon">a-<wbr>msgpack</a>
+						<ul>
+							<li class="current tsd-kind-class tsd-parent-kind-module">
+								<a href="a_msgpack.decoder.html" class="tsd-kind-icon">Decoder</a>
+								<ul>
+									<li class=" tsd-kind-constructor tsd-parent-kind-class">
+										<a href="a_msgpack.decoder.html#constructor" class="tsd-kind-icon">constructor</a>
+									</li>
+									<li class=" tsd-kind-property tsd-parent-kind-class">
+										<a href="a_msgpack.decoder.html#bytes" class="tsd-kind-icon">bytes</a>
+									</li>
+									<li class=" tsd-kind-property tsd-parent-kind-class">
+										<a href="a_msgpack.decoder.html#cachedkeydecoder" class="tsd-kind-icon">cached<wbr>Key<wbr>Decoder</a>
+									</li>
+									<li class=" tsd-kind-property tsd-parent-kind-class">
+										<a href="a_msgpack.decoder.html#extensioncodec" class="tsd-kind-icon">extension<wbr>Codec</a>
+									</li>
+									<li class=" tsd-kind-property tsd-parent-kind-class">
+										<a href="a_msgpack.decoder.html#maxarraylength" class="tsd-kind-icon">max<wbr>Array<wbr>Length</a>
+									</li>
+									<li class=" tsd-kind-property tsd-parent-kind-class">
+										<a href="a_msgpack.decoder.html#maxbinlength" class="tsd-kind-icon">max<wbr>Bin<wbr>Length</a>
+									</li>
+									<li class=" tsd-kind-property tsd-parent-kind-class">
+										<a href="a_msgpack.decoder.html#maxextlength" class="tsd-kind-icon">max<wbr>Ext<wbr>Length</a>
+									</li>
+									<li class=" tsd-kind-property tsd-parent-kind-class">
+										<a href="a_msgpack.decoder.html#maxmaplength" class="tsd-kind-icon">max<wbr>Map<wbr>Length</a>
+									</li>
+									<li class=" tsd-kind-property tsd-parent-kind-class">
+										<a href="a_msgpack.decoder.html#maxstrlength" class="tsd-kind-icon">max<wbr>Str<wbr>Length</a>
+									</li>
+									<li class=" tsd-kind-property tsd-parent-kind-class">
+										<a href="a_msgpack.decoder.html#pos" class="tsd-kind-icon">pos</a>
+									</li>
+									<li class=" tsd-kind-property tsd-parent-kind-class">
+										<a href="a_msgpack.decoder.html#stack" class="tsd-kind-icon">stack</a>
+									</li>
+									<li class=" tsd-kind-property tsd-parent-kind-class">
+										<a href="a_msgpack.decoder.html#totalpos" class="tsd-kind-icon">total<wbr>Pos</a>
+									</li>
+									<li class=" tsd-kind-property tsd-parent-kind-class">
+										<a href="a_msgpack.decoder.html#usejsbi" class="tsd-kind-icon">useJSBI</a>
+									</li>
+									<li class=" tsd-kind-property tsd-parent-kind-class">
+										<a href="a_msgpack.decoder.html#view" class="tsd-kind-icon">view</a>
+									</li>
+									<li class=" tsd-kind-method tsd-parent-kind-class">
+										<a href="a_msgpack.decoder.html#createnoextrabyteserror" class="tsd-kind-icon">create<wbr>NoExtra<wbr>Bytes<wbr>Error</a>
+									</li>
+									<li class=" tsd-kind-method tsd-parent-kind-class">
+										<a href="a_msgpack.decoder.html#decodebinary" class="tsd-kind-icon">decode<wbr>Binary</a>
+									</li>
+									<li class=" tsd-kind-method tsd-parent-kind-class">
+										<a href="a_msgpack.decoder.html#decodeextension" class="tsd-kind-icon">decode<wbr>Extension</a>
+									</li>
+									<li class=" tsd-kind-method tsd-parent-kind-class">
+										<a href="a_msgpack.decoder.html#decodesinglesync" class="tsd-kind-icon">decode<wbr>Single<wbr>Sync</a>
+									</li>
+									<li class=" tsd-kind-method tsd-parent-kind-class">
+										<a href="a_msgpack.decoder.html#decodesync" class="tsd-kind-icon">decode<wbr>Sync</a>
+									</li>
+									<li class=" tsd-kind-method tsd-parent-kind-class">
+										<a href="a_msgpack.decoder.html#decodeutf8string" class="tsd-kind-icon">decode<wbr>Utf8<wbr>String</a>
+									</li>
+									<li class=" tsd-kind-method tsd-parent-kind-class">
+										<a href="a_msgpack.decoder.html#hasremaining" class="tsd-kind-icon">has<wbr>Remaining</a>
+									</li>
+									<li class=" tsd-kind-method tsd-parent-kind-class">
+										<a href="a_msgpack.decoder.html#looku16" class="tsd-kind-icon">look<wbr>U16</a>
+									</li>
+									<li class=" tsd-kind-method tsd-parent-kind-class">
+										<a href="a_msgpack.decoder.html#looku32" class="tsd-kind-icon">look<wbr>U32</a>
+									</li>
+									<li class=" tsd-kind-method tsd-parent-kind-class">
+										<a href="a_msgpack.decoder.html#looku8" class="tsd-kind-icon">look<wbr>U8</a>
+									</li>
+									<li class=" tsd-kind-method tsd-parent-kind-class">
+										<a href="a_msgpack.decoder.html#pusharraystate" class="tsd-kind-icon">push<wbr>Array<wbr>State</a>
+									</li>
+									<li class=" tsd-kind-method tsd-parent-kind-class">
+										<a href="a_msgpack.decoder.html#pushmapstate" class="tsd-kind-icon">push<wbr>Map<wbr>State</a>
+									</li>
+									<li class=" tsd-kind-method tsd-parent-kind-class">
+										<a href="a_msgpack.decoder.html#readf32" class="tsd-kind-icon">read<wbr>F32</a>
+									</li>
+									<li class=" tsd-kind-method tsd-parent-kind-class">
+										<a href="a_msgpack.decoder.html#readf64" class="tsd-kind-icon">read<wbr>F64</a>
+									</li>
+									<li class=" tsd-kind-method tsd-parent-kind-class">
+										<a href="a_msgpack.decoder.html#readi16" class="tsd-kind-icon">read<wbr>I16</a>
+									</li>
+									<li class=" tsd-kind-method tsd-parent-kind-class">
+										<a href="a_msgpack.decoder.html#readi32" class="tsd-kind-icon">read<wbr>I32</a>
+									</li>
+									<li class=" tsd-kind-method tsd-parent-kind-class">
+										<a href="a_msgpack.decoder.html#readi64" class="tsd-kind-icon">read<wbr>I64</a>
+									</li>
+									<li class=" tsd-kind-method tsd-parent-kind-class">
+										<a href="a_msgpack.decoder.html#readi8" class="tsd-kind-icon">read<wbr>I8</a>
+									</li>
+									<li class=" tsd-kind-method tsd-parent-kind-class">
+										<a href="a_msgpack.decoder.html#readu16" class="tsd-kind-icon">read<wbr>U16</a>
+									</li>
+									<li class=" tsd-kind-method tsd-parent-kind-class">
+										<a href="a_msgpack.decoder.html#readu32" class="tsd-kind-icon">read<wbr>U32</a>
+									</li>
+									<li class=" tsd-kind-method tsd-parent-kind-class">
+										<a href="a_msgpack.decoder.html#readu64" class="tsd-kind-icon">read<wbr>U64</a>
+									</li>
+									<li class=" tsd-kind-method tsd-parent-kind-class">
+										<a href="a_msgpack.decoder.html#readu8" class="tsd-kind-icon">read<wbr>U8</a>
+									</li>
+									<li class=" tsd-kind-method tsd-parent-kind-class">
+										<a href="a_msgpack.decoder.html#setbuffer" class="tsd-kind-icon">set<wbr>Buffer</a>
+									</li>
+									<li class=" tsd-kind-method tsd-parent-kind-class">
+										<a href="a_msgpack.decoder.html#stateismapkey" class="tsd-kind-icon">state<wbr>IsMap<wbr>Key</a>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</li>
+				</ul>
+				<ul class="after-current">
+					<li class=" tsd-kind-module">
+						<a href="../modules/cloudvision_connector.html" class="tsd-kind-icon">cloudvision-<wbr>connector</a>
+					</li>
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer>
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-object-literal"><span class="tsd-kind-icon">Object literal</span></li>
+				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
+				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
+				<li class="tsd-kind-type-alias tsd-has-type-parameter"><span class="tsd-kind-icon">Type alias with type parameter</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
+				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
+				<li class="tsd-kind-interface tsd-has-type-parameter"><span class="tsd-kind-icon">Interface with type parameter</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="overlay"></div>
+<script src="../assets/js/main.js"></script>
+</body>
+</html>
