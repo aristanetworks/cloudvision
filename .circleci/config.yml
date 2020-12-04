@@ -60,6 +60,7 @@ jobs:
       - add_ssh_keys:
           fingerprints:
             - $DEPLOY_KEY_FINGERPRINT
+      - node/install-packages
       - run: npm run docs:deploy
   version-packages:
     executor:
