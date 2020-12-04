@@ -3,6 +3,7 @@
   "private": true,
   "devDependencies": {
     "@strictsoftware/typedoc-plugin-monorepo": "0.3.1",
+    "gh-pages": "3.1.0",
     "lerna": "3.22.1",
     "typedoc": "0.19.2",
     "typescript": "4.1.2"
@@ -14,6 +15,8 @@
     "ci": "npm run check && npm run test && npm run build",
     "clean": "lerna run clean",
     "docs": "typedoc --options typedoc.json",
+    "docs:deploy": "npm run docs && npm run gh-pages",
+    "gh-pages": "gh-pages -d docs",
     "lerna-version": "lerna version --conventional-commits --exact --no-push --yes",
     "postinstall": "npm run bootstrap",
     "preinstall": "npx npm-force-resolutions",
