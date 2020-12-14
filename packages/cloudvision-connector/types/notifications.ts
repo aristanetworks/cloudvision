@@ -26,9 +26,9 @@ export interface CloudVisionDatapoint<K, V> {
 export interface CloudVisionNotification<PE, T, U, D> {
   timestamp: T;
 
-  delete_all?: boolean;
+  delete_all?: boolean; // eslint-disable-line @typescript-eslint/naming-convention
   deletes?: D;
-  path_elements?: PE;
+  path_elements?: PE; // eslint-disable-line @typescript-eslint/naming-convention
   updates?: U;
 }
 

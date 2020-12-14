@@ -45,7 +45,7 @@ export type DatasetTypes = DatasetType;
 export type SearchType = typeof SEARCH_TYPE_ANY | typeof SEARCH_TYPE_IP | typeof SEARCH_TYPE_MAC;
 
 export interface PathObject {
-  path_elements: PathElements;
+  path_elements: PathElements; // eslint-disable-line @typescript-eslint/naming-convention
 
   keys?: readonly NeatType[];
 }
