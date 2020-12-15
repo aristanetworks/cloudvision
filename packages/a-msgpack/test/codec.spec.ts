@@ -143,39 +143,41 @@ describe('NEAT codec', () => {
   const bytesTests: YamlTest[] = [];
   const wildcardTests: YamlTest[] = [];
 
-  tests.tests.forEach((test: YamlTest) => {
-    if (test.bool !== undefined) {
-      boolTests.push(test);
-    } else if (test.i8 !== undefined) {
-      int8Tests.push(test);
-    } else if (test.i16 !== undefined) {
-      int16Tests.push(test);
-    } else if (test.i32 !== undefined) {
-      int32Tests.push(test);
-    } else if (test.i64 !== undefined) {
-      int64Tests.push(test);
-    } else if (test.f32 !== undefined) {
-      float32Tests.push(test);
-    } else if (test.f64 !== undefined) {
-      float64Tests.push(test);
-    } else if (test.str !== undefined) {
-      stringTests.push(test);
-    } else if (test.map !== undefined) {
-      mapTests.push(test);
-    } else if (test.array !== undefined) {
-      arrayTests.push(test);
-    } else if (test.pointer !== undefined) {
-      pointerTests.push(test);
-    } else if (test.complex !== undefined) {
-      complexTests.push(test);
-    } else if (test.bytes !== undefined) {
-      bytesTests.push(test);
-    } else if (test.wildcard !== undefined) {
-      wildcardTests.push(test);
-    } else {
-      nilTests.push(test);
-    }
-  });
+  if (typeof tests === 'object') {
+    (tests as { tests: YamlTest[] }).tests.forEach((test: YamlTest) => {
+      if (test.bool !== undefined) {
+        boolTests.push(test);
+      } else if (test.i8 !== undefined) {
+        int8Tests.push(test);
+      } else if (test.i16 !== undefined) {
+        int16Tests.push(test);
+      } else if (test.i32 !== undefined) {
+        int32Tests.push(test);
+      } else if (test.i64 !== undefined) {
+        int64Tests.push(test);
+      } else if (test.f32 !== undefined) {
+        float32Tests.push(test);
+      } else if (test.f64 !== undefined) {
+        float64Tests.push(test);
+      } else if (test.str !== undefined) {
+        stringTests.push(test);
+      } else if (test.map !== undefined) {
+        mapTests.push(test);
+      } else if (test.array !== undefined) {
+        arrayTests.push(test);
+      } else if (test.pointer !== undefined) {
+        pointerTests.push(test);
+      } else if (test.complex !== undefined) {
+        complexTests.push(test);
+      } else if (test.bytes !== undefined) {
+        bytesTests.push(test);
+      } else if (test.wildcard !== undefined) {
+        wildcardTests.push(test);
+      } else {
+        nilTests.push(test);
+      }
+    });
+  }
 
   test('should properly encode/decode nil', () => {
     nilTests.forEach((test) => {
