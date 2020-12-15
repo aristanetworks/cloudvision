@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.6.3](https://github.com/aristanetworks/cloudvision/compare/v4.6.2...v4.6.3) (2020-12-15)
+
+
+### Bug Fixes
+
+* **docs:** install packages before running gh-pages ([#301](https://github.com/aristanetworks/cloudvision/issues/301)) ([bfe7057](https://github.com/aristanetworks/cloudvision/commit/bfe70573d1299cdb7d74b1a68efe8b6f02519fa2))
+
+
+### Features
+
+* **docs:** publish docs to gh-pages branch ([#300](https://github.com/aristanetworks/cloudvision/issues/300)) ([2c2cef3](https://github.com/aristanetworks/cloudvision/commit/2c2cef31c9f15ad7ae9ccc482720822514d6bea8))
+
+
+
+
+
 ## [4.6.2](https://github.com/aristanetworks/cloudvision/compare/v4.6.1...v4.6.2) (2020-12-01)
 
 
