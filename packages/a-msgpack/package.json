@@ -1,6 +1,6 @@
 {
   "name": "a-msgpack",
-  "version": "4.6.3",
+  "version": "4.6.4",
   "description": "A minimalistic NEAT (MessagePack based) encoder and decoder for JavaScript.",
   "author": "Stephane Rufer <stephane@arista.com>",
   "homepage": "https://aristanetworks.github.io/cloudvision/modules/a_msgpack.html",
