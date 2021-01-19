@@ -58,6 +58,10 @@ export interface SearchOptions {
 export interface DatasetObject {
   name: string;
   type: DatasetType;
+  parent?: {
+    name: string;
+    type: string;
+  };
 }
 
 export interface QueryObject {
