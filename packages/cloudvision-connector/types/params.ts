@@ -1,10 +1,7 @@
 import { NeatType, PathElements } from 'a-msgpack';
 
 import {
-  APP_DATASET_TYPE,
   CLOSE,
-  CONFIG_DATASET_TYPE,
-  DEVICE_DATASET_TYPE,
   GET,
   GET_AND_SUBSCRIBE,
   GET_DATASETS,
