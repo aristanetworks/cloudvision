@@ -1,10 +1,7 @@
 import { NeatType, PathElements } from 'a-msgpack';
 
 import {
-  APP_DATASET_TYPE,
   CLOSE,
-  CONFIG_DATASET_TYPE,
-  DEVICE_DATASET_TYPE,
   GET,
   GET_AND_SUBSCRIBE,
   GET_DATASETS,
@@ -34,14 +31,6 @@ export type StreamCommands = StreamCommand;
 
 export type WsCommand = GetCommand | StreamCommand | typeof CLOSE | typeof PUBLISH;
 
-export type DatasetType =
-  | typeof APP_DATASET_TYPE
-  | typeof CONFIG_DATASET_TYPE
-  | typeof DEVICE_DATASET_TYPE;
-
-/** @deprecated: Use `DatasetType`. */
-export type DatasetTypes = DatasetType;
-
 export type SearchType = typeof SEARCH_TYPE_ANY | typeof SEARCH_TYPE_IP | typeof SEARCH_TYPE_MAC;
 
 export interface PathObject {
@@ -57,11 +46,9 @@ export interface SearchOptions {
 
 export interface DatasetObject {
   name: string;
-  type: DatasetType;
-  parent?: {
-    name: string;
-    type: string;
-  };
+  type: string;
+
+  parent?: DatasetObject;
 }
 
 export interface QueryObject {
@@ -123,7 +110,7 @@ export interface QueryParams {
 }
 
 export interface DatasetParams {
-  types?: DatasetType[];
+  types?: string[];
 }
 
 export interface SearchParams {
