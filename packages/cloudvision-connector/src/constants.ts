@@ -15,7 +15,7 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import { DatasetType, RequestContext, SearchType } from '../types';
+import { RequestContext, SearchType } from '../types';
 
 export const ERROR = 'ERROR';
 export const INFO = 'INFO';
@@ -54,7 +54,7 @@ export const SERVICE_REQUEST = 'serviceRequest';
 export const APP_DATASET_TYPE = 'app';
 export const CONFIG_DATASET_TYPE = 'config';
 export const DEVICE_DATASET_TYPE = 'device';
-export const ALL_DATASET_TYPES: DatasetType[] = [
+export const ALL_DATASET_TYPES: string[] = [
   APP_DATASET_TYPE,
   CONFIG_DATASET_TYPE,
   DEVICE_DATASET_TYPE,
