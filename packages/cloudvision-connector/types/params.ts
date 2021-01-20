@@ -47,6 +47,7 @@ export interface SearchOptions {
 export interface DatasetObject {
   name: string;
   type: string;
+
   parent?: DatasetObject;
 }
 
