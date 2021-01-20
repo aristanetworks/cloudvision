@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.6.5](https://github.com/aristanetworks/cloudvision/compare/v4.6.4...v4.6.5) (2021-01-20)
+
+
+### Bug Fixes
+
+* **cloudvision-connector:** fix DatasetObject type ([#337](https://github.com/aristanetworks/cloudvision/issues/337)) ([b432bf9](https://github.com/aristanetworks/cloudvision/commit/b432bf93cad353a67edf9eb29e36736bbeef89be))
+
+
+
+
+
 ## [4.6.4](https://github.com/aristanetworks/cloudvision/compare/v4.6.3...v4.6.4) (2021-01-19)
 
 

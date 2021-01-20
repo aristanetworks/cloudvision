@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.6.5](https://github.com/aristanetworks/cloudvision/compare/v4.6.4...v4.6.5) (2021-01-20)
+
+**Note:** Version bump only for package a-msgpack
+
+
+
+
+
 ## [4.6.4](https://github.com/aristanetworks/cloudvision/compare/v4.6.3...v4.6.4) (2021-01-19)
 
 **Note:** Version bump only for package a-msgpack
