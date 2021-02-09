@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>EncodeOptions | CloudVision</title>
+	<title>Timestamp | CloudVision</title>
 	<meta name="description" content="Documentation for CloudVision">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -55,10 +55,10 @@
 					<a href="../modules/a_msgpack.html">a-msgpack</a>
 				</li>
 				<li>
-					<a href="a_msgpack.encodeoptions.html">EncodeOptions</a>
+					<a href="a_msgpack.timestamp.html">Timestamp</a>
 				</li>
 			</ul>
-			<h1>Interface EncodeOptions</h1>
+			<h1>Interface Timestamp</h1>
 		</div>
 	</div>
 </header>
@@ -69,7 +69,7 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">EncodeOptions</span>
+						<span class="target">Timestamp</span>
 					</li>
 				</ul>
 			</section>
@@ -80,9 +80,8 @@
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="a_msgpack.encodeoptions.html#extensioncodec" class="tsd-kind-icon">extension<wbr>Codec</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="a_msgpack.encodeoptions.html#initialbuffersize" class="tsd-kind-icon">initial<wbr>Buffer<wbr>Size</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="a_msgpack.encodeoptions.html#maxdepth" class="tsd-kind-icon">max<wbr>Depth</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="a_msgpack.timestamp.html#nanos" class="tsd-kind-icon">nanos</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="a_msgpack.timestamp.html#seconds" class="tsd-kind-icon">seconds</a></li>
 							</ul>
 						</section>
 					</div>
@@ -91,53 +90,24 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="extensioncodec" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> extension<wbr>Codec</h3>
-					<div class="tsd-signature tsd-kind-icon">extension<wbr>Codec<span class="tsd-signature-symbol">:</span> <a href="a_msgpack.extensioncodectype.html" class="tsd-signature-type">ExtensionCodecType</a></div>
+					<a name="nanos" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> nanos</h3>
+					<div class="tsd-signature tsd-kind-icon">nanos<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aristanetworks/cloudvision/blob/6c4e13d/packages/a-msgpack/src/encode.ts#L9">packages/a-msgpack/src/encode.ts:9</a></li>
+							<li>Defined in <a href="https://github.com/aristanetworks/cloudvision/blob/6c4e13d/packages/a-msgpack/types/neat.ts#L13">packages/a-msgpack/types/neat.ts:13</a></li>
 						</ul>
 					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>The extension codec to use.
-							Default is none</p>
-						</div>
-					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="initialbuffersize" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> initial<wbr>Buffer<wbr>Size</h3>
-					<div class="tsd-signature tsd-kind-icon">initial<wbr>Buffer<wbr>Size<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span></div>
+					<a name="seconds" class="tsd-anchor"></a>
+					<h3>seconds</h3>
+					<div class="tsd-signature tsd-kind-icon">seconds<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aristanetworks/cloudvision/blob/6c4e13d/packages/a-msgpack/src/encode.ts#L20">packages/a-msgpack/src/encode.ts:20</a></li>
+							<li>Defined in <a href="https://github.com/aristanetworks/cloudvision/blob/6c4e13d/packages/a-msgpack/types/neat.ts#L12">packages/a-msgpack/types/neat.ts:12</a></li>
 						</ul>
 					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>The size of the buffer when beginning encoding.
-								This is the minimum amount of memory allocated.
-							Default 2048</p>
-						</div>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="maxdepth" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> max<wbr>Depth</h3>
-					<div class="tsd-signature tsd-kind-icon">max<wbr>Depth<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/aristanetworks/cloudvision/blob/6c4e13d/packages/a-msgpack/src/encode.ts#L14">packages/a-msgpack/src/encode.ts:14</a></li>
-						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>The maximum object depth
-							Default 100</p>
-						</div>
-					</div>
 				</section>
 			</section>
 		</div>
@@ -163,16 +133,13 @@
 						<a href="../modules/a_msgpack.html" class="tsd-kind-icon">a-<wbr>msgpack</a>
 						<ul>
 							<li class="current tsd-kind-interface tsd-parent-kind-module">
-								<a href="a_msgpack.encodeoptions.html" class="tsd-kind-icon">Encode<wbr>Options</a>
+								<a href="a_msgpack.timestamp.html" class="tsd-kind-icon">Timestamp</a>
 								<ul>
 									<li class=" tsd-kind-property tsd-parent-kind-interface">
-										<a href="a_msgpack.encodeoptions.html#extensioncodec" class="tsd-kind-icon">extension<wbr>Codec</a>
+										<a href="a_msgpack.timestamp.html#nanos" class="tsd-kind-icon">nanos</a>
 									</li>
 									<li class=" tsd-kind-property tsd-parent-kind-interface">
-										<a href="a_msgpack.encodeoptions.html#initialbuffersize" class="tsd-kind-icon">initial<wbr>Buffer<wbr>Size</a>
-									</li>
-									<li class=" tsd-kind-property tsd-parent-kind-interface">
-										<a href="a_msgpack.encodeoptions.html#maxdepth" class="tsd-kind-icon">max<wbr>Depth</a>
+										<a href="a_msgpack.timestamp.html#seconds" class="tsd-kind-icon">seconds</a>
 									</li>
 								</ul>
 							</li>

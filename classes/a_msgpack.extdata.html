@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>EncodeOptions | CloudVision</title>
+	<title>ExtData | CloudVision</title>
 	<meta name="description" content="Documentation for CloudVision">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -55,21 +55,28 @@
 					<a href="../modules/a_msgpack.html">a-msgpack</a>
 				</li>
 				<li>
-					<a href="a_msgpack.encodeoptions.html">EncodeOptions</a>
+					<a href="a_msgpack.extdata.html">ExtData</a>
 				</li>
 			</ul>
-			<h1>Interface EncodeOptions</h1>
+			<h1>Class ExtData</h1>
 		</div>
 	</div>
 </header>
 <div class="container container-main">
 	<div class="row">
 		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-comment">
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<p>ExtData is used to handle Extension Types that are not registered to ExtensionCodec.</p>
+					</div>
+				</div>
+			</section>
 			<section class="tsd-panel tsd-hierarchy">
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">EncodeOptions</span>
+						<span class="target">ExtData</span>
 					</li>
 				</ul>
 			</section>
@@ -78,66 +85,71 @@
 				<section class="tsd-panel tsd-index-panel">
 					<div class="tsd-index-content">
 						<section class="tsd-index-section ">
+							<h3>Constructors</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-constructor tsd-parent-kind-class"><a href="a_msgpack.extdata.html#constructor" class="tsd-kind-icon">constructor</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="a_msgpack.encodeoptions.html#extensioncodec" class="tsd-kind-icon">extension<wbr>Codec</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="a_msgpack.encodeoptions.html#initialbuffersize" class="tsd-kind-icon">initial<wbr>Buffer<wbr>Size</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="a_msgpack.encodeoptions.html#maxdepth" class="tsd-kind-icon">max<wbr>Depth</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="a_msgpack.extdata.html#data" class="tsd-kind-icon">data</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="a_msgpack.extdata.html#type" class="tsd-kind-icon">type</a></li>
 							</ul>
 						</section>
 					</div>
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Constructors</h2>
+				<section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class">
+					<a name="constructor" class="tsd-anchor"></a>
+					<h3>constructor</h3>
+					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Ext<wbr>Data<span class="tsd-signature-symbol">(</span>type<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, data<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Uint8Array</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="a_msgpack.extdata.html" class="tsd-signature-type">ExtData</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aristanetworks/cloudvision/blob/6c4e13d/packages/a-msgpack/src/ExtData.ts#L4">packages/a-msgpack/src/ExtData.ts:4</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>type: <span class="tsd-signature-type">number</span></h5>
+								</li>
+								<li>
+									<h5>data: <span class="tsd-signature-type">Uint8Array</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="a_msgpack.extdata.html" class="tsd-signature-type">ExtData</a></h4>
+						</li>
+					</ul>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="extensioncodec" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> extension<wbr>Codec</h3>
-					<div class="tsd-signature tsd-kind-icon">extension<wbr>Codec<span class="tsd-signature-symbol">:</span> <a href="a_msgpack.extensioncodectype.html" class="tsd-signature-type">ExtensionCodecType</a></div>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="data" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> data</h3>
+					<div class="tsd-signature tsd-kind-icon">data<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Uint8Array</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aristanetworks/cloudvision/blob/6c4e13d/packages/a-msgpack/src/encode.ts#L9">packages/a-msgpack/src/encode.ts:9</a></li>
+							<li>Defined in <a href="https://github.com/aristanetworks/cloudvision/blob/6c4e13d/packages/a-msgpack/src/ExtData.ts#L5">packages/a-msgpack/src/ExtData.ts:5</a></li>
 						</ul>
 					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>The extension codec to use.
-							Default is none</p>
-						</div>
-					</div>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="initialbuffersize" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> initial<wbr>Buffer<wbr>Size</h3>
-					<div class="tsd-signature tsd-kind-icon">initial<wbr>Buffer<wbr>Size<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span></div>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="type" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> type</h3>
+					<div class="tsd-signature tsd-kind-icon">type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aristanetworks/cloudvision/blob/6c4e13d/packages/a-msgpack/src/encode.ts#L20">packages/a-msgpack/src/encode.ts:20</a></li>
+							<li>Defined in <a href="https://github.com/aristanetworks/cloudvision/blob/6c4e13d/packages/a-msgpack/src/ExtData.ts#L5">packages/a-msgpack/src/ExtData.ts:5</a></li>
 						</ul>
 					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>The size of the buffer when beginning encoding.
-								This is the minimum amount of memory allocated.
-							Default 2048</p>
-						</div>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="maxdepth" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> max<wbr>Depth</h3>
-					<div class="tsd-signature tsd-kind-icon">max<wbr>Depth<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/aristanetworks/cloudvision/blob/6c4e13d/packages/a-msgpack/src/encode.ts#L14">packages/a-msgpack/src/encode.ts:14</a></li>
-						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>The maximum object depth
-							Default 100</p>
-						</div>
-					</div>
 				</section>
 			</section>
 		</div>
@@ -162,17 +174,17 @@
 					<li class="current tsd-kind-module">
 						<a href="../modules/a_msgpack.html" class="tsd-kind-icon">a-<wbr>msgpack</a>
 						<ul>
-							<li class="current tsd-kind-interface tsd-parent-kind-module">
-								<a href="a_msgpack.encodeoptions.html" class="tsd-kind-icon">Encode<wbr>Options</a>
+							<li class="current tsd-kind-class tsd-parent-kind-module">
+								<a href="a_msgpack.extdata.html" class="tsd-kind-icon">Ext<wbr>Data</a>
 								<ul>
-									<li class=" tsd-kind-property tsd-parent-kind-interface">
-										<a href="a_msgpack.encodeoptions.html#extensioncodec" class="tsd-kind-icon">extension<wbr>Codec</a>
+									<li class=" tsd-kind-constructor tsd-parent-kind-class">
+										<a href="a_msgpack.extdata.html#constructor" class="tsd-kind-icon">constructor</a>
 									</li>
-									<li class=" tsd-kind-property tsd-parent-kind-interface">
-										<a href="a_msgpack.encodeoptions.html#initialbuffersize" class="tsd-kind-icon">initial<wbr>Buffer<wbr>Size</a>
+									<li class=" tsd-kind-property tsd-parent-kind-class">
+										<a href="a_msgpack.extdata.html#data" class="tsd-kind-icon">data</a>
 									</li>
-									<li class=" tsd-kind-property tsd-parent-kind-interface">
-										<a href="a_msgpack.encodeoptions.html#maxdepth" class="tsd-kind-icon">max<wbr>Depth</a>
+									<li class=" tsd-kind-property tsd-parent-kind-class">
+										<a href="a_msgpack.extdata.html#type" class="tsd-kind-icon">type</a>
 									</li>
 								</ul>
 							</li>
@@ -200,12 +212,13 @@
 				<li class="tsd-kind-type-alias tsd-has-type-parameter"><span class="tsd-kind-icon">Type alias with type parameter</span></li>
 			</ul>
 			<ul class="tsd-legend">
-				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
-				<li class="tsd-kind-interface tsd-has-type-parameter"><span class="tsd-kind-icon">Interface with type parameter</span></li>
-				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
+				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
 			</ul>
 			<ul class="tsd-legend">
-				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
+				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
+				<li class="tsd-kind-interface tsd-has-type-parameter"><span class="tsd-kind-icon">Interface with type parameter</span></li>
 			</ul>
 		</div>
 	</div>
