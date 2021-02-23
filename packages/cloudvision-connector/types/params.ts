@@ -5,6 +5,7 @@ import {
   GET,
   GET_AND_SUBSCRIBE,
   GET_DATASETS,
+  GET_REGIONS_AND_CLUSTERS,
   PUBLISH,
   SEARCH,
   SEARCH_SUBSCRIBE,
@@ -15,7 +16,11 @@ import {
   SUBSCRIBE,
 } from '../src/constants';
 
-export type GetCommand = typeof GET | typeof GET_DATASETS | typeof SEARCH;
+export type GetCommand =
+  | typeof GET
+  | typeof GET_DATASETS
+  | typeof GET_REGIONS_AND_CLUSTERS
+  | typeof SEARCH;
 
 /** @deprecated: Use `GetCommand`. */
 export type GetCommands = GetCommand;
