@@ -23,6 +23,7 @@ import {
   GET,
   GET_AND_SUBSCRIBE,
   GET_DATASETS,
+  GET_REGIONS_AND_CLUSTERS,
   ID,
   PUBLISH,
   SEARCH,
@@ -194,6 +195,13 @@ export default class Connector extends Wrpc {
     const deviceType: typeof DEVICE_DATASET_TYPE[] = [DEVICE_DATASET_TYPE];
     const params: DatasetParams = { types: deviceType };
     return this.get(GET_DATASETS, params, makeNotifCallback(callback));
+  }
+
+  /**
+   * Returns a list of regions and associated clusters.
+   */
+  public getRegionsAndClusters(callback: NotifCallback): string | null {
+    return this.get(GET_REGIONS_AND_CLUSTERS, {}, makeNotifCallback(callback));
   }
 
   /**

@@ -45,6 +45,7 @@ export const DEVICES_DATASET_ID = 'DEVICES_DATASET_ID';
 export const GET = 'get';
 export const GET_DATASETS = 'getDatasets';
 export const GET_AND_SUBSCRIBE = 'getAndSubscribe';
+export const GET_REGIONS_AND_CLUSTERS = 'getRegionsAndClusters';
 export const PUBLISH = 'publish';
 export const SUBSCRIBE = 'subscribe';
 export const SEARCH = 'alpha/search';

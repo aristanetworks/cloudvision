@@ -27,6 +27,7 @@ import {
   GET,
   GET_AND_SUBSCRIBE,
   GET_DATASETS,
+  GET_REGIONS_AND_CLUSTERS,
   SEARCH,
   SEARCH_SUBSCRIBE,
   SEARCH_TYPE_ANY,
@@ -244,6 +245,25 @@ describe('getDatasets', () => {
       { types: ALL_DATASET_TYPES },
       expect.any(Function),
     );
+  });
+});
+
+describe('getRegionsAndClusters', () => {
+  let conn: Connector;
+  let spyCallback: () => void;
+
+  beforeEach(() => {
+    conn = new Connector();
+    conn.run('ws://localhost:8080');
+    conn.websocket.dispatchEvent(new MessageEvent('open', {}));
+    jest.spyOn(conn, 'get');
+    spyCallback = jest.fn();
+  });
+
+  test('should get all datasets', () => {
+    conn.getRegionsAndClusters(spyCallback);
+
+    expect(conn.get).toHaveBeenCalledWith(GET_REGIONS_AND_CLUSTERS, {}, expect.any(Function));
   });
 });
 
