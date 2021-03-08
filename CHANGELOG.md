@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.7.0](https://github.com/aristanetworks/cloudvision/compare/v4.6.5...v4.7.0) (2021-03-08)
+
+
+### Features
+
+* **connector:** add GET_REGIONS_AND_CLUSTERS method ([#366](https://github.com/aristanetworks/cloudvision/issues/366)) ([c26369c](https://github.com/aristanetworks/cloudvision/commit/c26369c536d5910ecc772e1f2f7a7db1132cf227))
+
+
+
+
+
 ## [4.6.5](https://github.com/aristanetworks/cloudvision/compare/v4.6.4...v4.6.5) (2021-01-20)
 
 
