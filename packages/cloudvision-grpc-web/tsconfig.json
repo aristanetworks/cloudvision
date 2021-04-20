@@ -1,0 +1,21 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "target": "ES6",
+    "paths": {
+      "@generated/*": ["./generated/*"],
+      "@types": ["./types"]
+    }
+  },
+  "exclude": ["generated/**"],
+  "typedocOptions": {
+    "exclude": "test/**",
+    "excludeExternals": true,
+    "hideGenerator": true,
+    "ignoreCompilerErrors": true,
+    "mode": "modules",
+    "out": "docs",
+    "readme": "./README.md"
+  }
+}
