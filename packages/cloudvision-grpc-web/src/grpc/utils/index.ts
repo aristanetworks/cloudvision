@@ -6,7 +6,7 @@ import { GrpcCodeWithMessage, GrpcSource } from '../../../types';
  * Will apply a buffer to the streams notifications and will only flush the
  * buffer once it encounters the flush message provided.
  *
- * @param resourceSource The GRPC service method defintion to be queried.
+ * @param resourceSource The GRPC service method definition to be queried.
  * @param flushMessage The message that when encountered triggers the buffer flush
  * @returns An object with the properties `data` and `message`, which are
  * [Sources](https://wonka.kitten.sh/api/sources) that can be subscribed to.

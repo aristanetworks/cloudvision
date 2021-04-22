@@ -6,7 +6,7 @@ import { bufferStream } from '../../grpc';
 /**
  * Buffers a resource call until the `INITIAL_SYNC_COMPLETE` message is encountered.
  *
- * @param resourceSource The GRPC service method defintion to be queried.
+ * @param resourceSource The GRPC service method definition to be queried.
  * @returns An object with the properties `data` and `message`, which are
  * [Sources](https://wonka.kitten.sh/api/sources) that can be subscribed to.
  */

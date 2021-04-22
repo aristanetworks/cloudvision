@@ -1,32 +1,32 @@
 import { grpc } from '@improbable-eng/grpc-web';
 import { makeSubject, Subject } from 'wonka';
 
-import { ControllFunctions, GrpcControlMessage, GrpcSource, RpcOptions } from '../../types';
+import { controlFunctions, GrpcControlMessage, GrpcSource, RpcOptions } from '../../types';
 
 const DEFAULT_CONTROL_FUNCTIONS = {
   onHeaders: <TResponse>(
-    controllMessageSubject: Subject<GrpcControlMessage>,
+    controlMessageSubject: Subject<GrpcControlMessage>,
     _dataSubject: Subject<TResponse>,
     headers: grpc.Metadata,
   ) => {
-    controllMessageSubject.next({ metadata: headers });
+    controlMessageSubject.next({ metadata: headers });
   },
   onMessage: <TResponse>(
-    _controllMessageSubject: Subject<GrpcControlMessage>,
+    _controlMessageSubject: Subject<GrpcControlMessage>,
     dataSubject: Subject<TResponse>,
     response: TResponse,
   ) => {
     dataSubject.next(response);
   },
   onEnd: <TResponse>(
-    controllMessageSubject: Subject<GrpcControlMessage>,
+    controlMessageSubject: Subject<GrpcControlMessage>,
     dataSubject: Subject<TResponse>,
     code: grpc.Code,
     message: string,
   ) => {
-    controllMessageSubject.next({ error: { code, message } });
+    controlMessageSubject.next({ error: { code, message } });
     dataSubject.complete();
-    controllMessageSubject.complete();
+    controlMessageSubject.complete();
   },
 };
 
@@ -36,9 +36,9 @@ const DEFAULT_CONTROL_FUNCTIONS = {
  * One is the `data` stream the other is the `message` stream. The message stream
  * contains GRPC metadata information, as well as any error messages.
  *
- * @param methodDescriptor The GRPC service method defintion to be queried.
+ * @param methodDescriptor The GRPC service method definition to be queried.
  * @param options Options to pass to eh GRPC call.
- * @param controllFunctions (optional) Implementation of the onHeaders, onMessage
+ * @param controlFunctions (optional) Implementation of the onHeaders, onMessage
  * and onEnd GRPC callbacks. This is where publishing to either the `data` or
  * `message` stream is done.
  * @returns An object with the properties `data` and `message`, which are
@@ -50,21 +50,21 @@ export function fromGrpcInvoke<
 >(
   methodDescriptor: grpc.MethodDefinition<TRequest, TResponse>,
   options: RpcOptions<TRequest, TResponse>,
-  controllFunctions: ControllFunctions<TResponse> = DEFAULT_CONTROL_FUNCTIONS,
+  controlFunctions: controlFunctions<TResponse> = DEFAULT_CONTROL_FUNCTIONS,
 ): GrpcSource<TResponse> {
   const dataSubject = makeSubject<TResponse>();
-  const controllMessageSubject = makeSubject<GrpcControlMessage>();
+  const controlMessageSubject = makeSubject<GrpcControlMessage>();
 
   const rpcOptions: grpc.InvokeRpcOptions<TRequest, TResponse> = {
     ...options,
     onHeaders: (headers: grpc.Metadata) => {
-      controllFunctions.onHeaders(controllMessageSubject, dataSubject, headers);
+      controlFunctions.onHeaders(controlMessageSubject, dataSubject, headers);
     },
     onMessage: (response: TResponse) => {
-      controllFunctions.onMessage(controllMessageSubject, dataSubject, response);
+      controlFunctions.onMessage(controlMessageSubject, dataSubject, response);
     },
     onEnd: (code: grpc.Code, message: string) => {
-      controllFunctions.onEnd(controllMessageSubject, dataSubject, code, message);
+      controlFunctions.onEnd(controlMessageSubject, dataSubject, code, message);
     },
   };
 
@@ -72,7 +72,7 @@ export function fromGrpcInvoke<
 
   return {
     data: dataSubject.source,
-    messages: controllMessageSubject.source,
+    messages: controlMessageSubject.source,
   };
 }
 

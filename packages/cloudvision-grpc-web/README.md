@@ -13,7 +13,7 @@ npm install cloudvision-grpc-web
 or
 
 ```bash
-npm install cloudvision-grpc-web
+yarn install cloudvision-grpc-web
 ```
 
 ## Usage
@@ -32,11 +32,13 @@ const grpcRequest = fromResourceGrpcInvoke(DeviceService.Subscribe, {
   request: requestAllMessage,
 });
 
+// Will print out each data message as it arrives
 pipe(
   grpcRequest.data,
   subscribe((val) => console.log('data', val.toObject())),
 );
 
+// Will print out any Grpc metadata or errors as they happen
 pipe(
   grpcRequest.messages,
   subscribe((val) => console.log('control message', val.toObject())),

@@ -20,19 +20,19 @@ export interface GrpcControlMessage {
   error?: GrpcCodeWithMessage;
 }
 
-export interface ControllFunctions<TResponse> {
+export interface controlFunctions<TResponse> {
   onHeaders(
-    controllMessageSubject: Subject<GrpcControlMessage>,
+    controlMessageSubject: Subject<GrpcControlMessage>,
     _dataSubject: Subject<TResponse>,
     headers: grpc.Metadata,
   ): void;
   onMessage(
-    _controllMessageSubject: Subject<GrpcControlMessage>,
+    _controlMessageSubject: Subject<GrpcControlMessage>,
     dataSubject: Subject<TResponse>,
     response: TResponse,
   ): void;
   onEnd(
-    controllMessageSubject: Subject<GrpcControlMessage>,
+    controlMessageSubject: Subject<GrpcControlMessage>,
     dataSubject: Subject<TResponse>,
     code: grpc.Code,
     message: string,
