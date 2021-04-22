@@ -20,7 +20,7 @@ export interface GrpcControlMessage {
   error?: GrpcCodeWithMessage;
 }
 
-export interface controlFunctions<TResponse> {
+export interface ControlFunctions<TResponse> {
   onHeaders(
     controlMessageSubject: Subject<GrpcControlMessage>,
     _dataSubject: Subject<TResponse>,

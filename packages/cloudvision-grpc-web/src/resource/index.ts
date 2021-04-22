@@ -1,7 +1,7 @@
 import { Operation } from '@generated/arista/subscriptions/subscriptions_pb';
 import { grpc } from '@improbable-eng/grpc-web';
 import {
-  controlFunctions,
+  ControlFunctions,
   GrpcSource,
   ResourceRpcOptions,
   StreamingResourceResponse,
@@ -26,7 +26,7 @@ export function fromResourceGrpcInvoke<
   methodDescriptor: grpc.MethodDefinition<TRequest, TResponse>,
   options: ResourceRpcOptions<TRequest, TResponse>,
 ): GrpcSource<TResponse> {
-  const controlFunctions: controlFunctions<TResponse> = {
+  const controlFunctions: ControlFunctions<TResponse> = {
     onHeaders: (controlMessageSubject, _dataSubject, headers) => {
       controlMessageSubject.next({ metadata: headers });
     },

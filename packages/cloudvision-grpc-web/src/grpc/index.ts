@@ -1,7 +1,7 @@
 import { grpc } from '@improbable-eng/grpc-web';
 import { makeSubject, Subject } from 'wonka';
 
-import { controlFunctions, GrpcControlMessage, GrpcSource, RpcOptions } from '../../types';
+import { ControlFunctions, GrpcControlMessage, GrpcSource, RpcOptions } from '../../types';
 
 const DEFAULT_CONTROL_FUNCTIONS = {
   onHeaders: <TResponse>(
@@ -50,7 +50,7 @@ export function fromGrpcInvoke<
 >(
   methodDescriptor: grpc.MethodDefinition<TRequest, TResponse>,
   options: RpcOptions<TRequest, TResponse>,
-  controlFunctions: controlFunctions<TResponse> = DEFAULT_CONTROL_FUNCTIONS,
+  controlFunctions: ControlFunctions<TResponse> = DEFAULT_CONTROL_FUNCTIONS,
 ): GrpcSource<TResponse> {
   const dataSubject = makeSubject<TResponse>();
   const controlMessageSubject = makeSubject<GrpcControlMessage>();
