@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>QueryObject | CloudVision</title>
+	<title>GrpcSource | CloudVision</title>
 	<meta name="description" content="Documentation for CloudVision">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -52,24 +52,41 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="../modules/cloudvision_connector.html">cloudvision-connector</a>
+					<a href="../modules/cloudvision_grpc_web.html">cloudvision-grpc-web</a>
 				</li>
 				<li>
-					<a href="cloudvision_connector.queryobject.html">QueryObject</a>
+					<a href="cloudvision_grpc_web.grpcsource.html">GrpcSource</a>
 				</li>
 			</ul>
-			<h1>Interface QueryObject</h1>
+			<h1>Interface GrpcSource&lt;TResponse&gt;</h1>
 		</div>
 	</div>
 </header>
 <div class="container container-main">
 	<div class="row">
 		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-comment">
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<p>The <a href="https://wonka.kitten.sh/api/sources">Wonka Source</a> representing a GRPC
+							call. All data will be pushed to the <code>data</code> source and any metadata or errors
+						will be pushed to the <code>messages</code> source.</p>
+					</div>
+				</div>
+			</section>
+			<section class="tsd-panel tsd-type-parameters">
+				<h3>Type parameters</h3>
+				<ul class="tsd-type-parameters">
+					<li>
+						<h4>TResponse</h4>
+					</li>
+				</ul>
+			</section>
 			<section class="tsd-panel tsd-hierarchy">
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">QueryObject</span>
+						<span class="target">GrpcSource</span>
 					</li>
 				</ul>
 			</section>
@@ -80,8 +97,8 @@
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="cloudvision_connector.queryobject.html#dataset" class="tsd-kind-icon">dataset</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="cloudvision_connector.queryobject.html#paths" class="tsd-kind-icon">paths</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="cloudvision_grpc_web.grpcsource.html#data" class="tsd-kind-icon">data</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="cloudvision_grpc_web.grpcsource.html#messages" class="tsd-kind-icon">messages</a></li>
 							</ul>
 						</section>
 					</div>
@@ -90,22 +107,22 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="dataset" class="tsd-anchor"></a>
-					<h3>dataset</h3>
-					<div class="tsd-signature tsd-kind-icon">dataset<span class="tsd-signature-symbol">:</span> <a href="cloudvision_connector.datasetobject.html" class="tsd-signature-type">DatasetObject</a></div>
+					<a name="data" class="tsd-anchor"></a>
+					<h3>data</h3>
+					<div class="tsd-signature tsd-kind-icon">data<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Source</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TResponse</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aristanetworks/cloudvision/blob/cc0ee18/packages/cloudvision-connector/types/params.ts#L60">packages/cloudvision-connector/types/params.ts:60</a></li>
+							<li>Defined in <a href="https://github.com/aristanetworks/cloudvision/blob/cc0ee18/packages/cloudvision-grpc-web/types/index.ts#L48">packages/cloudvision-grpc-web/types/index.ts:48</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="paths" class="tsd-anchor"></a>
-					<h3>paths</h3>
-					<div class="tsd-signature tsd-kind-icon">paths<span class="tsd-signature-symbol">:</span> <a href="cloudvision_connector.pathobject.html" class="tsd-signature-type">PathObject</a><span class="tsd-signature-symbol">[]</span></div>
+					<a name="messages" class="tsd-anchor"></a>
+					<h3>messages</h3>
+					<div class="tsd-signature tsd-kind-icon">messages<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Source</span><span class="tsd-signature-symbol">&lt;</span><a href="cloudvision_grpc_web.grpccontrolmessage.html" class="tsd-signature-type">GrpcControlMessage</a><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aristanetworks/cloudvision/blob/cc0ee18/packages/cloudvision-connector/types/params.ts#L61">packages/cloudvision-connector/types/params.ts:61</a></li>
+							<li>Defined in <a href="https://github.com/aristanetworks/cloudvision/blob/cc0ee18/packages/cloudvision-grpc-web/types/index.ts#L49">packages/cloudvision-grpc-web/types/index.ts:49</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -120,10 +137,10 @@
 					<li class=" tsd-kind-module">
 						<a href="../modules/a_msgpack.html">a-<wbr>msgpack</a>
 					</li>
-					<li class="current tsd-kind-module">
+					<li class=" tsd-kind-module">
 						<a href="../modules/cloudvision_connector.html">cloudvision-<wbr>connector</a>
 					</li>
-					<li class=" tsd-kind-module">
+					<li class="current tsd-kind-module">
 						<a href="../modules/cloudvision_grpc_web.html">cloudvision-<wbr>grpc-<wbr>web</a>
 					</li>
 				</ul>
@@ -133,29 +150,59 @@
 					<li class=" tsd-kind-module">
 						<a href="../modules/a_msgpack.html" class="tsd-kind-icon">a-<wbr>msgpack</a>
 					</li>
+					<li class=" tsd-kind-module">
+						<a href="../modules/cloudvision_connector.html" class="tsd-kind-icon">cloudvision-<wbr>connector</a>
+					</li>
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-module">
-						<a href="../modules/cloudvision_connector.html" class="tsd-kind-icon">cloudvision-<wbr>connector</a>
+						<a href="../modules/cloudvision_grpc_web.html" class="tsd-kind-icon">cloudvision-<wbr>grpc-<wbr>web</a>
 						<ul>
-							<li class="current tsd-kind-interface tsd-parent-kind-module">
-								<a href="cloudvision_connector.queryobject.html" class="tsd-kind-icon">Query<wbr>Object</a>
+							<li class=" tsd-kind-interface tsd-parent-kind-module tsd-has-type-parameter">
+								<a href="cloudvision_grpc_web.controlfunctions.html" class="tsd-kind-icon">Control<wbr>Functions</a>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-module">
+								<a href="cloudvision_grpc_web.grpccodewithmessage.html" class="tsd-kind-icon">Grpc<wbr>Code<wbr>With<wbr>Message</a>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-module">
+								<a href="cloudvision_grpc_web.grpccontrolmessage.html" class="tsd-kind-icon">Grpc<wbr>Control<wbr>Message</a>
+							</li>
+							<li class="current tsd-kind-interface tsd-parent-kind-module tsd-has-type-parameter">
+								<a href="cloudvision_grpc_web.grpcsource.html" class="tsd-kind-icon">Grpc<wbr>Source</a>
 								<ul>
 									<li class=" tsd-kind-property tsd-parent-kind-interface">
-										<a href="cloudvision_connector.queryobject.html#dataset" class="tsd-kind-icon">dataset</a>
+										<a href="cloudvision_grpc_web.grpcsource.html#data" class="tsd-kind-icon">data</a>
 									</li>
 									<li class=" tsd-kind-property tsd-parent-kind-interface">
-										<a href="cloudvision_connector.queryobject.html#paths" class="tsd-kind-icon">paths</a>
+										<a href="cloudvision_grpc_web.grpcsource.html#messages" class="tsd-kind-icon">messages</a>
 									</li>
 								</ul>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-module">
+								<a href="cloudvision_grpc_web.streamingresourceresponse.html" class="tsd-kind-icon">Streaming<wbr>Resource<wbr>Response</a>
+							</li>
+							<li class=" tsd-kind-type-alias tsd-parent-kind-module tsd-has-type-parameter">
+								<a href="../modules/cloudvision_grpc_web.html#resourcerpcoptions" class="tsd-kind-icon">Resource<wbr>Rpc<wbr>Options</a>
+							</li>
+							<li class=" tsd-kind-type-alias tsd-parent-kind-module tsd-has-type-parameter">
+								<a href="../modules/cloudvision_grpc_web.html#rpcoptions" class="tsd-kind-icon">Rpc<wbr>Options</a>
+							</li>
+							<li class=" tsd-kind-function tsd-parent-kind-module tsd-has-type-parameter">
+								<a href="../modules/cloudvision_grpc_web.html#bufferresource" class="tsd-kind-icon">buffer<wbr>Resource</a>
+							</li>
+							<li class=" tsd-kind-function tsd-parent-kind-module tsd-has-type-parameter">
+								<a href="../modules/cloudvision_grpc_web.html#bufferstream" class="tsd-kind-icon">buffer<wbr>Stream</a>
+							</li>
+							<li class=" tsd-kind-function tsd-parent-kind-module tsd-has-type-parameter">
+								<a href="../modules/cloudvision_grpc_web.html#fromgrpcinvoke" class="tsd-kind-icon">from<wbr>Grpc<wbr>Invoke</a>
+							</li>
+							<li class=" tsd-kind-function tsd-parent-kind-module tsd-has-type-parameter">
+								<a href="../modules/cloudvision_grpc_web.html#fromresourcegrpcinvoke" class="tsd-kind-icon">from<wbr>Resource<wbr>Grpc<wbr>Invoke</a>
 							</li>
 						</ul>
 					</li>
 				</ul>
 				<ul class="after-current">
-					<li class=" tsd-kind-module">
-						<a href="../modules/cloudvision_grpc_web.html" class="tsd-kind-icon">cloudvision-<wbr>grpc-<wbr>web</a>
-					</li>
 				</ul>
 			</nav>
 		</div>

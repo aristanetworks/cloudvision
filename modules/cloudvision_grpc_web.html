@@ -1,0 +1,489 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>cloudvision-grpc-web | CloudVision</title>
+	<meta name="description" content="Documentation for CloudVision">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="../assets/js/search.json" data-base="..">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="../index.html" class="title">CloudVision</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="../globals.html">Globals</a>
+				</li>
+				<li>
+					<a href="cloudvision_grpc_web.html">cloudvision-grpc-web</a>
+				</li>
+			</ul>
+			<h1>Module cloudvision-grpc-web</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-comment">
+				<div class="tsd-comment tsd-typography">
+					<a href="#cloudvision-grpc-web" id="cloudvision-grpc-web" style="color: inherit; text-decoration: none;">
+						<h1>cloudvision-grpc-web</h1>
+					</a>
+					<p>A grpc-web client for requesting CloudVision data from the frontend. This libraries exposed
+						functions and utils that convert the grpc-web calls to Observable streams that can be manipulated
+					using <a href="https://wonka.kitten.sh/">Wonka</a>.</p>
+					<a href="#installation" id="installation" style="color: inherit; text-decoration: none;">
+						<h2>Installation</h2>
+					</a>
+					<pre><code class="language-bash">npm install cloudvision-grpc-web</code></pre>
+					<p>or</p>
+					<pre><code class="language-bash">yarn install cloudvision-grpc-web</code></pre>
+					<a href="#usage" id="usage" style="color: inherit; text-decoration: none;">
+						<h2>Usage</h2>
+					</a>
+					<pre><code class="language-js"><span class="hljs-keyword">import</span> { fromResourceGrpcInvoke } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;cloudvision-grpc-web&#x27;</span>;
+<span class="hljs-keyword">import</span> { pipe, subscribe } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;wonka&#x27;</span>;
+
+<span class="hljs-keyword">import</span> { DeviceService } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;../generated/arista/inventory.v1/services.gen_pb_service&#x27;</span>;
+<span class="hljs-keyword">import</span> { DeviceStreamRequest } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;../generated/arista/inventory.v1/services.gen_pb&#x27;</span>;
+
+<span class="hljs-keyword">const</span> requestAllMessage = <span class="hljs-keyword">new</span> DeviceStreamRequest();
+
+<span class="hljs-keyword">const</span> grpcRequest = fromResourceGrpcInvoke(DeviceService.Subscribe, {
+  <span class="hljs-attr">host</span>: <span class="hljs-string">&#x27;http://cvphost&#x27;</span>,
+  <span class="hljs-attr">request</span>: requestAllMessage,
+});
+
+<span class="hljs-comment">// Will print out each data message as it arrives</span>
+pipe(
+  grpcRequest.data,
+  subscribe(<span class="hljs-function">(<span class="hljs-params">val</span>) =&gt;</span> <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&#x27;data&#x27;</span>, val.toObject())),
+);
+
+<span class="hljs-comment">// Will print out any Grpc metadata or errors as they happen</span>
+pipe(
+  grpcRequest.messages,
+  subscribe(<span class="hljs-function">(<span class="hljs-params">val</span>) =&gt;</span> <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&#x27;control message&#x27;</span>, val.toObject())),
+);</code></pre>
+				</div>
+			</section>
+			<section class="tsd-panel-group tsd-index-group">
+				<h2>Index</h2>
+				<section class="tsd-panel tsd-index-panel">
+					<div class="tsd-index-content">
+						<section class="tsd-index-section ">
+							<h3>Interfaces</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-interface tsd-parent-kind-module tsd-has-type-parameter"><a href="../interfaces/cloudvision_grpc_web.controlfunctions.html" class="tsd-kind-icon">Control<wbr>Functions</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-module"><a href="../interfaces/cloudvision_grpc_web.grpccodewithmessage.html" class="tsd-kind-icon">Grpc<wbr>Code<wbr>With<wbr>Message</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-module"><a href="../interfaces/cloudvision_grpc_web.grpccontrolmessage.html" class="tsd-kind-icon">Grpc<wbr>Control<wbr>Message</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-module tsd-has-type-parameter"><a href="../interfaces/cloudvision_grpc_web.grpcsource.html" class="tsd-kind-icon">Grpc<wbr>Source</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-module"><a href="../interfaces/cloudvision_grpc_web.streamingresourceresponse.html" class="tsd-kind-icon">Streaming<wbr>Resource<wbr>Response</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Type aliases</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-type-alias tsd-parent-kind-module tsd-has-type-parameter"><a href="cloudvision_grpc_web.html#resourcerpcoptions" class="tsd-kind-icon">Resource<wbr>Rpc<wbr>Options</a></li>
+								<li class="tsd-kind-type-alias tsd-parent-kind-module tsd-has-type-parameter"><a href="cloudvision_grpc_web.html#rpcoptions" class="tsd-kind-icon">Rpc<wbr>Options</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Functions</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-function tsd-parent-kind-module tsd-has-type-parameter"><a href="cloudvision_grpc_web.html#bufferresource" class="tsd-kind-icon">buffer<wbr>Resource</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-module tsd-has-type-parameter"><a href="cloudvision_grpc_web.html#bufferstream" class="tsd-kind-icon">buffer<wbr>Stream</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-module tsd-has-type-parameter"><a href="cloudvision_grpc_web.html#fromgrpcinvoke" class="tsd-kind-icon">from<wbr>Grpc<wbr>Invoke</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-module tsd-has-type-parameter"><a href="cloudvision_grpc_web.html#fromresourcegrpcinvoke" class="tsd-kind-icon">from<wbr>Resource<wbr>Grpc<wbr>Invoke</a></li>
+							</ul>
+						</section>
+					</div>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Type aliases</h2>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module tsd-has-type-parameter">
+					<a name="resourcerpcoptions" class="tsd-anchor"></a>
+					<h3>Resource<wbr>Rpc<wbr>Options</h3>
+					<div class="tsd-signature tsd-kind-icon">Resource<wbr>Rpc<wbr>Options&lt;TRequest, TResponse&gt;<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Omit</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">InvokeRpcOptions</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TRequest</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">TResponse</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">"onMessage"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"onEnd"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"onHeaders"</span><span class="tsd-signature-symbol">&gt;</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aristanetworks/cloudvision/blob/cc0ee18/packages/cloudvision-grpc-web/types/resource.ts#L16">packages/cloudvision-grpc-web/types/resource.ts:16</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Includes all <a href="https://github.com/improbable-eng/grpc-web/blob/master/client/grpc-web/docs/invoke.md#invokerpcoptions">grpc invoke options</a>
+							except for <code>onMessage</code>, <code>onEnd</code> and <code>onHeaders</code> for a resource request.</p>
+						</div>
+					</div>
+					<h4 class="tsd-type-parameters-title">Type parameters</h4>
+					<ul class="tsd-type-parameters">
+						<li>
+							<h4>TRequest<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ProtobufMessage</span></h4>
+						</li>
+						<li>
+							<h4>TResponse<span class="tsd-signature-symbol">: </span><a href="../interfaces/cloudvision_grpc_web.streamingresourceresponse.html" class="tsd-signature-type">StreamingResourceResponse</a></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module tsd-has-type-parameter">
+					<a name="rpcoptions" class="tsd-anchor"></a>
+					<h3>Rpc<wbr>Options</h3>
+					<div class="tsd-signature tsd-kind-icon">Rpc<wbr>Options&lt;TRequest, TResponse&gt;<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Omit</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">InvokeRpcOptions</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TRequest</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">TResponse</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">"onMessage"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"onEnd"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"onHeaders"</span><span class="tsd-signature-symbol">&gt;</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aristanetworks/cloudvision/blob/cc0ee18/packages/cloudvision-grpc-web/types/index.ts#L56">packages/cloudvision-grpc-web/types/index.ts:56</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Includes all <a href="https://github.com/improbable-eng/grpc-web/blob/master/client/grpc-web/docs/invoke.md#invokerpcoptions">grpc invoke options</a>
+							except for <code>onMessage</code>, <code>onEnd</code> and <code>onHeaders</code>.</p>
+						</div>
+					</div>
+					<h4 class="tsd-type-parameters-title">Type parameters</h4>
+					<ul class="tsd-type-parameters">
+						<li>
+							<h4>TRequest<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ProtobufMessage</span></h4>
+						</li>
+						<li>
+							<h4>TResponse<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ProtobufMessage</span></h4>
+						</li>
+					</ul>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Functions</h2>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-module tsd-has-type-parameter">
+					<a name="bufferresource" class="tsd-anchor"></a>
+					<h3>buffer<wbr>Resource</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-module tsd-has-type-parameter">
+						<li class="tsd-signature tsd-kind-icon">buffer<wbr>Resource&lt;TResponse&gt;<span class="tsd-signature-symbol">(</span>resourceSource<span class="tsd-signature-symbol">: </span><a href="../interfaces/cloudvision_grpc_web.grpcsource.html" class="tsd-signature-type">GrpcSource</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TResponse</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/cloudvision_grpc_web.grpcsource.html" class="tsd-signature-type">GrpcSource</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TResponse</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aristanetworks/cloudvision/blob/cc0ee18/packages/cloudvision-grpc-web/src/resource/utils/index.ts#L13">packages/cloudvision-grpc-web/src/resource/utils/index.ts:13</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Buffers a resource call until the <code>INITIAL_SYNC_COMPLETE</code> message is encountered.</p>
+								</div>
+							</div>
+							<h4 class="tsd-type-parameters-title">Type parameters</h4>
+							<ul class="tsd-type-parameters">
+								<li>
+									<h4>TResponse</h4>
+								</li>
+							</ul>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>resourceSource: <a href="../interfaces/cloudvision_grpc_web.grpcsource.html" class="tsd-signature-type">GrpcSource</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TResponse</span><span class="tsd-signature-symbol">&gt;</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The GRPC service method definition to be queried.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="../interfaces/cloudvision_grpc_web.grpcsource.html" class="tsd-signature-type">GrpcSource</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TResponse</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							<p>An object with the properties <code>data</code> and <code>message</code>, which are
+							<a href="https://wonka.kitten.sh/api/sources">Sources</a> that can be subscribed to.</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-module tsd-has-type-parameter">
+					<a name="bufferstream" class="tsd-anchor"></a>
+					<h3>buffer<wbr>Stream</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-module tsd-has-type-parameter">
+						<li class="tsd-signature tsd-kind-icon">buffer<wbr>Stream&lt;TResponse&gt;<span class="tsd-signature-symbol">(</span>resourceSource<span class="tsd-signature-symbol">: </span><a href="../interfaces/cloudvision_grpc_web.grpcsource.html" class="tsd-signature-type">GrpcSource</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TResponse</span><span class="tsd-signature-symbol">&gt;</span>, flushMessage<span class="tsd-signature-symbol">: </span><a href="../interfaces/cloudvision_grpc_web.grpccodewithmessage.html" class="tsd-signature-type">GrpcCodeWithMessage</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/cloudvision_grpc_web.grpcsource.html" class="tsd-signature-type">GrpcSource</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TResponse</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aristanetworks/cloudvision/blob/cc0ee18/packages/cloudvision-grpc-web/src/grpc/utils/index.ts#L14">packages/cloudvision-grpc-web/src/grpc/utils/index.ts:14</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Will apply a buffer to the streams notifications and will only flush the
+									buffer once it encounters the flush message provided.</p>
+								</div>
+							</div>
+							<h4 class="tsd-type-parameters-title">Type parameters</h4>
+							<ul class="tsd-type-parameters">
+								<li>
+									<h4>TResponse</h4>
+								</li>
+							</ul>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>resourceSource: <a href="../interfaces/cloudvision_grpc_web.grpcsource.html" class="tsd-signature-type">GrpcSource</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TResponse</span><span class="tsd-signature-symbol">&gt;</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The GRPC service method definition to be queried.</p>
+									</div>
+								</li>
+								<li>
+									<h5>flushMessage: <a href="../interfaces/cloudvision_grpc_web.grpccodewithmessage.html" class="tsd-signature-type">GrpcCodeWithMessage</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The message that when encountered triggers the buffer flush</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="../interfaces/cloudvision_grpc_web.grpcsource.html" class="tsd-signature-type">GrpcSource</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TResponse</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							<p>An object with the properties <code>data</code> and <code>message</code>, which are
+							<a href="https://wonka.kitten.sh/api/sources">Sources</a> that can be subscribed to.</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-module tsd-has-type-parameter">
+					<a name="fromgrpcinvoke" class="tsd-anchor"></a>
+					<h3>from<wbr>Grpc<wbr>Invoke</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-module tsd-has-type-parameter">
+						<li class="tsd-signature tsd-kind-icon">from<wbr>Grpc<wbr>Invoke&lt;TRequest, TResponse&gt;<span class="tsd-signature-symbol">(</span>methodDescriptor<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">MethodDefinition</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TRequest</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">TResponse</span><span class="tsd-signature-symbol">&gt;</span>, options<span class="tsd-signature-symbol">: </span><a href="cloudvision_grpc_web.html#rpcoptions" class="tsd-signature-type">RpcOptions</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TRequest</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">TResponse</span><span class="tsd-signature-symbol">&gt;</span>, controlFunctions<span class="tsd-signature-symbol">?: </span><a href="../interfaces/cloudvision_grpc_web.controlfunctions.html" class="tsd-signature-type">ControlFunctions</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TResponse</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/cloudvision_grpc_web.grpcsource.html" class="tsd-signature-type">GrpcSource</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TResponse</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aristanetworks/cloudvision/blob/cc0ee18/packages/cloudvision-grpc-web/src/grpc/index.ts#L47">packages/cloudvision-grpc-web/src/grpc/index.ts:47</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Runs <a href="https://github.com/improbable-eng/grpc-web/blob/master/client/grpc-web/docs/invoke.md">grpc.invoke</a>
+										on the GRPC service and converts the response into two observable streams.
+										One is the <code>data</code> stream the other is the <code>message</code> stream. The message stream
+									contains GRPC metadata information, as well as any error messages.</p>
+								</div>
+							</div>
+							<h4 class="tsd-type-parameters-title">Type parameters</h4>
+							<ul class="tsd-type-parameters">
+								<li>
+									<h4>TRequest<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ProtobufMessage</span></h4>
+								</li>
+								<li>
+									<h4>TResponse<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ProtobufMessage</span></h4>
+								</li>
+							</ul>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>methodDescriptor: <span class="tsd-signature-type">MethodDefinition</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TRequest</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">TResponse</span><span class="tsd-signature-symbol">&gt;</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The GRPC service method definition to be queried.</p>
+									</div>
+								</li>
+								<li>
+									<h5>options: <a href="cloudvision_grpc_web.html#rpcoptions" class="tsd-signature-type">RpcOptions</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TRequest</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">TResponse</span><span class="tsd-signature-symbol">&gt;</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Options to pass to eh GRPC call.</p>
+									</div>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> controlFunctions: <a href="../interfaces/cloudvision_grpc_web.controlfunctions.html" class="tsd-signature-type">ControlFunctions</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TResponse</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> = DEFAULT_CONTROL_FUNCTIONS</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>(optional) Implementation of the onHeaders, onMessage
+											and onEnd GRPC callbacks. This is where publishing to either the <code>data</code> or
+										<code>message</code> stream is done.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="../interfaces/cloudvision_grpc_web.grpcsource.html" class="tsd-signature-type">GrpcSource</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TResponse</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							<p>An object with the properties <code>data</code> and <code>message</code>, which are
+							<a href="https://wonka.kitten.sh/api/sources">Sources</a> that can be subscribed to.</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-module tsd-has-type-parameter">
+					<a name="fromresourcegrpcinvoke" class="tsd-anchor"></a>
+					<h3>from<wbr>Resource<wbr>Grpc<wbr>Invoke</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-module tsd-has-type-parameter">
+						<li class="tsd-signature tsd-kind-icon">from<wbr>Resource<wbr>Grpc<wbr>Invoke&lt;TRequest, TResponse&gt;<span class="tsd-signature-symbol">(</span>methodDescriptor<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">MethodDefinition</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TRequest</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">TResponse</span><span class="tsd-signature-symbol">&gt;</span>, options<span class="tsd-signature-symbol">: </span><a href="cloudvision_grpc_web.html#resourcerpcoptions" class="tsd-signature-type">ResourceRpcOptions</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TRequest</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">TResponse</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/cloudvision_grpc_web.grpcsource.html" class="tsd-signature-type">GrpcSource</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TResponse</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aristanetworks/cloudvision/blob/cc0ee18/packages/cloudvision-grpc-web/src/resource/index.ts#L22">packages/cloudvision-grpc-web/src/resource/index.ts:22</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Calls fromGrpcInvoke and adds some resource specific handling for stream
+										control messages that do not contain data, but are sent as data messages
+									This implements the special handleing for the <code>INITIAL_SYNC_COMPLETE</code> message.</p>
+								</div>
+							</div>
+							<h4 class="tsd-type-parameters-title">Type parameters</h4>
+							<ul class="tsd-type-parameters">
+								<li>
+									<h4>TRequest<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ProtobufMessage</span></h4>
+								</li>
+								<li>
+									<h4>TResponse<span class="tsd-signature-symbol">: </span><a href="../interfaces/cloudvision_grpc_web.streamingresourceresponse.html" class="tsd-signature-type">StreamingResourceResponse</a></h4>
+								</li>
+							</ul>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>methodDescriptor: <span class="tsd-signature-type">MethodDefinition</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TRequest</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">TResponse</span><span class="tsd-signature-symbol">&gt;</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The GRPC service method definition to be queried.</p>
+									</div>
+								</li>
+								<li>
+									<h5>options: <a href="cloudvision_grpc_web.html#resourcerpcoptions" class="tsd-signature-type">ResourceRpcOptions</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TRequest</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">TResponse</span><span class="tsd-signature-symbol">&gt;</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Options to pass to eh GRPC call.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="../interfaces/cloudvision_grpc_web.grpcsource.html" class="tsd-signature-type">GrpcSource</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TResponse</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							<p>An object with the properties <code>data</code> and <code>message</code>, which are
+							<a href="https://wonka.kitten.sh/api/sources">Sources</a> that can be subscribed to.</p>
+						</li>
+					</ul>
+				</section>
+			</section>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class="globals  ">
+						<a href="../globals.html"><em>Globals</em></a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="a_msgpack.html">a-<wbr>msgpack</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="cloudvision_connector.html">cloudvision-<wbr>connector</a>
+					</li>
+					<li class="current tsd-kind-module">
+						<a href="cloudvision_grpc_web.html">cloudvision-<wbr>grpc-<wbr>web</a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+					<li class=" tsd-kind-module">
+						<a href="a_msgpack.html" class="tsd-kind-icon">a-<wbr>msgpack</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="cloudvision_connector.html" class="tsd-kind-icon">cloudvision-<wbr>connector</a>
+					</li>
+				</ul>
+				<ul class="current">
+					<li class="current tsd-kind-module">
+						<a href="cloudvision_grpc_web.html" class="tsd-kind-icon">cloudvision-<wbr>grpc-<wbr>web</a>
+						<ul>
+							<li class=" tsd-kind-interface tsd-parent-kind-module tsd-has-type-parameter">
+								<a href="../interfaces/cloudvision_grpc_web.controlfunctions.html" class="tsd-kind-icon">Control<wbr>Functions</a>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-module">
+								<a href="../interfaces/cloudvision_grpc_web.grpccodewithmessage.html" class="tsd-kind-icon">Grpc<wbr>Code<wbr>With<wbr>Message</a>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-module">
+								<a href="../interfaces/cloudvision_grpc_web.grpccontrolmessage.html" class="tsd-kind-icon">Grpc<wbr>Control<wbr>Message</a>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-module tsd-has-type-parameter">
+								<a href="../interfaces/cloudvision_grpc_web.grpcsource.html" class="tsd-kind-icon">Grpc<wbr>Source</a>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-module">
+								<a href="../interfaces/cloudvision_grpc_web.streamingresourceresponse.html" class="tsd-kind-icon">Streaming<wbr>Resource<wbr>Response</a>
+							</li>
+							<li class=" tsd-kind-type-alias tsd-parent-kind-module tsd-has-type-parameter">
+								<a href="cloudvision_grpc_web.html#resourcerpcoptions" class="tsd-kind-icon">Resource<wbr>Rpc<wbr>Options</a>
+							</li>
+							<li class=" tsd-kind-type-alias tsd-parent-kind-module tsd-has-type-parameter">
+								<a href="cloudvision_grpc_web.html#rpcoptions" class="tsd-kind-icon">Rpc<wbr>Options</a>
+							</li>
+							<li class=" tsd-kind-function tsd-parent-kind-module tsd-has-type-parameter">
+								<a href="cloudvision_grpc_web.html#bufferresource" class="tsd-kind-icon">buffer<wbr>Resource</a>
+							</li>
+							<li class=" tsd-kind-function tsd-parent-kind-module tsd-has-type-parameter">
+								<a href="cloudvision_grpc_web.html#bufferstream" class="tsd-kind-icon">buffer<wbr>Stream</a>
+							</li>
+							<li class=" tsd-kind-function tsd-parent-kind-module tsd-has-type-parameter">
+								<a href="cloudvision_grpc_web.html#fromgrpcinvoke" class="tsd-kind-icon">from<wbr>Grpc<wbr>Invoke</a>
+							</li>
+							<li class=" tsd-kind-function tsd-parent-kind-module tsd-has-type-parameter">
+								<a href="cloudvision_grpc_web.html#fromresourcegrpcinvoke" class="tsd-kind-icon">from<wbr>Resource<wbr>Grpc<wbr>Invoke</a>
+							</li>
+						</ul>
+					</li>
+				</ul>
+				<ul class="after-current">
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer>
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-object-literal"><span class="tsd-kind-icon">Object literal</span></li>
+				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
+				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
+				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
+				<li class="tsd-kind-type-alias tsd-has-type-parameter"><span class="tsd-kind-icon">Type alias with type parameter</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
+				<li class="tsd-kind-interface tsd-has-type-parameter"><span class="tsd-kind-icon">Interface with type parameter</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="overlay"></div>
+<script src="../assets/js/main.js"></script>
+</body>
+</html>
