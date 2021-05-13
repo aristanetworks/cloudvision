@@ -59,7 +59,7 @@
   },
   "dependencies": {
     "@improbable-eng/grpc-web": "0.14.0",
-    "google-protobuf": "3.16.0",
+    "google-protobuf": "3.17.0",
     "wonka": "4.0.15"
   },
   "devDependencies": {
