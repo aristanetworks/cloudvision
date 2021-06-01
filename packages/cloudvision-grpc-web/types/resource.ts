@@ -5,8 +5,7 @@ import { grpc } from '@improbable-eng/grpc-web';
  * A GRPC response the represents a response from a streaming resource.
  */
 export interface StreamingResourceResponse extends grpc.ProtobufMessage {
-  getType?(): OperationMap[keyof OperationMap];
-  setType?(value: OperationMap[keyof OperationMap]): void;
+  type?: OperationMap[keyof OperationMap];
 }
 
 /**

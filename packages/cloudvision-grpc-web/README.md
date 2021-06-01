@@ -2,7 +2,7 @@
 
 A grpc-web client for requesting CloudVision data from the frontend. This libraries exposed
 functions and utils that convert the grpc-web calls to Observable streams that can be manipulated
-using [Wonka](https://wonka.kitten.sh/).
+using [RXJS](https://rxjs.dev/).
 
 ## Installation
 
@@ -20,7 +20,6 @@ yarn install cloudvision-grpc-web
 
 ```js
 import { fromResourceGrpcInvoke } from 'cloudvision-grpc-web';
-import { pipe, subscribe } from 'wonka';
 
 import { DeviceService } from '../generated/arista/inventory.v1/services.gen_pb_service';
 import { DeviceStreamRequest } from '../generated/arista/inventory.v1/services.gen_pb';
@@ -33,14 +32,13 @@ const grpcRequest = fromResourceGrpcInvoke(DeviceService.Subscribe, {
 });
 
 // Will print out each data message as it arrives
-pipe(
-  grpcRequest.data,
-  subscribe((val) => console.log('data', val.toObject())),
-);
+grpcRequest.data.subscribe({
+  next: (val) => console.log('data', val))
+})
 
 // Will print out any Grpc metadata or errors as they happen
-pipe(
-  grpcRequest.messages,
-  subscribe((val) => console.log('control message', val.toObject())),
-);
+grpcRequest.messages.subscribe({
+  next: (val) => console.log('control message', val))
+})
+
 ```

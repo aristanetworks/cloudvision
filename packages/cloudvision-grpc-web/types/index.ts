@@ -1,5 +1,5 @@
 import { grpc } from '@improbable-eng/grpc-web';
-import { Source, Subject } from 'wonka';
+import { Observable, Subject } from 'rxjs';
 
 /**
  * Represents the combination of the GRPC code along with any message
@@ -40,13 +40,13 @@ export interface ControlFunctions<TResponse> {
 }
 
 /**
- * The [Wonka Source](https://wonka.kitten.sh/api/sources) representing a GRPC
+ * The [RXJS Observable](https://rxjs.dev/api/index/class/Observable) representing a GRPC
  * call. All data will be pushed to the `data` source and any metadata or errors
  * will be pushed to the `messages` source.
  */
 export interface GrpcSource<TResponse> {
-  data: Source<TResponse>;
-  messages: Source<GrpcControlMessage>;
+  data: Observable<TResponse>;
+  messages: Observable<GrpcControlMessage>;
 }
 
 /**

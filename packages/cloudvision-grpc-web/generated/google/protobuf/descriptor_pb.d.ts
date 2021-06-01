@@ -66,7 +66,7 @@ export class FileDescriptorProto extends jspb.Message {
   setServiceList(value: Array<ServiceDescriptorProto>): void;
   addService(value?: ServiceDescriptorProto, index?: number): ServiceDescriptorProto;
 
-  clearExtensionList(): void;
+  clearExtension$List(): void;
   getExtensionList(): Array<FieldDescriptorProto>;
   setExtensionList(value: Array<FieldDescriptorProto>): void;
   addExtension(value?: FieldDescriptorProto, index?: number): FieldDescriptorProto;
@@ -124,7 +124,7 @@ export class DescriptorProto extends jspb.Message {
   setFieldList(value: Array<FieldDescriptorProto>): void;
   addField(value?: FieldDescriptorProto, index?: number): FieldDescriptorProto;
 
-  clearExtensionList(): void;
+  clearExtension$List(): void;
   getExtensionList(): Array<FieldDescriptorProto>;
   setExtensionList(value: Array<FieldDescriptorProto>): void;
   addExtension(value?: FieldDescriptorProto, index?: number): FieldDescriptorProto;

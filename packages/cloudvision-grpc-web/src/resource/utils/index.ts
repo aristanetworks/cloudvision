@@ -8,7 +8,7 @@ import { bufferStream } from '../../grpc';
  *
  * @param resourceSource The GRPC service method definition to be queried.
  * @returns An object with the properties `data` and `message`, which are
- * [Sources](https://wonka.kitten.sh/api/sources) that can be subscribed to.
+ * [RXJS Observables](https://rxjs.dev/api/index/class/Observable) that can be subscribed to.
  */
 export function bufferResource<TResponse>(
   resourceSource: GrpcSource<TResponse>,

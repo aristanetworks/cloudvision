@@ -60,7 +60,7 @@
   "dependencies": {
     "@improbable-eng/grpc-web": "0.14.0",
     "google-protobuf": "3.17.1",
-    "wonka": "4.0.15"
+    "rxjs": "6.6.7"
   },
   "devDependencies": {
     "@arista/prettier-config": "1.1.4",

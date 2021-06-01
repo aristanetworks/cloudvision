@@ -1,5 +1,5 @@
 import { grpc } from '@improbable-eng/grpc-web';
-import { makeSubject, Subject } from 'wonka';
+import { Subject } from 'rxjs';
 
 import { ControlFunctions, GrpcControlMessage, GrpcSource, RpcOptions } from '../../types';
 
@@ -42,7 +42,7 @@ const DEFAULT_CONTROL_FUNCTIONS = {
  * and onEnd GRPC callbacks. This is where publishing to either the `data` or
  * `message` stream is done.
  * @returns An object with the properties `data` and `message`, which are
- * [Sources](https://wonka.kitten.sh/api/sources) that can be subscribed to.
+ * [RXJS Observables](https://rxjs.dev/api/index/class/Observable) that can be subscribed to.
  */
 export function fromGrpcInvoke<
   TRequest extends grpc.ProtobufMessage,
@@ -52,8 +52,8 @@ export function fromGrpcInvoke<
   options: RpcOptions<TRequest, TResponse>,
   controlFunctions: ControlFunctions<TResponse> = DEFAULT_CONTROL_FUNCTIONS,
 ): GrpcSource<TResponse> {
-  const dataSubject = makeSubject<TResponse>();
-  const controlMessageSubject = makeSubject<GrpcControlMessage>();
+  const dataSubject = new Subject<TResponse>();
+  const controlMessageSubject = new Subject<GrpcControlMessage>();
 
   const rpcOptions: grpc.InvokeRpcOptions<TRequest, TResponse> = {
     ...options,
@@ -71,8 +71,8 @@ export function fromGrpcInvoke<
   grpc.invoke(methodDescriptor, rpcOptions);
 
   return {
-    data: dataSubject.source,
-    messages: controlMessageSubject.source,
+    data: dataSubject.asObservable(),
+    messages: controlMessageSubject.asObservable(),
   };
 }
 
