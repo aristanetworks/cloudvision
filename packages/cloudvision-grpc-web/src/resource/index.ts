@@ -1,4 +1,4 @@
-import { Operation } from '@generated/arista/subscriptions/subscriptions_pb';
+import { Operation } from '@generated/arista/subscriptions/subscriptions';
 import { grpc } from '@improbable-eng/grpc-web';
 import {
   ControlFunctions,

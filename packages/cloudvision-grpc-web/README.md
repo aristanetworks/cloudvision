@@ -4,6 +4,8 @@ A grpc-web client for requesting CloudVision data from the frontend. This librar
 functions and utils that convert the grpc-web calls to Observable streams that can be manipulated
 using [RXJS](https://rxjs.dev/).
 
+The package expects protobuf definitions to be generated via [ts-proto](https://github.com/stephenh/ts-proto)
+
 ## Installation
 
 ```bash
@@ -21,14 +23,13 @@ yarn install cloudvision-grpc-web
 ```js
 import { fromResourceGrpcInvoke } from 'cloudvision-grpc-web';
 
-import { DeviceService } from '../generated/arista/inventory.v1/services.gen_pb_service';
-import { DeviceStreamRequest } from '../generated/arista/inventory.v1/services.gen_pb';
+import { DeviceServiceGetAllDesc, DeviceStreamRequest } from '../generated/arista/inventory.v1/services.gen';
 
-const requestAllMessage = new DeviceStreamRequest();
+const requestAllMessage = DeviceStreamRequest.fromPartial({});
 
-const grpcRequest = fromResourceGrpcInvoke(DeviceService.Subscribe, {
+const grpcRequest = fromResourceGrpcInvoke(DeviceServiceGetAllDesc, {
   host: 'http://cvphost',
-  request: requestAllMessage,
+  request: { ...requestAllMessage, ...DeviceServiceGetAllDesc.requestType },
 });
 
 // Will print out each data message as it arrives
