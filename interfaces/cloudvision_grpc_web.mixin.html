@@ -1,0 +1,279 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>Mixin | CloudVision</title>
+	<meta name="description" content="Documentation for CloudVision">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="../assets/js/search.json" data-base="..">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="../index.html" class="title">CloudVision</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="../globals.html">Globals</a>
+				</li>
+				<li>
+					<a href="../modules/cloudvision_grpc_web.html">cloudvision-grpc-web</a>
+				</li>
+				<li>
+					<a href="cloudvision_grpc_web.mixin.html">Mixin</a>
+				</li>
+			</ul>
+			<h1>Interface Mixin</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-comment">
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<p>Declares an API Interface to be included in this interface. The including
+							interface must redeclare all the methods from the included interface, but
+						documentation and options are inherited as follows:</p>
+					</div>
+					<ul>
+						<li><p>If after comment and whitespace stripping, the documentation
+								string of the redeclared method is empty, it will be inherited
+							from the original method.</p>
+						</li>
+						<li><p>Each annotation belonging to the service config (http,
+								visibility) which is not set in the redeclared method will be
+							inherited.</p>
+						</li>
+						<li><p>If an http annotation is inherited, the path pattern will be
+								modified as follows. Any version prefix will be replaced by the
+								version of the including interface plus the [root][] path if
+							specified.</p>
+						</li>
+					</ul>
+					<p>Example of a simple mixin:</p>
+					<pre><code><span class="hljs-keyword">package</span> google.acl.v1;
+<span class="hljs-class"><span class="hljs-keyword">service</span> <span class="hljs-title">AccessControl</span> </span>{
+  <span class="hljs-comment">// Get the underlying ACL object.</span>
+  <span class="hljs-function"><span class="hljs-keyword">rpc</span> GetAcl(GetAclRequest) <span class="hljs-keyword">returns</span> (Acl) </span>{
+    <span class="hljs-keyword">option</span> (google.api.http).get = <span class="hljs-string">&quot;/v1/{resource=**}:getAcl&quot;</span>;
+  }
+}
+
+<span class="hljs-keyword">package</span> google.storage.v2;
+<span class="hljs-class"><span class="hljs-keyword">service</span> <span class="hljs-title">Storage</span> </span>{
+  <span class="hljs-function"><span class="hljs-keyword">rpc</span> GetAcl(GetAclRequest) <span class="hljs-keyword">returns</span> (Acl)</span>;
+
+  <span class="hljs-comment">// Get a data record.</span>
+  <span class="hljs-function"><span class="hljs-keyword">rpc</span> GetData(GetDataRequest) <span class="hljs-keyword">returns</span> (Data) </span>{
+    <span class="hljs-keyword">option</span> (google.api.http).get = <span class="hljs-string">&quot;/v2/{resource=**}&quot;</span>;
+  }
+}</code></pre>
+					<p>Example of a mixin configuration:</p>
+					<pre><code><span class="hljs-selector-tag">apis</span>:
+<span class="hljs-selector-tag">-</span> <span class="hljs-selector-tag">name</span>: <span class="hljs-selector-tag">google</span><span class="hljs-selector-class">.storage</span><span class="hljs-selector-class">.v2</span><span class="hljs-selector-class">.Storage</span>
+  <span class="hljs-selector-tag">mixins</span>:
+  <span class="hljs-selector-tag">-</span> <span class="hljs-selector-tag">name</span>: <span class="hljs-selector-tag">google</span><span class="hljs-selector-class">.acl</span><span class="hljs-selector-class">.v1</span><span class="hljs-selector-class">.AccessControl</span></code></pre>
+					<p>The mixin construct implies that all methods in <code>AccessControl</code> are
+						also declared with same name and request/response types in
+						<code>Storage</code>. A documentation generator or annotation processor will
+						see the effective <code>Storage.GetAcl</code> method after inheriting
+					documentation and annotations as follows:</p>
+					<pre><code><span class="hljs-class"><span class="hljs-keyword">service</span> <span class="hljs-title">Storage</span> </span>{
+  <span class="hljs-comment">// Get the underlying ACL object.</span>
+  <span class="hljs-function"><span class="hljs-keyword">rpc</span> GetAcl(GetAclRequest) <span class="hljs-keyword">returns</span> (Acl) </span>{
+    <span class="hljs-keyword">option</span> (google.api.http).get = <span class="hljs-string">&quot;/v2/{resource=**}:getAcl&quot;</span>;
+  }
+  ...
+}</code></pre>
+					<p>Note how the version in the path pattern changed from <code>v1</code> to <code>v2</code>.</p>
+					<p>If the <code>root</code> field in the mixin is specified, it should be a
+					relative path under which inherited HTTP paths are placed. Example:</p>
+					<pre><code><span class="hljs-selector-tag">apis</span>:
+<span class="hljs-selector-tag">-</span> <span class="hljs-selector-tag">name</span>: <span class="hljs-selector-tag">google</span><span class="hljs-selector-class">.storage</span><span class="hljs-selector-class">.v2</span><span class="hljs-selector-class">.Storage</span>
+  <span class="hljs-selector-tag">mixins</span>:
+  <span class="hljs-selector-tag">-</span> <span class="hljs-selector-tag">name</span>: <span class="hljs-selector-tag">google</span><span class="hljs-selector-class">.acl</span><span class="hljs-selector-class">.v1</span><span class="hljs-selector-class">.AccessControl</span>
+    <span class="hljs-selector-tag">root</span>: <span class="hljs-selector-tag">acls</span></code></pre>
+					<p>This implies the following inherited HTTP annotation:</p>
+					<pre><code><span class="hljs-class"><span class="hljs-keyword">service</span> <span class="hljs-title">Storage</span> </span>{
+  <span class="hljs-comment">// Get the underlying ACL object.</span>
+  <span class="hljs-function"><span class="hljs-keyword">rpc</span> GetAcl(GetAclRequest) <span class="hljs-keyword">returns</span> (Acl) </span>{
+    <span class="hljs-keyword">option</span> (google.api.http).get = <span class="hljs-string">&quot;/v2/acls/{resource=**}:getAcl&quot;</span>;
+  }
+  ...
+}</code></pre>
+				</div>
+			</section>
+			<section class="tsd-panel tsd-hierarchy">
+				<h3>Hierarchy</h3>
+				<ul class="tsd-hierarchy">
+					<li>
+						<span class="target">Mixin</span>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel-group tsd-index-group">
+				<h2>Index</h2>
+				<section class="tsd-panel tsd-index-panel">
+					<div class="tsd-index-content">
+						<section class="tsd-index-section ">
+							<h3>Properties</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="cloudvision_grpc_web.mixin.html#name" class="tsd-kind-icon">name</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="cloudvision_grpc_web.mixin.html#root" class="tsd-kind-icon">root</a></li>
+							</ul>
+						</section>
+					</div>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Properties</h2>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="name" class="tsd-anchor"></a>
+					<h3>name</h3>
+					<div class="tsd-signature tsd-kind-icon">name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aristanetworks/cloudvision/blob/6f84cf2/packages/cloudvision-grpc-web/generated/google/protobuf/api.ts#L163">packages/cloudvision-grpc-web/generated/google/protobuf/api.ts:163</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>The fully qualified name of the interface which is included.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="root" class="tsd-anchor"></a>
+					<h3>root</h3>
+					<div class="tsd-signature tsd-kind-icon">root<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aristanetworks/cloudvision/blob/6f84cf2/packages/cloudvision-grpc-web/generated/google/protobuf/api.ts#L168">packages/cloudvision-grpc-web/generated/google/protobuf/api.ts:168</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>If non-empty specifies a path under which inherited HTTP paths
+							are rooted.</p>
+						</div>
+					</div>
+				</section>
+			</section>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class="globals  ">
+						<a href="../globals.html"><em>Globals</em></a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="../modules/a_msgpack.html">a-<wbr>msgpack</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="../modules/cloudvision_connector.html">cloudvision-<wbr>connector</a>
+					</li>
+					<li class="current tsd-kind-module">
+						<a href="../modules/cloudvision_grpc_web.html">cloudvision-<wbr>grpc-<wbr>web</a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+					<li class=" tsd-kind-module">
+						<a href="../modules/a_msgpack.html" class="tsd-kind-icon">a-<wbr>msgpack</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="../modules/cloudvision_connector.html" class="tsd-kind-icon">cloudvision-<wbr>connector</a>
+					</li>
+				</ul>
+				<ul class="current">
+					<li class="current tsd-kind-module">
+						<a href="../modules/cloudvision_grpc_web.html" class="tsd-kind-icon">cloudvision-<wbr>grpc-<wbr>web</a>
+						<ul>
+							<li class="current tsd-kind-interface tsd-parent-kind-module">
+								<a href="cloudvision_grpc_web.mixin.html" class="tsd-kind-icon">Mixin</a>
+								<ul>
+									<li class=" tsd-kind-property tsd-parent-kind-interface">
+										<a href="cloudvision_grpc_web.mixin.html#name" class="tsd-kind-icon">name</a>
+									</li>
+									<li class=" tsd-kind-property tsd-parent-kind-interface">
+										<a href="cloudvision_grpc_web.mixin.html#root" class="tsd-kind-icon">root</a>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</li>
+				</ul>
+				<ul class="after-current">
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer>
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-object-literal"><span class="tsd-kind-icon">Object literal</span></li>
+				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
+				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
+				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
+				<li class="tsd-kind-type-alias tsd-has-type-parameter"><span class="tsd-kind-icon">Type alias with type parameter</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
+				<li class="tsd-kind-interface tsd-has-type-parameter"><span class="tsd-kind-icon">Interface with type parameter</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-enum"><span class="tsd-kind-icon">Enumeration</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="overlay"></div>
+<script src="../assets/js/main.js"></script>
+</body>
+</html>
