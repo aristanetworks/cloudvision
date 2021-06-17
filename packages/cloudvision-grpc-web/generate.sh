@@ -20,18 +20,20 @@ PROTO_LOC="$2"
 # Directory to write generated code to (.js and .d.ts files)
 OUT_DIR="./generated"
 
-mkdir "${OUT_DIR}"
+mkdir -p "${OUT_DIR}"
 
 # Path to this plugin, Note this must be an absolute path on Windows
-PROTOC_GEN_TS_PATH="./node_modules/.bin/protoc-gen-ts"
+PROTOC_GEN_TS_PATH="./node_modules/.bin/protoc-gen-ts_proto"
 
 
 SUBSCRIPTIONS_PROTO_FILES=$(ls $GO_SRC_LOC/arista/resources/arista/subscriptions/*.proto)
 
 TS_GEN_OPTIONS="
-    --plugin="protoc-gen-ts=${PROTOC_GEN_TS_PATH}"
-    --js_out="import_style=commonjs,binary:${OUT_DIR}"
-    --ts_out="service=grpc-web:${OUT_DIR}"
+    --plugin=${PROTOC_GEN_TS_PATH}
+    --ts_proto_out=${OUT_DIR}/
+    --ts_proto_opt=env=browser
+    --ts_proto_opt=esModuleInterop=true
+    --ts_proto_opt=outputClientImpl=grpc-web
 "
 
 GOOGLE_PROTO_FILES=$(ls $PROTO_LOC/include/google/**/*.proto)

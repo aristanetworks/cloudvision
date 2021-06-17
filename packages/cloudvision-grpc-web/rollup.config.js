@@ -14,6 +14,18 @@ const projectRootDir = path.resolve(__dirname);
 const config = {
   input: 'src/index.ts',
   onwarn: (warning) => {
+    if (
+      warning.code === 'CIRCULAR_DEPENDENCY' &&
+      warning.importer === 'node_modules/protobufjs/src/util/minimal.js'
+    ) {
+      return;
+    }
+    if (
+      warning.code === 'EVAL' &&
+      (warning.id || '').includes('node_modules/@protobufjs/inquire/index.js')
+    ) {
+      return;
+    }
     if (warning.loc) {
       throw new Error(
         `${warning.message} (${warning.loc.file}):${warning.loc.line}:${warning.loc.column}`,
@@ -37,7 +49,7 @@ const external = Object.keys(packageJson.dependencies);
 const globals = {
   '@improbable-eng/grpc-web': 'grpc-web',
   'google-protobuf': 'google-protobuf',
-  'wonka': 'wonka',
+  'rxjs': 'rxjs',
 };
 
 // Build preserving environment variables

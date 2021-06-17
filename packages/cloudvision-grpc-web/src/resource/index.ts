@@ -1,4 +1,4 @@
-import { Operation } from '@generated/arista/subscriptions/subscriptions_pb';
+import { Operation } from '@generated/arista/subscriptions/subscriptions';
 import { grpc } from '@improbable-eng/grpc-web';
 import {
   ControlFunctions,
@@ -17,7 +17,7 @@ import { fromGrpcInvoke } from '../grpc';
  * @param methodDescriptor The GRPC service method definition to be queried.
  * @param options Options to pass to eh GRPC call.
  * @returns An object with the properties `data` and `message`, which are
- * [Sources](https://wonka.kitten.sh/api/sources) that can be subscribed to.
+ * [RXJS Observables](https://rxjs.dev/api/index/class/Observable) that can be subscribed to.
  */
 export function fromResourceGrpcInvoke<
   TRequest extends grpc.ProtobufMessage,
@@ -31,7 +31,7 @@ export function fromResourceGrpcInvoke<
       controlMessageSubject.next({ metadata: headers });
     },
     onMessage: (controlMessageSubject, dataSubject, response) => {
-      const messageType = response.getType && response.getType();
+      const messageType = response.type;
       if (messageType === Operation.INITIAL_SYNC_COMPLETE) {
         // Should be a control message
         controlMessageSubject.next({
