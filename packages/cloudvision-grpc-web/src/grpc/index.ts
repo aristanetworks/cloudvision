@@ -46,7 +46,7 @@ const DEFAULT_CONTROL_FUNCTIONS = {
  */
 export function fromGrpcInvoke<
   TRequest extends grpc.ProtobufMessage,
-  TResponse extends grpc.ProtobufMessage
+  TResponse extends grpc.ProtobufMessage,
 >(
   methodDescriptor: grpc.MethodDefinition<TRequest, TResponse>,
   options: RpcOptions<TRequest, TResponse>,

@@ -55,7 +55,7 @@ export interface GrpcSource<TResponse> {
  */
 export type RpcOptions<
   TRequest extends grpc.ProtobufMessage,
-  TResponse extends grpc.ProtobufMessage
+  TResponse extends grpc.ProtobufMessage,
 > = Omit<grpc.InvokeRpcOptions<TRequest, TResponse>, 'onMessage' | 'onEnd' | 'onHeaders'>;
 
 export * from './resource';
