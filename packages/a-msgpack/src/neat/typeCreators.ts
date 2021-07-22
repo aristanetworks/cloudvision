@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/prefer-for-of */
+// Allow usage of for loops, since here performance is paramount
+
 // Copyright (c) 2018, Arista Networks, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software
@@ -45,7 +48,7 @@ export function createBaseType(value: unknown): BaseType {
       proto = Object.getPrototypeOf(proto);
     }
     if (Object.getPrototypeOf(value) === proto) {
-      // eslint-disable-next-line no-use-before-define
+      // eslint-disable-next-line @typescript-eslint/no-use-before-define
       return createTypedMap(value as PlainObject<unknown>);
     }
   }

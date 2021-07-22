@@ -37,7 +37,7 @@ function fromStringToBuffer(view: DataView, offset: number, str: string): void {
   const len = str.length;
   let highNum = 0;
   let lowNum = 0;
-  if (str[0] === '-') {
+  if (str.startsWith('-')) {
     pos++;
   }
   const sign = pos;
