@@ -1,4 +1,4 @@
-import { buffer, filter, pipe } from 'wonka';
+import { buffer, filter } from 'rxjs/operators';
 
 import { GrpcCodeWithMessage, GrpcSource } from '../../../types';
 
@@ -9,21 +9,20 @@ import { GrpcCodeWithMessage, GrpcSource } from '../../../types';
  * @param resourceSource The GRPC service method definition to be queried.
  * @param flushMessage The message that when encountered triggers the buffer flush
  * @returns An object with the properties `data` and `message`, which are
- * [Sources](https://wonka.kitten.sh/api/sources) that can be subscribed to.
+ * [RXJS Observables](https://rxjs.dev/api/index/class/Observable) that can be subscribed to.
  */
 export function bufferStream<TResponse>(
   resourceSource: GrpcSource<TResponse>,
   flushMessage: GrpcCodeWithMessage,
 ): GrpcSource<TResponse[]> {
-  const flushCondition = pipe(
-    resourceSource.messages,
+  const flushCondition = resourceSource.messages.pipe(
     filter(
       (msg) => msg.error?.code === flushMessage.code && msg.error?.message === flushMessage.message,
     ),
   );
 
   return {
-    data: pipe(resourceSource.data, buffer(flushCondition)),
+    data: resourceSource.data.pipe(buffer(flushCondition)),
     messages: resourceSource.messages,
   };
 }
