@@ -5,7 +5,7 @@
     "@strictsoftware/typedoc-plugin-monorepo": "0.4.2",
     "gh-pages": "3.1.0",
     "lerna": "4.0.0",
-    "typedoc": "0.19.2",
+    "typedoc": "0.21.4",
     "typescript": "4.2.4"
   },
   "scripts": {
@@ -19,7 +19,6 @@
     "gh-pages": "gh-pages -d docs",
     "lerna-version": "lerna version --conventional-commits --exact --no-push --yes",
     "postinstall": "npm run bootstrap",
-    "preinstall": "npx npm-force-resolutions",
     "test": "lerna run test:cov"
   }
 }
