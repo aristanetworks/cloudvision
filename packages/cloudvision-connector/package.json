@@ -1,6 +1,6 @@
 {
   "name": "cloudvision-connector",
-  "version": "4.9.0",
+  "version": "4.9.1",
   "description": "A module to communicate with the CloudVision API server",
   "author": "extensions@arista.com",
   "homepage": "https://aristanetworks.github.io/cloudvision/modules/cloudvision_connector.html",
@@ -54,7 +54,7 @@
     "switch"
   ],
   "dependencies": {
-    "a-msgpack": "4.9.0",
+    "a-msgpack": "4.9.1",
     "base64-js": "1.5.1",
     "jsbi": "3.1.5",
     "uuid": "8.3.2"
@@ -87,9 +87,9 @@
     "rimraf": "3.0.2",
     "rollup": "2.49.0",
     "rollup-plugin-terser": "7.0.2",
-    "typedoc": "0.19.2",
     "ts-jest": "27.0.4",
     "tslib": "2.3.0",
+    "typedoc": "0.19.2",
     "typedoc-neo-theme": "1.1.1",
     "typedoc-plugin-markdown": "3.1.1",
     "typescript": "4.2.4"
