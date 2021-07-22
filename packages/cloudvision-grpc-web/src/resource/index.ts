@@ -21,7 +21,7 @@ import { fromGrpcInvoke } from '../grpc';
  */
 export function fromResourceGrpcInvoke<
   TRequest extends grpc.ProtobufMessage,
-  TResponse extends StreamingResourceResponse
+  TResponse extends StreamingResourceResponse,
 >(
   methodDescriptor: grpc.MethodDefinition<TRequest, TResponse>,
   options: ResourceRpcOptions<TRequest, TResponse>,

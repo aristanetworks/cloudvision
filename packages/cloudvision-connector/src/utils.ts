@@ -173,13 +173,13 @@ export function makeNotifCallback(callback: NotifCallback, options: Options = {}
     }
 
     const datasets = result as CloudVisionDatasets;
-    if (datasets && datasets.datasets) {
+    if (datasets?.datasets) {
       callback(null, datasets, status, token, requestContext);
       return;
     }
 
     const notifs = result as CloudVisionNotifs | CloudVisionBatchedNotifications;
-    if (notifs && notifs.dataset) {
+    if (notifs?.dataset) {
       callback(null, notifs, status, token, requestContext);
       return;
     }

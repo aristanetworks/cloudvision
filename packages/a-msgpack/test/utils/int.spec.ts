@@ -42,7 +42,7 @@ describe('codec: int64 / uint64', () => {
     test(`sets and gets ${name} ${value} as JSBI when BigInt not available`, () => {
       const b = new Uint8Array(8);
       const view = new DataView(b.buffer);
-      // @ts-ignore This is for testing DataViews that do not implement int64
+      // @ts-expect-error This is for testing DataViews that do not implement int64
       view.getBigInt64 = undefined;
       setInt64(view, 0, value);
       const result = typeof value === 'bigint' ? value.toString() : value;
@@ -78,7 +78,7 @@ describe('codec: int64 / uint64', () => {
     test(`sets and gets ${name} ${value} as JSBI when BigInt not available`, () => {
       const b = new Uint8Array(8);
       const view = new DataView(b.buffer);
-      // @ts-ignore This is for testing DataViews that do not implement int64
+      // @ts-expect-error This is for testing DataViews that do not implement int64
       view.getBigUint64 = undefined;
       setUint64(view, 0, value);
       const result = typeof value === 'bigint' ? value.toString() : value;
@@ -95,7 +95,7 @@ describe('codec: int64 / uint64', () => {
     test(`int64 sets and gets ${name} ${value}`, () => {
       const b = new Uint8Array(8);
       const view = new DataView(b.buffer);
-      // @ts-ignore So that we can test undefined
+      // @ts-expect-error So that we can test undefined
       setInt64(view, 0, value);
       expect(getInt64(view, 0, false)).toEqual(BigInt(0));
     });
@@ -103,7 +103,7 @@ describe('codec: int64 / uint64', () => {
     test(`uint64 sets and gets ${name} ${value}`, () => {
       const b = new Uint8Array(8);
       const view = new DataView(b.buffer);
-      // @ts-ignore So that we can test undefined
+      // @ts-expect-error So that we can test undefined
       setUint64(view, 0, value);
       expect(getUint64(view, 0, false)).toEqual(BigInt(0));
     });

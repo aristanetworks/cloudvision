@@ -126,7 +126,7 @@ function createExpectedComplexObject(complexArr: unknown[]) {
 }
 
 describe('NEAT codec', () => {
-  const tests = yaml.safeLoad(fs.readFileSync(process.cwd() + '/test/codec_tests.yaml', 'utf8'));
+  const tests = yaml.load(fs.readFileSync(process.cwd() + '/test/codec_tests.yaml', 'utf8'));
   const arrayTests: YamlTest[] = [];
   const boolTests: YamlTest[] = [];
   const complexTests: YamlTest[] = [];
@@ -438,35 +438,8 @@ describe('NEAT codec', () => {
       b: { 'gcQBZMQBZA==': { _key: { d: 'd' }, _value: 'e' } },
     };
     const testOutput = [
-      130,
-      196,
-      1,
-      97,
-      129,
-      129,
-      196,
-      1,
-      99,
-      196,
-      1,
-      100,
-      196,
-      1,
-      101,
-      196,
-      1,
-      98,
-      129,
-      129,
-      196,
-      1,
-      100,
-      196,
-      1,
-      100,
-      196,
-      1,
-      101,
+      130, 196, 1, 97, 129, 129, 196, 1, 99, 196, 1, 100, 196, 1, 101, 196, 1, 98, 129, 129, 196, 1,
+      100, 196, 1, 100, 196, 1, 101,
     ];
     expect(msgpackCustomCodec.encode(testInput)).toEqual(new Uint8Array(testOutput));
     expect(msgpackCustomCodec.decode(new Uint8Array(testOutput))).toEqual(expectedDecodedValue);

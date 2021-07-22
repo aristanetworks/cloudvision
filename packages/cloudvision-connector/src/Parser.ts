@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/prefer-for-of */
+// Allow usage of for loops, since here performance is paramount
+
 // Copyright (c) 2018, Arista Networks, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software
@@ -331,7 +334,7 @@ function encodeNotification(notif: NewConvertedNotification): RawNotification {
     timestamp: notif.timestamp,
   };
 
-  if (notif.path_elements && notif.path_elements.length) {
+  if (notif.path_elements?.length) {
     encodedNotif.path_elements = encodePathElements(notif.path_elements);
   }
 

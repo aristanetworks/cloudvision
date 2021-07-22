@@ -447,6 +447,37 @@ describe('encodeNotifications', () => {
     expect(encodeNotifications(rawNotifs)).toEqual(encodedNotifs);
   });
 
+  test('should properly encode CloudVision notifications with no path_elements', () => {
+    const emptyPathElementNotif = {
+      timestamp: { seconds: 1539822631, nanos: 883496 },
+      updates: [
+        {
+          key: 'Basketball',
+          value: 'NBA',
+        },
+      ],
+    };
+    const emptyPathElementEncoded = {
+      timestamp: { seconds: 1539822631, nanos: 883496 },
+      updates: [
+        {
+          key: 'xApCYXNrZXRiYWxs',
+          value: 'xANOQkE=',
+        },
+      ],
+    };
+    const notifs: PublishRequest = {
+      dataset: { type: DEVICE_DATASET_TYPE, name: 'Dodgers' },
+      notifications: [emptyPathElementNotif],
+    };
+    const encoded: CloudVisionRawNotifs = {
+      dataset: { type: DEVICE_DATASET_TYPE, name: 'Dodgers' },
+      notifications: [emptyPathElementEncoded],
+    };
+
+    expect(encodeNotifications(notifs)).toEqual(encoded);
+  });
+
   test('should properly encode batched CloudVision notifications', () => {
     expect(encodeNotifications(batchedNotifs)).toEqual(encodedNotifs);
   });

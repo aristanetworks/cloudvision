@@ -72,26 +72,26 @@ describe('NEAT types', () => {
 
   test('Nil', () => {
     // Explicitly test that nil will always return null regardless of what args are passed
-    // @ts-ignore Explicitly test nil
+    // @ts-expect-error Explicitly test nil
     expect(new Nil(1).value).toEqual(null);
-    // @ts-ignore Explicitly test nil
+    // @ts-expect-error Explicitly test nil
     expect(new Nil(true).value).toEqual(null);
-    // @ts-ignore Explicitly test nil
+    // @ts-expect-error Explicitly test nil
     expect(new Nil([]).value).toEqual(null);
-    // @ts-ignore Explicitly test nil
+    // @ts-expect-error Explicitly test nil
     expect(new Nil(false).value).toEqual(null);
-    // @ts-ignore Explicitly test nil
+    // @ts-expect-error Explicitly test nil
     expect(new Nil({}).value).toEqual(null);
 
-    // @ts-ignore Explicitly test nil
+    // @ts-expect-error Explicitly test nil
     expect(new Nil(1).toString()).toEqual('null');
-    // @ts-ignore Explicitly test nil
+    // @ts-expect-error Explicitly test nil
     expect(new Nil(true).toString()).toEqual('null');
-    // @ts-ignore Explicitly test nil
+    // @ts-expect-error Explicitly test nil
     expect(new Nil([]).toString()).toEqual('null');
-    // @ts-ignore Explicitly test nil
+    // @ts-expect-error Explicitly test nil
     expect(new Nil(false).toString()).toEqual('null');
-    // @ts-ignore Explicitly test nil
+    // @ts-expect-error Explicitly test nil
     expect(new Nil({}).toString()).toEqual('null');
   });
 
@@ -143,26 +143,26 @@ describe('NEAT types', () => {
   test('Wildcard', () => {
     const wildcardValue = '*';
     // Explicitly test that Wildcard will always return null regardless of what args are passed
-    // @ts-ignore Explicitly test wildcard
+    // @ts-expect-error Explicitly test wildcard
     expect(new Wildcard(1).value).toEqual(null);
-    // @ts-ignore Explicitly test wildcard
+    // @ts-expect-error Explicitly test wildcard
     expect(new Wildcard(true).value).toEqual(null);
-    // @ts-ignore Explicitly test wildcard
+    // @ts-expect-error Explicitly test wildcard
     expect(new Wildcard([]).value).toEqual(null);
-    // @ts-ignore Explicitly test wildcard
+    // @ts-expect-error Explicitly test wildcard
     expect(new Wildcard(false).value).toEqual(null);
-    // @ts-ignore Explicitly test wildcard
+    // @ts-expect-error Explicitly test wildcard
     expect(new Wildcard({}).value).toEqual(null);
 
-    // @ts-ignore Explicitly test wildcard
+    // @ts-expect-error Explicitly test wildcard
     expect(new Wildcard(1).toString()).toEqual(wildcardValue);
-    // @ts-ignore Explicitly test wildcard
+    // @ts-expect-error Explicitly test wildcard
     expect(new Wildcard(true).toString()).toEqual(wildcardValue);
-    // @ts-ignore Explicitly test wildcard
+    // @ts-expect-error Explicitly test wildcard
     expect(new Wildcard([]).toString()).toEqual(wildcardValue);
-    // @ts-ignore Explicitly test wildcard
+    // @ts-expect-error Explicitly test wildcard
     expect(new Wildcard(false).toString()).toEqual(wildcardValue);
-    // @ts-ignore Explicitly test wildcard
+    // @ts-expect-error Explicitly test wildcard
     expect(new Wildcard({}).toString()).toEqual(wildcardValue);
   });
 });

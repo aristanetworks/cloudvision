@@ -14,5 +14,5 @@ export interface StreamingResourceResponse extends grpc.ProtobufMessage {
  */
 export type ResourceRpcOptions<
   TRequest extends grpc.ProtobufMessage,
-  TResponse extends StreamingResourceResponse
+  TResponse extends StreamingResourceResponse,
 > = Omit<grpc.InvokeRpcOptions<TRequest, TResponse>, 'onMessage' | 'onEnd' | 'onHeaders'>;

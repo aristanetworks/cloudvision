@@ -146,7 +146,7 @@ describe('Emitter', () => {
     emitter.bind(event, requestContext, callbackWithUnbind);
     emitter.bind(event2, requestContext, fakeCallback1);
 
-    // @ts-ignore Accessing private attribute for easier testing
+    // @ts-expect-error Accessing private attribute for easier testing
     expect(emitter.events.size).toBe(2);
     expect(emitter.getRequestContextMap().size).toBe(2);
   });
@@ -165,7 +165,7 @@ describe('Emitter', () => {
     emitter.bind(event, requestContext, callbackWithUnbind);
     emitter.bind(event2, requestContext, fakeCallback1);
 
-    // @ts-ignore Accessing private attribute for easier testing
+    // @ts-expect-error Accessing private attribute for easier testing
     expect(emitter.events.size).toBe(2);
     expect(emitter.getEventsMap().size).toBe(2);
   });
@@ -231,9 +231,9 @@ describe('Emitter', () => {
     const fakeCallback = jest.fn();
     const fakeCallback1 = jest.fn();
 
-    // @ts-ignore setup for callback that is missing request context
+    // @ts-expect-error setup for callback that is missing request context
     emitter.bind(event, undefined, fakeCallback);
-    // @ts-ignore setup for callback that is missing request context
+    // @ts-expect-error setup for callback that is missing request context
     emitter.bind(event, undefined, fakeCallback1);
 
     emitter.emit(event, otherArg);
