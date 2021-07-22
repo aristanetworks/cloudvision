@@ -10,7 +10,7 @@ describe.each<[LogLevel, string]>([
   [WARN, 'warn'],
 ])('log', (level, fn) => {
   const groupSpy = jest.spyOn(console, 'groupCollapsed');
-  // @ts-ignore spyOn uses the string name of the function
+  // @ts-expect-error spyOn uses the string name of the function
   const consoleSpy = jest.spyOn(console, fn);
   const message = 'Dodgers rule';
   const status = { code: 0, message: 'Giants not that great' };

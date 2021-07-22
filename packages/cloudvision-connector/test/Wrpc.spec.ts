@@ -1,4 +1,6 @@
-/* eslint-env jest */
+/**
+ * @jest-environment jsdom
+ */
 
 // Copyright (c) 2018, Arista Networks, Inc.
 //
@@ -251,9 +253,9 @@ describe.each<[WsCommand, WrpcMethod, boolean]>([
   beforeEach(() => {
     jest.resetAllMocks();
     wrpc = new Wrpc();
-    // @ts-ignore Easier than to type everything
+    // @ts-expect-error Easier than to type everything
     commandFn = wrpc[fn];
-    // @ts-ignore Easier than to type everything
+    // @ts-expect-error Easier than to type everything
     polymorphicCommandFn = wrpc[fn];
     wrpc.run('ws://localhost:8080');
     ws = wrpc.websocket;
@@ -321,7 +323,7 @@ describe.each<[WsCommand, WrpcMethod, boolean]>([
   test(`'${fn} + ${command}' call callback with error on message that throws a send error`, () => {
     ws.dispatchEvent(new MessageEvent('open', {}));
     sendSpy.mockImplementation(() => {
-      throw ERROR_MESSAGE;
+      throw new Error(ERROR_MESSAGE);
     });
 
     let token;
@@ -343,7 +345,7 @@ describe.each<[WsCommand, WrpcMethod, boolean]>([
       );
       expect(callbackSpy).toHaveBeenCalledTimes(1);
       expect(callbackSpy).toHaveBeenCalledWith(
-        ERROR_MESSAGE,
+        new Error(ERROR_MESSAGE),
         undefined,
         undefined,
         token,
@@ -588,9 +590,9 @@ describe.each<[WsCommand, WrpcMethod, boolean]>([
       batchResults: true,
       debugMode: true,
     });
-    // @ts-ignore Easier than to type everything
+    // @ts-expect-error Easier than to type everything
     commandFn = wrpc[fn];
-    // @ts-ignore Easier than to type everything
+    // @ts-expect-error Easier than to type everything
     polymorphicCommandFn = wrpc[fn];
     wrpc.run('ws://localhost:8080');
     ws = wrpc.websocket;
@@ -844,7 +846,7 @@ describe.each<[StreamCommand, 'stream']>([
     ws.dispatchEvent(new MessageEvent('open', {}));
 
     const subscriptionId = commandFn.call(wrpc, command, query, callbackSpy);
-    if (subscriptionId && subscriptionId.token) {
+    if (subscriptionId?.token) {
       const token = subscriptionId.token;
       expect(callbackSpy).not.toHaveBeenCalled();
       expect(eventsEmitterSpy).not.toHaveBeenCalled();
@@ -872,7 +874,7 @@ describe.each<[StreamCommand, 'stream']>([
     ws.dispatchEvent(new MessageEvent('open', {}));
 
     const subscriptionId = commandFn.call(wrpc, command, query, callbackSpy);
-    if (subscriptionId && subscriptionId.token) {
+    if (subscriptionId?.token) {
       const token = subscriptionId.token;
       const requestContext = createRequestContext(command, token, query);
       ws.dispatchEvent(
@@ -913,11 +915,11 @@ describe.each<[StreamCommand, 'stream']>([
   test(`'${fn} + ${command}' should call callback with error on message that throws a send error`, () => {
     ws.dispatchEvent(new MessageEvent('open', {}));
     sendSpy.mockImplementation(() => {
-      throw ERROR_MESSAGE;
+      throw new Error(ERROR_MESSAGE);
     });
 
     const subscriptionId = commandFn.call(wrpc, command, query, callbackSpy);
-    if (subscriptionId && subscriptionId.token) {
+    if (subscriptionId?.token) {
       const token = subscriptionId.token;
       const requestContext = createRequestContext(command, token, query);
       expect(log).toHaveBeenCalledTimes(1);
@@ -931,7 +933,7 @@ describe.each<[StreamCommand, 'stream']>([
       );
       expect(callbackSpy).toHaveBeenCalledTimes(1);
       expect(callbackSpy).toHaveBeenCalledWith(
-        ERROR_MESSAGE,
+        new Error(ERROR_MESSAGE),
         undefined,
         undefined,
         token,
@@ -954,7 +956,7 @@ describe.each<[StreamCommand, 'stream']>([
     ws.dispatchEvent(new MessageEvent('open', {}));
 
     const subscriptionId = commandFn.call(wrpc, command, query, callbackSpy);
-    if (subscriptionId && subscriptionId.token) {
+    if (subscriptionId?.token) {
       const token = subscriptionId.token;
       const requestContext = createRequestContext(command, token, query);
       ws.dispatchEvent(
@@ -992,7 +994,7 @@ describe.each<[StreamCommand, 'stream']>([
     ws.dispatchEvent(new MessageEvent('open', {}));
 
     const subscriptionId = commandFn.call(wrpc, command, query, callbackSpy);
-    if (subscriptionId && subscriptionId.token) {
+    if (subscriptionId?.token) {
       const token = subscriptionId.token;
       const requestContext = createRequestContext(command, token, query);
       ws.dispatchEvent(
@@ -1026,7 +1028,7 @@ describe.each<[StreamCommand, 'stream']>([
     ws.dispatchEvent(new MessageEvent('open', {}));
 
     const subscriptionId = commandFn.call(wrpc, command, query, callbackSpy);
-    if (subscriptionId && subscriptionId.token) {
+    if (subscriptionId?.token) {
       const token = subscriptionId.token;
       const requestContext = createRequestContext(command, token, query);
       ws.dispatchEvent(
@@ -1065,7 +1067,7 @@ describe.each<[StreamCommand, 'stream']>([
     ws.dispatchEvent(new MessageEvent('open', {}));
 
     const subscriptionId = commandFn.call(wrpc, command, query, callbackSpy);
-    if (subscriptionId && subscriptionId.token) {
+    if (subscriptionId?.token) {
       const token = subscriptionId.token;
       const requestContext = createRequestContext(command, token, query);
       ws.dispatchEvent(
@@ -1093,7 +1095,7 @@ describe.each<[StreamCommand, 'stream']>([
     ws.dispatchEvent(new MessageEvent('open', {}));
 
     const subscriptionId = commandFn.call(wrpc, command, query, callbackSpy);
-    if (subscriptionId && subscriptionId.token) {
+    if (subscriptionId?.token) {
       const token = subscriptionId.token;
       ws.dispatchEvent(new MessageEvent('message', { data: RESULT }));
 
@@ -1116,7 +1118,7 @@ describe.each<[StreamCommand, 'stream']>([
     ws.dispatchEvent(new MessageEvent('open', {}));
 
     const subscriptionId = commandFn.call(wrpc, command, query, callbackSpy);
-    if (subscriptionId && subscriptionId.token) {
+    if (subscriptionId?.token) {
       const token = subscriptionId.token;
       ws.dispatchEvent(new MessageEvent('message', { data: stringifyMessage({ result: RESULT }) }));
 
@@ -1140,7 +1142,7 @@ describe.each<[StreamCommand, 'stream']>([
 
     const result = '{ data: 1';
     const subscriptionId = commandFn.call(wrpc, command, query, callbackSpy);
-    if (subscriptionId && subscriptionId.token) {
+    if (subscriptionId?.token) {
       const token = subscriptionId.token;
       ws.dispatchEvent(new MessageEvent('message', { data: result }));
 
@@ -1246,14 +1248,19 @@ describe.each<[StreamCommand, 'stream']>([
 
     test(`'${fn} + ${command}' should callback with error on close message that throws a send error`, () => {
       sendSpy.mockImplementation(() => {
-        throw ERROR_MESSAGE;
+        throw new Error(ERROR_MESSAGE);
       });
 
       const token = wrpc.closeStream(subscriptionId, closeCallback);
 
       if (token) {
         expect(closeCallback).toHaveBeenCalledTimes(1);
-        expect(closeCallback).toHaveBeenCalledWith(ERROR_MESSAGE, undefined, undefined, token);
+        expect(closeCallback).toHaveBeenCalledWith(
+          new Error(ERROR_MESSAGE),
+          undefined,
+          undefined,
+          token,
+        );
         expect(callbackSpy).not.toHaveBeenCalled();
         expect(log).toHaveBeenCalledTimes(1);
         expect(eventsEmitterSpy).not.toHaveBeenCalled();
@@ -1325,7 +1332,7 @@ describe.each<[StreamCommand, 'stream']>([
 
     test(`'${fn} + ${command}' should callback with error on close message that throws a send error`, () => {
       sendSpy.mockImplementation(() => {
-        throw ERROR_MESSAGE;
+        throw new Error(ERROR_MESSAGE);
       });
 
       const streams = [subscriptionId, subscriptionIdTwo];

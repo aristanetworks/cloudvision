@@ -18,7 +18,7 @@ class TextDE {
   }
 }
 
-// @ts-ignore temp ignore to test
+// @ts-expect-error temp ignore to test
 global.WebSocket = WebSocket;
 
 global.TextDecoder = TextDE;

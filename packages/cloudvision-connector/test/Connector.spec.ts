@@ -1,3 +1,7 @@
+/**
+ * @jest-environment jsdom
+ */
+
 // Copyright (c) 2018, Arista Networks, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software
@@ -305,9 +309,9 @@ describe.each([
 
   beforeEach(() => {
     conn = new Connector();
-    // @ts-ignore Easier than typing everything
+    // @ts-expect-error Easier than typing everything
     connFn = conn[fn];
-    // @ts-ignore Easier than typing everything
+    // @ts-expect-error Easier than typing everything
     commandFnSpy = jest.spyOn(conn, wrpcFn);
     conn.run('ws://localhost:8080');
     conn.websocket.dispatchEvent(new MessageEvent('open', {}));
@@ -338,7 +342,7 @@ describe.each([
   test(`'${fn}' should handle invalid query`, () => {
     const query = undefined;
 
-    // @ts-ignore Easier than typing everything
+    // @ts-expect-error Easier than typing everything
     const token = connFn.call(conn, query, callback, options);
 
     expect(commandFnSpy).not.toHaveBeenCalled();
@@ -515,9 +519,8 @@ describe.each([
 
   beforeEach(() => {
     conn = new Connector();
-    // @ts-ignore Easier than typing everything
+    // @ts-expect-error Easier than typing everything
     connFn = conn[fn];
-    // @ts-ignore Easier than typing everything
     commandFnSpy = jest.spyOn(conn, 'stream');
     conn.run('ws://localhost:8080');
     conn.websocket.dispatchEvent(new MessageEvent('open', {}));
@@ -548,7 +551,7 @@ describe.each([
 
   test(`'${fn}' should handle invalid query`, () => {
     const query = undefined;
-    // @ts-ignore Easier than typing everything
+    // @ts-expect-error Easier than typing everything
     const subscriptionId = connFn.call(conn, query, callback);
 
     expect(commandFnSpy).not.toHaveBeenCalled();

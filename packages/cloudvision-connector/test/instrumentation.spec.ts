@@ -1,4 +1,6 @@
-/* eslint-env jest */
+/**
+ * @jest-environment jsdom
+ */
 
 // Copyright (c) 2020, Arista Networks, Inc.
 //
@@ -109,9 +111,9 @@ describe.each<[WsCommand, WrpcMethod, boolean]>([
         end: endSpy,
       },
     });
-    // @ts-ignore Easier than to type everything
+    // @ts-expect-error Easier than to type everything
     commandFn = wrpc[fn];
-    // @ts-ignore Easier than to type everything
+    // @ts-expect-error Easier than to type everything
     polymorphicCommandFn = wrpc[fn];
     wrpc.run('ws://localhost:8080');
     ws = wrpc.websocket;
@@ -190,7 +192,7 @@ describe.each<[WsCommand, WrpcMethod, boolean]>([
   test(`'${fn} + ${command}' should send instrumentation info message on error`, () => {
     ws.dispatchEvent(new MessageEvent('open', {}));
     sendSpy.mockImplementation(() => {
-      throw ERROR_MESSAGE;
+      throw new Error(ERROR_MESSAGE);
     });
 
     let token;
@@ -211,7 +213,7 @@ describe.each<[WsCommand, WrpcMethod, boolean]>([
       );
       expect(callbackSpy).toHaveBeenCalledTimes(1);
       expect(callbackSpy).toHaveBeenCalledWith(
-        ERROR_MESSAGE,
+        new Error(ERROR_MESSAGE),
         undefined,
         undefined,
         token,
@@ -227,7 +229,7 @@ describe.each<[WsCommand, WrpcMethod, boolean]>([
       expect(eventsEmitterUnbindSpy).toHaveBeenCalledTimes(1);
       expect(token).not.toBeNull();
       expect(startSpy).toHaveBeenCalledWith(requestContext);
-      expect(infoSpy).toHaveBeenCalledWith(requestContext, { error: ERROR_MESSAGE });
+      expect(infoSpy).toHaveBeenCalledWith(requestContext, { error: new Error(ERROR_MESSAGE) });
       expect(endSpy).toHaveBeenCalledWith(requestContext);
     }
     expect(token).not.toBeNull();
@@ -340,7 +342,7 @@ describe.each<[StreamCommand, 'stream']>([
     ws.dispatchEvent(new MessageEvent('open', {}));
 
     const subscriptionId = commandFn.call(wrpc, command, query, callbackSpy);
-    if (subscriptionId && subscriptionId.token) {
+    if (subscriptionId?.token) {
       const token = subscriptionId.token;
       const requestContext = createRequestContext(command, token, query);
       expect(callbackSpy).not.toHaveBeenCalled();
@@ -373,7 +375,7 @@ describe.each<[StreamCommand, 'stream']>([
     ws.dispatchEvent(new MessageEvent('open', {}));
 
     const subscriptionId = commandFn.call(wrpc, command, query, callbackSpy);
-    if (subscriptionId && subscriptionId.token) {
+    if (subscriptionId?.token) {
       const token = subscriptionId.token;
       const requestContext = createRequestContext(command, token, query);
       ws.dispatchEvent(
@@ -407,7 +409,7 @@ describe.each<[StreamCommand, 'stream']>([
     ws.dispatchEvent(new MessageEvent('open', {}));
 
     const subscriptionId = commandFn.call(wrpc, command, query, callbackSpy);
-    if (subscriptionId && subscriptionId.token) {
+    if (subscriptionId?.token) {
       const token = subscriptionId.token;
       const requestContext = createRequestContext(command, token, query);
       ws.dispatchEvent(
@@ -479,7 +481,7 @@ describe.each<[WsCommand, 'stream' | 'get']>([
         end: endSpy,
       },
     });
-    // @ts-ignore Easier than to type everything
+    // @ts-expect-error Easier than to type everything
     commandFn = wrpc[fn];
     wrpc.run('ws://localhost:8080');
     ws = wrpc.websocket;
@@ -501,7 +503,7 @@ describe.each<[WsCommand, 'stream' | 'get']>([
   });
 
   test(`'${fn} + ${command}' should not send instrumentation info message if socket is not running`, () => {
-    // @ts-ignore Easier than to type everything
+    // @ts-expect-error Easier than to type everything
     const subscriptionId = commandFn.call(wrpc, command, query, callbackSpy);
 
     expect(callbackSpy).toHaveBeenCalledWith('Connection is down');
@@ -517,9 +519,9 @@ describe.each<[WsCommand, 'stream' | 'get']>([
   test(`'${fn} + ${command}' should send instrumentation message if socket is running, but command is not instrumented`, () => {
     ws.dispatchEvent(new MessageEvent('open', {}));
 
-    // @ts-ignore Easier than to type everything
+    // @ts-expect-error Easier than to type everything
     const subscriptionId = commandFn.call(wrpc, command, query, callbackSpy);
-    if (subscriptionId && subscriptionId.token) {
+    if (subscriptionId?.token) {
       const token = subscriptionId.token;
       const requestContext = createRequestContext(command, token, query);
       expect(callbackSpy).not.toHaveBeenCalled();
