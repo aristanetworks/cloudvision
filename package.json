@@ -3,7 +3,7 @@
   "private": true,
   "devDependencies": {
     "@strictsoftware/typedoc-plugin-monorepo": "0.4.2",
-    "gh-pages": "3.1.0",
+    "gh-pages": "3.2.3",
     "lerna": "4.0.0",
     "typedoc": "0.21.4",
     "typescript": "4.2.4"
