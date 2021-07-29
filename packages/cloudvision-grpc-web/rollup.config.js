@@ -81,9 +81,12 @@ if (env === 'development' || env === 'production') {
   };
   config.plugins.push(
     replace({
-      'process.env.NODE_ENV': JSON.stringify(env),
-      'process.env.TEXT_ENCODING': JSON.stringify('always'),
-      'process.env.TEXT_DECODER': JSON.stringify('always'),
+      preventAssignment: true,
+      values: {
+        'process.env.NODE_ENV': JSON.stringify(env),
+        'process.env.TEXT_ENCODING': JSON.stringify('always'),
+        'process.env.TEXT_DECODER': JSON.stringify('always'),
+      },
     }),
     commonjs(),
   );
