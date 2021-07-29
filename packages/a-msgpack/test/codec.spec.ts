@@ -72,10 +72,10 @@ interface YamlTest {
   f32: number;
   f64: string;
   str: string;
-  map: object;
+  map: Record<string, unknown>;
   array: unknown[];
   pointer: Element[];
-  complex: [object, unknown][];
+  complex: [Record<string, unknown>, unknown][];
   bytes: number[];
   wildcard: string;
 }
@@ -101,7 +101,7 @@ function createComplexMap(complexArr: unknown[]) {
   return map;
 }
 
-function createComplexKey(key: object): string {
+function createComplexKey(key: Record<string, unknown>): string {
   const mapArr: [unknown, unknown][] = [];
   Object.entries(key).forEach((entry) => {
     mapArr.push([
@@ -116,7 +116,7 @@ function createComplexKey(key: object): string {
 function createExpectedComplexObject(complexArr: unknown[]) {
   const obj: PlainObject<unknown> = {};
   for (let i = 0; i < complexArr.length; i += 2) {
-    const key = complexArr[i] as object;
+    const key = complexArr[i] as Record<string, unknown>;
     obj[createComplexKey(key)] = {
       _key: key,
       _value: complexArr[i + 1],
@@ -245,7 +245,9 @@ describe('NEAT codec', () => {
         expect(msgpackCustomCodec.decode(new Uint8Array(test.out))).toEqual(int.value);
       } else {
         expect(msgpackCustomCodec.decode(new Uint8Array(test.out))).toEqual(BigInt(test.i64));
-        expect(msgpackCustomCodec.decode(new Uint8Array(test.out))).toEqual(BigInt(int.value));
+        expect(msgpackCustomCodec.decode(new Uint8Array(test.out))).toEqual(
+          BigInt(int.value as unknown as string),
+        );
         const int64 = new NeatTypes.Int(BigInt(test.i64));
         expect(msgpackCustomCodec.encode(int64)).toEqual(new Uint8Array(test.out));
         expect(msgpackCustomCodec.decode(new Uint8Array(test.out))).toEqual(int64.value);
