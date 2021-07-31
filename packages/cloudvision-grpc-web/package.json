@@ -75,7 +75,7 @@
     "@typescript-eslint/parser": "4.28.5",
     "babel-eslint": "10.1.0",
     "cross-env": "7.0.3",
-    "eslint": "7.31.0",
+    "eslint": "7.32.0",
     "eslint-config-arista-js": "2.0.1",
     "eslint-config-arista-ts": "2.0.0",
     "eslint-plugin-arista": "0.2.2",
