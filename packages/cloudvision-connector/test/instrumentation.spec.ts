@@ -110,6 +110,7 @@ describe.each<[WsCommand, WrpcMethod, boolean]>([
         info: infoSpy,
         end: endSpy,
       },
+      nanosecondMode: false,
     });
     // @ts-expect-error Easier than to type everything
     commandFn = wrpc[fn];
@@ -304,6 +305,7 @@ describe.each<[StreamCommand, 'stream']>([
         info: infoSpy,
         end: endSpy,
       },
+      nanosecondMode: false,
     });
     commandFn = wrpc[fn];
     wrpc.run('ws://localhost:8080');
@@ -480,6 +482,7 @@ describe.each<[WsCommand, 'stream' | 'get']>([
         info: infoSpy,
         end: endSpy,
       },
+      nanosecondMode: false,
     });
     // @ts-expect-error Easier than to type everything
     commandFn = wrpc[fn];
