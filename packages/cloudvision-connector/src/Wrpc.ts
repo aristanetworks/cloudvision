@@ -63,6 +63,7 @@ import { createCloseParams, toBinaryKey, validateResponse } from './utils';
 interface ConnectorOptions {
   batchResults: boolean;
   debugMode: boolean;
+  nanosecondMode: boolean;
   instrumentationConfig?: InstrumentationConfig;
 }
 
@@ -95,6 +96,7 @@ export default class Wrpc {
     options: ConnectorOptions = {
       batchResults: true,
       debugMode: false,
+      nanosecondMode: false,
     },
     websocketClass = WebSocket,
     parser = Parser,
@@ -330,7 +332,11 @@ export default class Wrpc {
 
       let msg: CloudVisionMessage;
       try {
-        msg = this.Parser.parse(event.data, this.connectorOptions.batchResults);
+        msg = this.Parser.parse(
+          event.data,
+          this.connectorOptions.batchResults,
+          this.connectorOptions.nanosecondMode,
+        );
         if (this.connectorOptions.debugMode) {
           // Used for debugging
           self.postMessage(

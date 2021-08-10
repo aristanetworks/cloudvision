@@ -1,4 +1,5 @@
 import { PathElements } from 'a-msgpack';
+import JSBI from 'jsbi';
 
 import { DEVICE_DATASET_TYPE } from '../src/constants';
 import { ConvertedNotification, PublishNotification, Query, RawNotification } from '../types';
@@ -64,7 +65,7 @@ export const thirdNotif: RawNotification = {
 };
 export const fourthNotif: RawNotification = {
   path_elements: encodedPath1,
-  timestamp: { seconds: 1539822631, nanos: 9934968754 },
+  timestamp: { seconds: 1539822631, nanos: 993496875 },
   deletes: ['xA1CYXNlYmFsbCBUZWFt'],
 };
 export const fifthNotif: RawNotification = {
@@ -159,6 +160,70 @@ export const expectedFifthNotif: ConvertedNotification = {
 export const expectedSixthNotif: ConvertedNotification = {
   path_elements: path1,
   timestamp: 1539832611883,
+  deletes: {},
+};
+export const expectedFirstNotifNano: ConvertedNotification = {
+  path_elements: path1,
+  timestamp: JSBI.BigInt('1539822611883496678'),
+  updates: {
+    xA1CYXNlYmFsbCBUZWFt: {
+      key: 'Baseball Team',
+      value: 'Dodgers',
+    },
+    xA1CYXkgQXJlYSBUZWFt: {
+      key: 'Bay Area Team',
+      value: 'Athletics',
+    },
+  },
+};
+export const expectedSecondNotifNano: ConvertedNotification = {
+  path_elements: path2,
+  timestamp: JSBI.BigInt('1539822631000883496'),
+  updates: {
+    xApCYXNrZXRiYWxs: {
+      key: 'Basketball',
+      value: 'NBA',
+    },
+  },
+};
+export const expectedThirdNotifNano: ConvertedNotification = {
+  path_elements: path1,
+  timestamp: JSBI.BigInt('1539822611000000000'),
+  updates: {
+    gcQFc3BvcnTECGJhc2ViYWxs: {
+      key: { sport: 'baseball' },
+      value: ['NL', 'AL'],
+    },
+  },
+  deletes: {
+    xA1CYXkgQXJlYSBUZWFt: {
+      key: 'Bay Area Team',
+    },
+  },
+};
+export const expectedFourthNotifNano: ConvertedNotification = {
+  path_elements: path1,
+  timestamp: JSBI.BigInt('1539822631993496875'),
+  deletes: {
+    xA1CYXNlYmFsbCBUZWFt: {
+      key: 'Baseball Team',
+    },
+  },
+};
+
+export const expectedFifthNotifNano: ConvertedNotification = {
+  path_elements: path3,
+  timestamp: JSBI.BigInt('1539822631000993496'),
+  updates: {
+    xApCYXNrZXRiYWxs: {
+      key: 'Basketball',
+      value: 'NBA',
+    },
+  },
+};
+export const expectedSixthNotifNano: ConvertedNotification = {
+  path_elements: path1,
+  timestamp: JSBI.BigInt('1539832611883496678'),
   deletes: {},
 };
 

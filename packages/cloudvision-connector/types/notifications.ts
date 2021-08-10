@@ -1,4 +1,5 @@
 import { PathElements, Timestamp } from 'a-msgpack';
+import JSBI from 'jsbi';
 
 import { RequestContext } from './connection';
 import { DatasetObject } from './params';
@@ -48,7 +49,7 @@ export type CloudVisionDelete<K> = CloudVisionDeletes<K>;
 
 export type ConvertedNotification<K = unknown, V = unknown> = CloudVisionNotification<
   PathElements,
-  number,
+  number | JSBI,
   CloudVisionUpdates<K, V>,
   CloudVisionDeletes<K>
 >;
