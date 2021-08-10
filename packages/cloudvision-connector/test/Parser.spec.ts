@@ -32,6 +32,11 @@ import {
   expectedSecondNotif,
   expectedSixthNotif,
   expectedThirdNotif,
+  expectedFirstNotifNano,
+  expectedFourthNotifNano,
+  expectedSecondNotifNano,
+  expectedSixthNotifNano,
+  expectedThirdNotifNano,
   fifthNotif,
   firstNotif,
   firstNotifPublishRaw,
@@ -107,6 +112,18 @@ describe('Parser', () => {
         expectedSixthNotif,
       ],
     };
+
+    const nanoResult: CloudVisionNotifs = {
+      dataset: { type: DEVICE_DATASET_TYPE, name: 'Dodgers' },
+      metadata: {},
+      notifications: [
+        expectedThirdNotifNano,
+        expectedFirstNotifNano,
+        expectedSecondNotifNano,
+        expectedFourthNotifNano,
+        expectedSixthNotifNano,
+      ],
+    };
     const data = {
       result: encodedData,
       status: {},
@@ -122,17 +139,26 @@ describe('Parser', () => {
       status: {},
       token: 'someToken',
     };
+    const expectedNanosecondFormat = {
+      result: nanoResult,
+      status: {},
+      token: 'someToken',
+    };
 
     test('decode messages in batch format', () => {
-      expect(Parser.parse(JSON.stringify(data), true)).toEqual(expectedBatchData);
+      expect(Parser.parse(JSON.stringify(data), true, false)).toEqual(expectedBatchData);
     });
 
     test('decode messages in raw format', () => {
-      expect(Parser.parse(JSON.stringify(data), false)).toEqual(expectedRawFormat);
+      expect(Parser.parse(JSON.stringify(data), false, false)).toEqual(expectedRawFormat);
+    });
+
+    test('decode messages in nanosecond format', () => {
+      expect(Parser.parse(JSON.stringify(data), false, true)).toEqual(expectedNanosecondFormat);
     });
 
     test('decode empty result', () => {
-      expect(Parser.parse(JSON.stringify({}), false)).toEqual({
+      expect(Parser.parse(JSON.stringify({}), false, false)).toEqual({
         result: undefined,
         status: undefined,
         token: undefined,
@@ -250,7 +276,7 @@ describe('decodeNotifications', () => {
       },
     };
 
-    const decodedNotif = decodeNotifications(notif, true);
+    const decodedNotif = decodeNotifications(notif, true, false);
 
     expect(decodedNotif).toEqual(expectedNotif);
     expect(decodedNotif).not.toBe(expectedNotif);
@@ -269,7 +295,7 @@ describe('decodeNotifications', () => {
       },
     };
 
-    const batchedNotif = decodeNotifications(notif, true);
+    const batchedNotif = decodeNotifications(notif, true, false);
 
     expect(batchedNotif).toEqual(expectedNotif);
     expect(batchedNotif).not.toBe(expectedNotif);
@@ -288,7 +314,7 @@ describe('decodeNotifications', () => {
       },
     };
 
-    const batchedNotif = decodeNotifications(notif, true);
+    const batchedNotif = decodeNotifications(notif, true, false);
 
     expect(batchedNotif).toEqual(expectedNotif);
     expect(batchedNotif).not.toBe(expectedNotif);
@@ -308,7 +334,7 @@ describe('decodeNotifications', () => {
       },
     };
 
-    const batchedNotif = decodeNotifications(notif, true);
+    const batchedNotif = decodeNotifications(notif, true, false);
 
     expect(batchedNotif).toEqual(expectedNotif);
     expect(batchedNotif).not.toBe(expectedNotif);
@@ -330,7 +356,7 @@ describe('decodeNotifications', () => {
       ],
     };
 
-    const decodedNotif = decodeNotifications(notif, false);
+    const decodedNotif = decodeNotifications(notif, false, false);
 
     expect(decodedNotif).toEqual(expectedNotif);
     expect(decodedNotif).not.toBe(expectedNotif);
@@ -347,7 +373,7 @@ describe('decodeNotifications', () => {
       notifications: [expectedThirdNotif, expectedFirstNotif],
     };
 
-    const batchedNotif = decodeNotifications(notif, false);
+    const batchedNotif = decodeNotifications(notif, false, false);
 
     expect(batchedNotif).toEqual(expectedNotif);
     expect(batchedNotif).not.toBe(expectedNotif);
@@ -365,7 +391,7 @@ describe('decodeNotifications', () => {
       notifications: [expectedThirdNotif, expectedFirstNotif],
     };
 
-    const batchedNotif = decodeNotifications(notif, false);
+    const batchedNotif = decodeNotifications(notif, false, false);
 
     expect(batchedNotif).toEqual(expectedNotif);
     expect(batchedNotif).not.toBe(expectedNotif);
@@ -384,7 +410,7 @@ describe('decodeNotifications', () => {
       },
     };
 
-    const decodedNotif = decodeNotifications(notif, true);
+    const decodedNotif = decodeNotifications(notif, true, false);
 
     expect(decodedNotif).toEqual(expectedNotif);
     expect(decodedNotif).not.toBe(expectedNotif);
@@ -406,7 +432,7 @@ describe('decodeNotifications', () => {
       ],
     };
 
-    const batchedNotif = decodeNotifications(notif, false);
+    const batchedNotif = decodeNotifications(notif, false, false);
 
     expect(batchedNotif).toEqual(expectedNotif);
     expect(batchedNotif).not.toBe(expectedNotif);
