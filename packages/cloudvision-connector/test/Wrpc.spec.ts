@@ -589,6 +589,7 @@ describe.each<[WsCommand, WrpcMethod, boolean]>([
     wrpc = new Wrpc({
       batchResults: true,
       debugMode: true,
+      nanosecondMode: false,
     });
     // @ts-expect-error Easier than to type everything
     commandFn = wrpc[fn];

@@ -20,6 +20,7 @@
 
 import { encode, decode, Codec, PathElements } from 'a-msgpack';
 import { fromByteArray, toByteArray } from 'base64-js';
+import JSBI from 'jsbi';
 
 import {
   BatchPublishRequest,
@@ -204,20 +205,22 @@ function decodeDeletes(deletes: string[]): CloudVisionDeletes<unknown> {
  * **NOTE** this is deprecated and in upcoming versions the timestamp will be passed on in its full
  * resolution. This behavior will become an option that can be turned on.
  */
-function convertNotif(notif: RawNotification): ConvertedNotification {
-  const convertedNotif: ConvertedNotification = {
-    path_elements: [],
-    timestamp: 0,
-  };
-  convertedNotif.path_elements = decodePathElements(notif.path_elements || []);
+function convertNotif(notif: RawNotification, nanosecondMode: boolean): ConvertedNotification {
+  const pathElements = decodePathElements(notif.path_elements || []);
   // Pad nano seconds
   let nanos = '';
   if (notif.timestamp.nanos) {
     nanos += notif.timestamp.nanos;
   }
   nanos = nanos.padStart(9, '0');
-  convertedNotif.timestamp = parseInt(('' + notif.timestamp.seconds + nanos).slice(0, 13), 10);
-
+  const stringifiedTimestamp = '' + notif.timestamp.seconds + nanos;
+  const timestamp = nanosecondMode
+    ? JSBI.BigInt(stringifiedTimestamp)
+    : parseInt(stringifiedTimestamp.slice(0, 13), 10);
+  const convertedNotif: ConvertedNotification = {
+    path_elements: pathElements,
+    timestamp,
+  };
   if (notif.updates) {
     convertedNotif.updates = decodeNotifs(notif.updates);
   }
@@ -238,7 +241,7 @@ function convertNotif(notif: RawNotification): ConvertedNotification {
  * @param notif the raw notifications as they come from the API server.
  */
 function decodeAndBatchNotif(batch: CloudVisionBatchedNotifications, notif: RawNotification): void {
-  const convertedNotif: ConvertedNotification = convertNotif(notif);
+  const convertedNotif: ConvertedNotification = convertNotif(notif, false);
   if (batch.notifications[JSON.stringify(convertedNotif.path_elements)]) {
     batch.notifications[JSON.stringify(convertedNotif.path_elements)].push(convertedNotif);
   } else {
@@ -293,6 +296,7 @@ export function sortTimestamp(first: RawNotification, second: RawNotification): 
 export function decodeNotifications(
   result: CloudVisionRawNotifs,
   batchResults: boolean,
+  nanosecondMode: boolean,
 ): CloudVisionBatchedNotifications | CloudVisionNotifs {
   result.notifications.sort(sortTimestamp);
 
@@ -317,7 +321,7 @@ export function decodeNotifications(
   };
   for (let i = 0; i < result.notifications.length; i += 1) {
     const n = result.notifications[i];
-    const convertedNotif: ConvertedNotification = convertNotif(n);
+    const convertedNotif: ConvertedNotification = convertNotif(n, nanosecondMode);
     notif.notifications.push(convertedNotif);
   }
   return notif;
@@ -392,12 +396,12 @@ export function encodeNotifications(
  * Implements parse which decodes responses sent by the server.
  */
 export default class Parser {
-  public static parse(data: string, batch: boolean): CloudVisionMessage {
+  public static parse(data: string, batch: boolean, nanosecondMode: boolean): CloudVisionMessage {
     const message = JSON.parse(data);
     const result = message.result;
     if (result && !result.datasets && result.notifications) {
       // Timeseries notification that needs to be decoded with NEAT
-      const decodedResult = decodeNotifications(result, batch);
+      const decodedResult = decodeNotifications(result, batch, nanosecondMode);
       return {
         error: message.error,
         result: decodedResult,
