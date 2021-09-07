@@ -1,6 +1,8 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+// @ts-nocheck
 /* eslint-disable */
 import Long from 'long';
-import _m0 from 'protobufjs/minimal';
+import _m0 from '@arista/protobufjs/minimal';
 
 export const protobufPackage = 'google.protobuf';
 
@@ -427,18 +429,18 @@ export interface FileOptions {
    */
   javaPackage: string;
   /**
-   * If set, all the classes from the .proto file are wrapped in a single
-   * outer class with the given name.  This applies to both Proto1
-   * (equivalent to the old "--one_java_file" option) and Proto2 (where
-   * a .proto always translates to a single class, but you may want to
-   * explicitly choose the class name).
+   * Controls the name of the wrapper Java class generated for the .proto file.
+   * That class will always contain the .proto file's getDescriptor() method as
+   * well as any top-level extensions defined in the .proto file.
+   * If java_multiple_files is disabled, then all the other classes from the
+   * .proto file will be nested inside the single wrapper outer class.
    */
   javaOuterClassname: string;
   /**
-   * If set true, then the Java code generator will generate a separate .java
+   * If enabled, then the Java code generator will generate a separate .java
    * file for each top-level message, enum, and service defined in the .proto
-   * file.  Thus, these types will *not* be nested inside the outer class
-   * named by java_outer_classname.  However, the outer class will still be
+   * file.  Thus, these types will *not* be nested inside the wrapper class
+   * named by java_outer_classname.  However, the wrapper class will still be
    * generated to contain the file's getDescriptor() method as well as any
    * top-level extensions defined in the file.
    */
@@ -4756,8 +4758,8 @@ const btoa: (bin: string) => string =
   globalThis.btoa || ((bin) => globalThis.Buffer.from(bin, 'binary').toString('base64'));
 function base64FromBytes(arr: Uint8Array): string {
   const bin: string[] = [];
-  for (let i = 0; i < arr.byteLength; ++i) {
-    bin.push(String.fromCharCode(arr[i]));
+  for (const byte of arr) {
+    bin.push(String.fromCharCode(byte));
   }
   return btoa(bin.join(''));
 }

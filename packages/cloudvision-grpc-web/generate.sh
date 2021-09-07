@@ -47,3 +47,9 @@ protoc \
     $TS_GEN_OPTIONS \
     -I=$GO_SRC_LOC/arista/resources \
     $SUBSCRIPTIONS_PROTO_FILES
+
+echo "Use @arista/protobufjs"
+find ${OUT_DIR} -type f -name "*.ts" -print0 | xargs -0 sed -i '' -e "s#protobufjs/minimal#@arista/protobufjs/minimal#g"
+
+echo "Don't type-check generated files"
+find ${OUT_DIR} -type f -name "*.ts" -print0 | xargs -0 sed -i '' -e "1s#^#/* eslint-disable @typescript-eslint/ban-ts-comment */\n// @ts-nocheck\n#"
