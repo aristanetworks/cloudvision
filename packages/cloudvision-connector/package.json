@@ -56,7 +56,7 @@
   "dependencies": {
     "a-msgpack": "4.10.0",
     "base64-js": "1.5.1",
-    "jsbi": "3.2.2",
+    "jsbi": "3.2.3",
     "uuid": "8.3.2"
   },
   "devDependencies": {
