@@ -1,6 +1,6 @@
 {
   "name": "cloudvision-grpc-web",
-  "version": "4.9.2",
+  "version": "4.10.0",
   "description": "A Grpc-Web client for CloudVision",
   "keywords": [
     "grpc",

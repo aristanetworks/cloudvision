@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.10.0](https://github.com/aristanetworks/cloudvision/compare/v4.9.2...v4.10.0) (2021-09-08)
+
+
+### Features
+
+* **cloudvision-grpc-web:** Use Arista fork of protobuf.js ([#541](https://github.com/aristanetworks/cloudvision/issues/541)) ([33d61d4](https://github.com/aristanetworks/cloudvision/commit/33d61d47fb5f7d9a85b829f027391e5b73fb2776))
+
+
+
+
+
 ## [4.9.2](https://github.com/aristanetworks/cloudvision/compare/v4.9.1...v4.9.2) (2021-08-06)
 
 **Note:** Version bump only for package root
