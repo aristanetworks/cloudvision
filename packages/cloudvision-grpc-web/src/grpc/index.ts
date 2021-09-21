@@ -1,29 +1,16 @@
 import { grpc } from '@improbable-eng/grpc-web';
+import { ControlFunctions, GrpcControlMessage, GrpcSource, RpcOptions } from '@types';
 import { Subject } from 'rxjs';
 
-import { ControlFunctions, GrpcControlMessage, GrpcSource, RpcOptions } from '../../types';
-
-const DEFAULT_CONTROL_FUNCTIONS = {
-  onHeaders: <TResponse>(
-    controlMessageSubject: Subject<GrpcControlMessage>,
-    _dataSubject: Subject<TResponse>,
-    headers: grpc.Metadata,
-  ) => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const DEFAULT_CONTROL_FUNCTIONS: ControlFunctions<any> = {
+  onHeaders(controlMessageSubject, _dataSubject, headers) {
     controlMessageSubject.next({ metadata: headers });
   },
-  onMessage: <TResponse>(
-    _controlMessageSubject: Subject<GrpcControlMessage>,
-    dataSubject: Subject<TResponse>,
-    response: TResponse,
-  ) => {
+  onMessage(_controlMessageSubject, dataSubject, response) {
     dataSubject.next(response);
   },
-  onEnd: <TResponse>(
-    controlMessageSubject: Subject<GrpcControlMessage>,
-    dataSubject: Subject<TResponse>,
-    code: grpc.Code,
-    message: string,
-  ) => {
+  onEnd(controlMessageSubject, dataSubject, code, message) {
     controlMessageSubject.next({ error: { code, message } });
     dataSubject.complete();
     controlMessageSubject.complete();
@@ -44,27 +31,29 @@ const DEFAULT_CONTROL_FUNCTIONS = {
  * @returns An object with the properties `data` and `message`, which are
  * [RXJS Observables](https://rxjs.dev/api/index/class/Observable) that can be subscribed to.
  */
-export function fromGrpcInvoke<
-  TRequest extends grpc.ProtobufMessage,
-  TResponse extends grpc.ProtobufMessage,
->(
-  methodDescriptor: grpc.MethodDefinition<TRequest, TResponse>,
-  options: RpcOptions<TRequest, TResponse>,
-  controlFunctions: ControlFunctions<TResponse> = DEFAULT_CONTROL_FUNCTIONS,
-): GrpcSource<TResponse> {
-  const dataSubject = new Subject<TResponse>();
+export function fromGrpcInvoke<Req extends grpc.ProtobufMessage, Res extends grpc.ProtobufMessage>(
+  methodDescriptor: grpc.MethodDefinition<Req, Res>,
+  options: RpcOptions<Req, Res>,
+  controlFunctions?: Partial<ControlFunctions<Res>>,
+): GrpcSource<Res> {
+  const dataSubject = new Subject<Res>();
   const controlMessageSubject = new Subject<GrpcControlMessage>();
 
-  const rpcOptions: grpc.InvokeRpcOptions<TRequest, TResponse> = {
+  const allControlFunctions: ControlFunctions<Res> = {
+    ...DEFAULT_CONTROL_FUNCTIONS,
+    ...controlFunctions,
+  };
+
+  const rpcOptions: grpc.InvokeRpcOptions<Req, Res> = {
     ...options,
-    onHeaders: (headers: grpc.Metadata) => {
-      controlFunctions.onHeaders(controlMessageSubject, dataSubject, headers);
+    onHeaders(headers) {
+      allControlFunctions.onHeaders(controlMessageSubject, dataSubject, headers);
     },
-    onMessage: (response: TResponse) => {
-      controlFunctions.onMessage(controlMessageSubject, dataSubject, response);
+    onMessage(response) {
+      allControlFunctions.onMessage(controlMessageSubject, dataSubject, response);
     },
-    onEnd: (code: grpc.Code, message: string) => {
-      controlFunctions.onEnd(controlMessageSubject, dataSubject, code, message);
+    onEnd(code, message) {
+      allControlFunctions.onEnd(controlMessageSubject, dataSubject, code, message);
     },
   };
 
@@ -76,4 +65,4 @@ export function fromGrpcInvoke<
   };
 }
 
-export * from './utils';
+export * from './operators';
