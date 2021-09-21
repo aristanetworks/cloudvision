@@ -1,6 +1,8 @@
 import { Operation } from '@generated/arista/subscriptions/subscriptions';
 import { grpc } from '@improbable-eng/grpc-web';
 
+import { RpcOptions } from './grpc';
+
 /**
  * A GRPC response the represents a response from a streaming resource.
  */
@@ -13,6 +15,6 @@ export interface StreamingResourceResponse extends grpc.ProtobufMessage {
  * except for `onMessage`, `onEnd` and `onHeaders` for a resource request.
  */
 export type ResourceRpcOptions<
-  TRequest extends grpc.ProtobufMessage,
-  TResponse extends StreamingResourceResponse,
-> = Omit<grpc.InvokeRpcOptions<TRequest, TResponse>, 'onMessage' | 'onEnd' | 'onHeaders'>;
+  Req extends grpc.ProtobufMessage,
+  Res extends StreamingResourceResponse,
+> = RpcOptions<Req, Res>;
