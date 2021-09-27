@@ -223,29 +223,29 @@ export class Encoder {
   }
 
   encodeNeatClass(value: NeatType): void {
-    if (value instanceof Float32) {
+    if ((value as Float32).type === 'float32') {
       // float 32 -- 0xca
       this.writeU8(0xca);
-      this.writeF32(value.value);
-    } else if (value instanceof Float64) {
+      this.writeF32((value as Float32).value);
+    } else if ((value as Float64).type === 'float64') {
       // float 64 -- 0xcb
       this.writeU8(0xcb);
-      this.writeF64(value.value);
-    } else if (value instanceof Int) {
+      this.writeF64((value as Float64).value);
+    } else if ((value as Int).type === 'int') {
       // int
-      if (typeof value.value === 'bigint') {
-        this.encodeBigInt(value.value);
-      } else if (isJsbi(value.value)) {
-        this.encodeJSBI(value.value as JSBI);
+      if (typeof (value as Int).value === 'bigint') {
+        this.encodeBigInt(((value as Int).value as bigint));
+      } else if (isJsbi((value as Int).value)) {
+        this.encodeJSBI((value as Int).value as JSBI);
       } else {
-        this.encodeNumber(value.value as number);
+        this.encodeNumber((value as Int).value as number);
       }
-    } else if (value instanceof Str) {
+    } else if ((value as Str).type === 'str') {
       // string
-      this.encodeString(value.value);
-    } else if (value instanceof Bool) {
+      this.encodeString((value as Str).value);
+    } else if ((value as Bool).type === 'bool') {
       // bool
-      this.encodeBoolean(value.value);
+      this.encodeBoolean((value as Bool).value);
     } else {
       // nil
       this.encodeNil();
