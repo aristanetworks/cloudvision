@@ -9,6 +9,8 @@ import {
 
 import { fromGrpcInvoke } from '../grpc';
 
+import { INITIAL_SYNC_COMPLETE } from './constants';
+
 /**
  * Calls fromGrpcInvoke and adds some resource specific handling for stream
  * control messages that do not contain data, but are sent as data messages
@@ -20,38 +22,32 @@ import { fromGrpcInvoke } from '../grpc';
  * [RXJS Observables](https://rxjs.dev/api/index/class/Observable) that can be subscribed to.
  */
 export function fromResourceGrpcInvoke<
-  TRequest extends grpc.ProtobufMessage,
-  TResponse extends StreamingResourceResponse,
+  Req extends grpc.ProtobufMessage,
+  Res extends StreamingResourceResponse,
 >(
-  methodDescriptor: grpc.MethodDefinition<TRequest, TResponse>,
-  options: ResourceRpcOptions<TRequest, TResponse>,
-): GrpcSource<TResponse> {
-  const controlFunctions: ControlFunctions<TResponse> = {
-    onHeaders: (controlMessageSubject, _dataSubject, headers) => {
-      controlMessageSubject.next({ metadata: headers });
-    },
-    onMessage: (controlMessageSubject, dataSubject, response) => {
-      const messageType = response.type;
-      if (messageType === Operation.INITIAL_SYNC_COMPLETE) {
-        // Should be a control message
+  methodDescriptor: grpc.MethodDefinition<Req, Res>,
+  options: ResourceRpcOptions<Req, Res>,
+): GrpcSource<Res> {
+  const controlFunctions: Partial<ControlFunctions<Res>> = {
+    onMessage(controlMessageSubject, dataSubject, response) {
+      if (response.type === Operation.INITIAL_SYNC_COMPLETE) {
         controlMessageSubject.next({
           error: {
             code: grpc.Code.OK,
-            message: 'INITIAL_SYNC_COMPLETE',
+            message: INITIAL_SYNC_COMPLETE,
           },
         });
       } else {
         dataSubject.next(response);
       }
     },
-    onEnd: (controlMessageSubject, dataSubject, code, message) => {
-      controlMessageSubject.next({ error: { code, message } });
-      dataSubject.complete();
-      controlMessageSubject.complete();
-    },
   };
 
   return fromGrpcInvoke(methodDescriptor, options, controlFunctions);
 }
 
+export * from '@generated/arista/subscriptions/subscriptions';
+
+export * from './constants';
+export * from './operators';
 export * from './utils';

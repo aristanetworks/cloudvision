@@ -1,6 +1,8 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+// @ts-nocheck
 /* eslint-disable */
 import Long from 'long';
-import _m0 from 'protobufjs/minimal';
+import _m0 from '@arista/protobufjs/minimal';
 
 export const protobufPackage = 'google.protobuf';
 
