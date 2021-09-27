@@ -123,7 +123,7 @@ describe('Parser', () => {
         expectedFourthNotifNano,
         expectedSixthNotifNano,
       ],
-    }
+    };
     const data = {
       result: encodedData,
       status: {},

@@ -1,16 +1,11 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
-import { PathElements } from '../../types/neat';
+import { BasicNeatType, PathElements } from '../../types/neat';
 
 import { Bool, Float32, Float64, Int, Nil, Pointer, Str } from './NeatTypes';
 
 interface SerializedNeatType {
   __neatTypeClass: string;
-  value: unknown;
-}
-
-interface BasicNeatType {
-  type: Bool['type'] | Float32['type'] | Float64['type'] | Int['type'] | Nil['type'] | Str['type'];
   value: unknown;
 }
 
@@ -20,7 +15,7 @@ interface PointerNeatType {
   delimiter: string;
 }
 
-export function isBaseNeatType(value: unknown): boolean {
+export function isBaseNeatType(value: unknown): value is BasicNeatType {
   if (typeof value === 'object' && value !== null) {
     if (Object.keys(value).length === 2 && 'type' in value && 'value' in value) {
       const neatValue = value as BasicNeatType;
