@@ -1,11 +1,18 @@
 import JSBI from 'jsbi';
 
-import { NeatType } from '../types/neat';
+import { BasicNeatType } from '../types/neat';
 
 import { ExtData } from './ExtData';
 import { ExtensionCodec, ExtensionCodecType } from './ExtensionCodec';
-import { Bool, Float32, Float64, Int, Str } from './neat/NeatTypes';
-import { isBaseNeatType, sortMapByKey } from './neat/utils';
+import {
+  isBasicNeatType,
+  isBool,
+  isFloat32,
+  isFloat64,
+  isInt,
+  isStr,
+  sortMapByKey,
+} from './neat/utils';
 import { isJsbi, isPlainObject } from './utils/data';
 import { setInt64, setUint64 } from './utils/int';
 import { ensureUint8Array } from './utils/typedArrays';
@@ -205,8 +212,8 @@ export class Encoder {
     } else if (object instanceof Map) {
       this.encodeMap(object, depth);
     } else if (typeof object === 'object') {
-      if (isBaseNeatType(object)) {
-        this.encodeNeatClass(object as NeatType);
+      if (isBasicNeatType(object)) {
+        this.encodeNeatClass(object);
       } else if (isPlainObject(object as object)) {
         // Find out if it is a plain object
         this.encodePlainObject(object as Record<string, unknown>, depth);
@@ -222,16 +229,16 @@ export class Encoder {
     }
   }
 
-  encodeNeatClass(value: NeatType): void {
-    if (value instanceof Float32) {
+  encodeNeatClass(value: BasicNeatType): void {
+    if (isFloat32(value)) {
       // float 32 -- 0xca
       this.writeU8(0xca);
       this.writeF32(value.value);
-    } else if (value instanceof Float64) {
+    } else if (isFloat64(value)) {
       // float 64 -- 0xcb
       this.writeU8(0xcb);
       this.writeF64(value.value);
-    } else if (value instanceof Int) {
+    } else if (isInt(value)) {
       // int
       if (typeof value.value === 'bigint') {
         this.encodeBigInt(value.value);
@@ -240,10 +247,10 @@ export class Encoder {
       } else {
         this.encodeNumber(value.value as number);
       }
-    } else if (value instanceof Str) {
+    } else if (isStr(value)) {
       // string
       this.encodeString(value.value);
-    } else if (value instanceof Bool) {
+    } else if (isBool(value)) {
       // bool
       this.encodeBoolean(value.value);
     } else {
