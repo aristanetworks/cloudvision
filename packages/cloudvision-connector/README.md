@@ -154,17 +154,16 @@ Arguments:
 - `err`: either a string or `null`. If `null` then there is no error. If it is a string, then an error occurred.
 
 - `res`: an object with the properties `dataset` and `notifications`. e.g.
-
-```js
-res = {
-  dataset: "someDevice",
-  notifications: {
-    "['path', 'to', 'some', 'data']":    [...],
-    "['path', 'to', 'another', 'data']": [...],
-    ...
+  ```js
+  res = {
+    dataset: "someDevice",
+    notifications: {
+      "['path', 'to', 'some', 'data']":    [...],
+      "['path', 'to', 'another', 'data']": [...],
+      ...
+    }
   }
-}
-```
+  ```
 
 Each `[...]` above is an array of notifications which each have a `timestamp`, `path`, collection of
 `updates`, and `deletes` (see "Data Model" section for more information).
