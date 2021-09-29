@@ -62,9 +62,12 @@ as multiple paths within multiple datasets.
 Returns all notifications that match the given query and options.
 
 - `query`: an object in the shape of a query (see "Query")
+
 - `callback`: a function that is called when notifications are received (see "Notifications
   Callback")
+
 - `options`: an object in the shape of query options (see "Options")
+
 - **Returns**: the token (unique identifier) of the request.
 
 ##### Example
@@ -110,9 +113,12 @@ Returns all notifications that match the given query and options, in addition to
 updates. This will return notifications as new updates to the data requested come in.
 
 - `query`: an object in the shape of a query (see "Query")
+
 - `callback`: a function that is called when notifications are received (see "Notifications
   Callback")
+
 - `options`: an object in the shape of query options (see "Options")
+
 - **Returns**: a the subscription identifier. This is an object constaining the token and the
   callback
 
@@ -156,6 +162,7 @@ Arguments:
 
 - `err`: either a string or `null`. If `null` then there is no error. If it is a string, then an
   error occurred.
+
 - `res`: an object with the properties `dataset` and `notifications`. e.g.
   ```js
   res = {
@@ -171,6 +178,7 @@ Arguments:
   of `updates`, and `deletes` (see "Data Model" section for more information).
 - status: An object with the status code and a message. See the "Notification Statuses" section for
   more details.
+
 - `token`: The token id that was created for the request.
 
 #### Notification Statuses
@@ -194,6 +202,7 @@ valid, each of them is listed below.
 Range query (returns one or more data points):
 
 - `start`: the epoch timestamp in (milliseconds) of the first data point.
+
 - `end`: the epoch timestamp in (milliseconds) of the last data point.
 
 Point in time query (returns exactly one data point):
@@ -203,6 +212,7 @@ Point in time query (returns exactly one data point):
 Limit query (returns `versions` + 1 number of data points):
 
 - `end`: the epoch timestamp in (milliseconds) of the last data point.
+
 - `versions`: the number of versions of data (in the past) to request in addition to the data point
   for `end`.
 
@@ -351,6 +361,7 @@ WebSocket documentation) is passed as the second argument.
 
 - `Connector.CONNECTED` is emitted once the WebSocket connection has been established and the client
   is authenticated. At this point requests can be sent and the server will start sending responses.
+
 - `Connector.DISCONNECTED` is emitted when the WebSocket is hung up.
 
 ##### Example
@@ -401,9 +412,12 @@ contains both the decoded `key` and `value`.
 NEAT is MessagePack with some alterations listed below:
 
 - All strings are binary encoded
+
 - Maps and Object keys are encoded in order of binary value of the key. This means
   `{ a: 'b', c: 'd' }` and `{ c: 'd', a: 'b' }` are encoded as the same NEAT value.
+
 - Support for pointer values via the `Pointer` extention type
+
 - Support for wildcard values via the `Wildcard` extention type
 
 ## Try it out
