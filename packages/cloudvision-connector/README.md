@@ -63,8 +63,7 @@ Returns all notifications that match the given query and options.
 
 - `query`: an object in the shape of a query (see "Query")
 
-- `callback`: a function that is called when notifications are received (see "Notifications
-  Callback")
+- `callback`: a function that is called when notifications are received (see "Notifications Callback")
 
 - `options`: an object in the shape of query options (see "Options")
 
@@ -114,13 +113,11 @@ updates. This will return notifications as new updates to the data requested com
 
 - `query`: an object in the shape of a query (see "Query")
 
-- `callback`: a function that is called when notifications are received (see "Notifications
-  Callback")
+- `callback`: a function that is called when notifications are received (see "Notifications Callback")
 
 - `options`: an object in the shape of query options (see "Options")
 
-- **Returns**: a the subscription identifier. This is an object constaining the token and the
-  callback
+- **Returns**: a the subscription identifier. This is an object constaining the token and the callback
 
 ##### Example
 
@@ -164,20 +161,22 @@ Arguments:
   error occurred.
 
 - `res`: an object with the properties `dataset` and `notifications`. e.g.
-  ```js
-  res = {
-    dataset: "someDevice",
-    notifications: {
-      "['path', 'to', 'some', 'data']":    [...],
-      "['path', 'to', 'another', 'data']": [...],
-      ...
-    }
+
+```js
+res = {
+  dataset: "someDevice",
+  notifications: {
+    "['path', 'to', 'some', 'data']":    [...],
+    "['path', 'to', 'another', 'data']": [...],
+    ...
   }
-  ```
-  Each `[...]` above is an array of notifications which each have a `timestamp`, `path`, collection
-  of `updates`, and `deletes` (see "Data Model" section for more information).
-- status: An object with the status code and a message. See the "Notification Statuses" section for
-  more details.
+}
+```
+
+Each `[...]` above is an array of notifications which each have a `timestamp`, `path`, collection of
+`updates`, and `deletes` (see "Data Model" section for more information).
+
+- status: An object with the status code and a message. See the "Notification Statuses" section for more details.
 
 - `token`: The token id that was created for the request.
 
@@ -213,8 +212,7 @@ Limit query (returns `versions` + 1 number of data points):
 
 - `end`: the epoch timestamp in (milliseconds) of the last data point.
 
-- `versions`: the number of versions of data (in the past) to request in addition to the data point
-  for `end`.
+- `versions`: the number of versions of data (in the past) to request in addition to the data point for `end`.
 
 #### Query
 
@@ -413,8 +411,7 @@ NEAT is MessagePack with some alterations listed below:
 
 - All strings are binary encoded
 
-- Maps and Object keys are encoded in order of binary value of the key. This means
-  `{ a: 'b', c: 'd' }` and `{ c: 'd', a: 'b' }` are encoded as the same NEAT value.
+- Maps and Object keys are encoded in order of binary value of the key. This means `{ a: 'b', c: 'd' }` and `{ c: 'd', a: 'b' }` are encoded as the same NEAT value.
 
 - Support for pointer values via the `Pointer` extention type
 
