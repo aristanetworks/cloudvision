@@ -16,6 +16,11 @@ export interface Timestamp {
 export type BaseType = Bool | Float32 | Float64 | Int | Nil | Pointer | Str | Map<unknown, unknown>;
 export type NeatType = BaseType | Element;
 
+export interface BasicNeatType {
+  type: Bool['type'] | Float32['type'] | Float64['type'] | Int['type'] | Nil['type'] | Str['type'];
+  value: unknown;
+}
+
 export type NeatTypeClass =
   | typeof Bool
   | typeof Float32
