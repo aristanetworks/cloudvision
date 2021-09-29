@@ -190,8 +190,8 @@ export default class Wrpc {
     try {
       this.sendMessage(closeToken, CLOSE, requestContext, closeParams);
     } catch (err) {
-      log(ERROR, err);
-      callback(err, undefined, undefined, closeToken);
+      log(ERROR, err as string);
+      callback(err as string, undefined, undefined, closeToken);
     }
     return closeToken;
   }
@@ -343,7 +343,7 @@ export default class Wrpc {
           );
         }
       } catch (err) {
-        log(ERROR, err);
+        log(ERROR, err as string);
         return;
       }
 
@@ -419,7 +419,7 @@ export default class Wrpc {
     try {
       this.sendMessage(token, command, requestContext, params);
     } catch (err) {
-      log(ERROR, err);
+      log(ERROR, err as string);
       // notifAndUnBindCallback(err, undefined, undefined, token);
       this.events.emit(token, err, undefined, undefined);
     }
