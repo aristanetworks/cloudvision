@@ -97,6 +97,14 @@ const ERROR_STATUS: CloudVisionStatus = {
 
 jest.spyOn(console, 'groupCollapsed').mockImplementation();
 
+function setupConnector(): Connector {
+  const conn = new Connector();
+  conn.run('ws://localhost:8080');
+  conn.websocket.dispatchEvent(new MessageEvent('open', {}));
+
+  return conn;
+}
+
 describe('closeSubscriptions', () => {
   const streamCallback = jest.fn();
   const streamToken = 'DodgerBlue';
@@ -108,9 +116,7 @@ describe('closeSubscriptions', () => {
   ];
 
   test('should close multiple subscriptions in one call', () => {
-    const conn = new Connector();
-    conn.run('ws://localhost:8080');
-    conn.websocket.dispatchEvent(new MessageEvent('open', {}));
+    const conn = setupConnector();
 
     jest.spyOn(conn, 'closeStreams');
     const spyCallback = jest.fn();
@@ -135,9 +141,7 @@ describe('writeSync', () => {
       ],
     };
 
-    const conn = new Connector();
-    conn.run('ws://localhost:8080');
-    conn.websocket.dispatchEvent(new MessageEvent('open', {}));
+    const conn = setupConnector();
 
     jest.spyOn(conn, 'writeSync');
     const spyCallback = jest.fn();
@@ -151,40 +155,32 @@ describe('writeSync', () => {
 
 describe('runService', () => {
   test('should call runService with proper params', () => {
-    const request = serviceQuery;
-
-    const conn = new Connector();
-    conn.run('ws://localhost:8080');
-    conn.websocket.dispatchEvent(new MessageEvent('open', {}));
+    const conn = setupConnector();
 
     jest.spyOn(conn, 'requestService');
     const spyCallback = jest.fn();
 
-    conn.runService(request, spyCallback);
+    conn.runService(serviceQuery, spyCallback);
     expect(conn.requestService).toHaveBeenCalledTimes(1);
-    expect(conn.requestService).toHaveBeenCalledWith(request, expect.any(Function));
+    expect(conn.requestService).toHaveBeenCalledWith(serviceQuery, expect.any(Function));
     expect(spyCallback).not.toHaveBeenCalled();
   });
 });
 
 describe('runStreamingService', () => {
   test('should call runStreamingService with proper params and receive streamIdentifier', () => {
-    const request = serviceQuery;
-
-    const conn = new Connector();
-    conn.run('ws://localhost:8080');
-    conn.websocket.dispatchEvent(new MessageEvent('open', {}));
+    const conn = setupConnector();
 
     jest.spyOn(conn, 'runStreamingService');
     const spyCallback = jest.fn();
 
-    const streamIdentifier = conn.runStreamingService(request, spyCallback);
+    const streamIdentifier = conn.runStreamingService(serviceQuery, spyCallback);
     if (streamIdentifier !== null) {
       expect(streamIdentifier.token).toEqual(expect.any(String));
       expect(typeof streamIdentifier.callback).toBe('function');
     }
     expect(conn.runStreamingService).toHaveBeenCalledTimes(1);
-    expect(conn.runStreamingService).toHaveBeenCalledWith(request, expect.any(Function));
+    expect(conn.runStreamingService).toHaveBeenCalledWith(serviceQuery, expect.any(Function));
     expect(spyCallback).not.toHaveBeenCalled();
   });
 });
@@ -194,9 +190,7 @@ describe('getDatasets', () => {
   let spyCallback: () => void;
 
   beforeEach(() => {
-    conn = new Connector();
-    conn.run('ws://localhost:8080');
-    conn.websocket.dispatchEvent(new MessageEvent('open', {}));
+    conn = setupConnector();
     jest.spyOn(conn, 'get');
     spyCallback = jest.fn();
   });
@@ -257,9 +251,7 @@ describe('getRegionsAndClusters', () => {
   let spyCallback: () => void;
 
   beforeEach(() => {
-    conn = new Connector();
-    conn.run('ws://localhost:8080');
-    conn.websocket.dispatchEvent(new MessageEvent('open', {}));
+    conn = setupConnector();
     jest.spyOn(conn, 'get');
     spyCallback = jest.fn();
   });
