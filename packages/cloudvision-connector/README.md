@@ -346,8 +346,8 @@ unbinding function that may be used to remove the callback. The status passed to
 either `Connector.CONNECTED`, or `Connector.DISCONNECTED`. Additionally, the WebSocket event (see
 WebSocket documentation) is passed as the second argument.
 
-- `Connector.CONNECTED` is emitted once the WebSocket connection has been established and the client
-  is authenticated. At this point requests can be sent and the server will start sending responses.
+-   `Connector.CONNECTED` is emitted once the WebSocket connection has been established and the client
+    is authenticated. At this point requests can be sent and the server will start sending responses.
 
 - `Connector.DISCONNECTED` is emitted when the WebSocket is hung up.
 
