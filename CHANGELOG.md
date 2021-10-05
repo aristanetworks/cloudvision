@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.12.0](https://github.com/aristanetworks/cloudvision/compare/v4.11.0...v4.12.0) (2021-10-05)
+
+
+### Features
+
+* **grpc-web:** Export operators ([#578](https://github.com/aristanetworks/cloudvision/issues/578)) ([218a5de](https://github.com/aristanetworks/cloudvision/commit/218a5deac53a6de73eb01c4649710c7d836fbdc4))
+
+
+
+
+
 # [4.11.0](https://github.com/aristanetworks/cloudvision/compare/v4.10.1...v4.11.0) (2021-10-04)
 
 
