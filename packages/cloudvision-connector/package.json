@@ -82,7 +82,7 @@
     "jest": "27.2.5",
     "jest-environment-jsdom": "27.2.5",
     "js-yaml": "4.1.0",
-    "mock-socket": "9.0.5",
+    "mock-socket": "9.0.6",
     "prettier": "2.4.1",
     "rimraf": "3.0.2",
     "rollup": "2.58.0",
