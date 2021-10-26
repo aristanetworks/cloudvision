@@ -13,6 +13,7 @@
   "unpkg": "dist/cloudvision-connector.js",
   "module": "es/cloudvision-connector.js",
   "typings": "typings/index.d.ts",
+  "typedocMain": "src/index.ts",
   "scripts": {
     "build": "npm run clean && npm run build:es && npm run build:commonjs && npm run build:umd && npm run build:umd:min && npm run docs && npm run docs:md && npm run build:types",
     "build:commonjs": "cross-env NODE_ENV=cjs rollup -c -o lib/cloudvision-connector.js",
@@ -23,8 +24,8 @@
     "build:umd:min": "cross-env NODE_ENV=production rollup -c -o dist/cloudvision-connector.min.js",
     "check": "npm run lint && npm run type-check && npm run prettier-check",
     "clean": "rimraf dist lib coverage es docs typings",
-    "docs": "typedoc --options typedoc-neo.json --plugin typedoc-neo-theme --theme ./node_modules/typedoc-neo-theme/bin/default --out docs/html",
-    "docs:md": "typedoc --plugin typedoc-plugin-markdown --theme markdown --out docs/md --hideSources",
+    "docs": "typedoc --plugin none --out docs/html",
+    "docs:md": "typedoc --plugin typedoc-plugin-markdown --theme markdown --out docs/md",
     "lint": "eslint --max-warnings 0 --ext .js,.ts *.js src/**/*.ts test/**/*.ts types/**/*.ts",
     "prepare": "npm run build",
     "prettier-check": "prettier -c *.js src/**/*.ts test/**/*.ts types/**/*.ts",
@@ -89,9 +90,8 @@
     "rollup-plugin-terser": "7.0.2",
     "ts-jest": "27.0.7",
     "tslib": "2.3.1",
-    "typedoc": "0.19.2",
-    "typedoc-neo-theme": "1.1.1",
-    "typedoc-plugin-markdown": "3.1.1",
+    "typedoc": "0.22.7",
+    "typedoc-plugin-markdown": "3.11.3",
     "typescript": "4.4.4"
   }
 }

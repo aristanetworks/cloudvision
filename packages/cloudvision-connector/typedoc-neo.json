@@ -1,9 +1,0 @@
-{
-  "disableOutputCheck": true,
-  "exclude": ["test/**"],
-  "excludeExternals": true,
-  "excludeNotExported": true,
-  "excludePrivate": true,
-  "hideGenerator": true,
-  "ignoreCompilerErrors": true
-}

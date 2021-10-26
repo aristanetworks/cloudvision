@@ -20,5 +20,21 @@
     //   "./node_modules/@types",
     //   "../../node_modules/@types",
     // ]
+  },
+  "typedocOptions": {
+    "cleanOutputDir": true,
+    "entryPoints": [
+      "./packages/a-msgpack",
+      "./packages/cloudvision-connector",
+      "./packages/cloudvision-grpc-web"
+    ],
+    "entryPointStrategy": "packages",
+    "exclude": ["**/test/**", "**/benchmark-msgpack/**"],
+    "excludeExternals": true,
+    "excludePrivate": true,
+    "hideGenerator": true,
+    "name": "CloudVision",
+    "out": "docs",
+    "readme": "README.md"
   }
 }
