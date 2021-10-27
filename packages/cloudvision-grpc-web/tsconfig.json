@@ -10,11 +10,12 @@
   },
   "exclude": ["generated/**"],
   "typedocOptions": {
+    "cleanOutputDir": true,
+    "entryPoints": ["src/index.ts"],
     "exclude": "test/**",
     "excludeExternals": true,
+    "excludePrivate": true,
     "hideGenerator": true,
-    "ignoreCompilerErrors": true,
-    "mode": "modules",
     "out": "docs",
     "readme": "./README.md"
   }

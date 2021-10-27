@@ -21,6 +21,7 @@
   "unpkg": "dist/cloudvision-grpc-web.js",
   "module": "es/cloudvision-grpc-web.js",
   "typings": "typings/index.d.ts",
+  "typedocMain": "src/index.ts",
   "files": [
     "dist",
     "lib",
@@ -42,8 +43,8 @@
     "check": "npm run lint && npm run type-check && npm run prettier-check",
     "generate": "rimraf generated && bash generate.sh",
     "clean": "rimraf dist lib coverage es docs typings",
-    "docs": "typedoc --options typedoc-neo.json --plugin typedoc-neo-theme --theme ./node_modules/typedoc-neo-theme/bin/default --out docs/html",
-    "docs:md": "typedoc --plugin typedoc-plugin-markdown --theme markdown --out docs/md --hideSources",
+    "docs": "typedoc --plugin none --out docs/html",
+    "docs:md": "typedoc --plugin typedoc-plugin-markdown --theme markdown --out docs/md",
     "lint": "eslint --max-warnings 0 --ext .js,.ts *.js src/**/*.ts test/**/*.ts types/**/*.ts",
     "prepare": "npm run build",
     "prettier-check": "prettier -c *.js src/**/*.ts test/**/*.ts types/**/*.ts",
@@ -90,9 +91,8 @@
     "ts-proto": "1.83.2",
     "tsc-alias": "1.3.10",
     "tslib": "2.3.1",
-    "typedoc": "0.19.2",
-    "typedoc-neo-theme": "1.1.1",
-    "typedoc-plugin-markdown": "3.1.1",
+    "typedoc": "0.22.7",
+    "typedoc-plugin-markdown": "3.11.3",
     "typescript": "4.4.4"
   }
 }
