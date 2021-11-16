@@ -78,7 +78,7 @@
     "eslint": "7.32.0",
     "eslint-config-arista-js": "2.0.1",
     "eslint-config-arista-ts": "2.0.1",
-    "eslint-plugin-arista": "0.2.2",
+    "eslint-plugin-arista": "0.2.3",
     "eslint-plugin-import": "2.24.2",
     "jest": "27.3.1",
     "jest-environment-jsdom": "27.3.1",
