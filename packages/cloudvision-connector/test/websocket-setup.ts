@@ -18,7 +18,6 @@ class TextDE {
   }
 }
 
-// @ts-expect-error url field of constructor needs URL type
 global.WebSocket = WebSocket;
 
 global.TextDecoder = TextDE;
