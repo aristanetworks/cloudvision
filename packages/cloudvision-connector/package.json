@@ -70,7 +70,7 @@
     "@types/imurmurhash": "0.1.1",
     "@types/jest": "27.0.3",
     "@types/js-yaml": "4.0.4",
-    "@types/uuid": "8.3.1",
+    "@types/uuid": "8.3.3",
     "@typescript-eslint/eslint-plugin": "5.3.1",
     "@typescript-eslint/parser": "5.3.1",
     "babel-eslint": "10.1.0",
