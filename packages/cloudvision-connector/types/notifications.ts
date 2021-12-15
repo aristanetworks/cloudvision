@@ -48,7 +48,7 @@ export type CloudVisionDelete<K> = CloudVisionDeletes<K>;
 
 export type ConvertedNotification<K = unknown, V = unknown> = CloudVisionNotification<
   PathElements,
-  number,
+  string | number,
   CloudVisionUpdates<K, V>,
   CloudVisionDeletes<K>
 >;

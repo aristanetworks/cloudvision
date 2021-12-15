@@ -204,7 +204,7 @@ function decodeDeletes(deletes: string[]): CloudVisionDeletes<unknown> {
  * **NOTE** this is deprecated and in upcoming versions the timestamp will be passed on in its full
  * resolution. This behavior will become an option that can be turned on.
  */
-function convertNotif(notif: RawNotification): ConvertedNotification {
+function convertNotif(notif: RawNotification, nanosEnabled?: boolean): ConvertedNotification {
   const convertedNotif: ConvertedNotification = {
     path_elements: [],
     timestamp: 0,
@@ -216,7 +216,10 @@ function convertNotif(notif: RawNotification): ConvertedNotification {
     nanos += notif.timestamp.nanos;
   }
   nanos = nanos.padStart(9, '0');
-  convertedNotif.timestamp = parseInt(('' + notif.timestamp.seconds + nanos).slice(0, 13), 10);
+  const stringTimestamp = '' + notif.timestamp.seconds + nanos;
+  convertedNotif.timestamp = nanosEnabled
+    ? stringTimestamp
+    : parseInt(stringTimestamp.slice(0, 13), 10);
 
   if (notif.updates) {
     convertedNotif.updates = decodeNotifs(notif.updates);
@@ -293,6 +296,7 @@ export function sortTimestamp(first: RawNotification, second: RawNotification): 
 export function decodeNotifications(
   result: CloudVisionRawNotifs,
   batchResults: boolean,
+  nanos = false,
 ): CloudVisionBatchedNotifications | CloudVisionNotifs {
   result.notifications.sort(sortTimestamp);
 
@@ -317,7 +321,7 @@ export function decodeNotifications(
   };
   for (let i = 0; i < result.notifications.length; i += 1) {
     const n = result.notifications[i];
-    const convertedNotif: ConvertedNotification = convertNotif(n);
+    const convertedNotif: ConvertedNotification = convertNotif(n, nanos);
     notif.notifications.push(convertedNotif);
   }
   return notif;
@@ -392,12 +396,12 @@ export function encodeNotifications(
  * Implements parse which decodes responses sent by the server.
  */
 export default class Parser {
-  public static parse(data: string, batch: boolean): CloudVisionMessage {
+  public static parse(data: string, batch: boolean, nanos = false): CloudVisionMessage {
     const message = JSON.parse(data);
     const result = message.result;
     if (result && !result.datasets && result.notifications) {
       // Timeseries notification that needs to be decoded with NEAT
-      const decodedResult = decodeNotifications(result, batch);
+      const decodedResult = decodeNotifications(result, batch, nanos);
       return {
         error: message.error,
         result: decodedResult,
