@@ -64,6 +64,7 @@ interface ConnectorOptions {
   batchResults: boolean;
   debugMode: boolean;
   instrumentationConfig?: InstrumentationConfig;
+  nanosecondResolution?: boolean;
 }
 
 /**
@@ -330,7 +331,11 @@ export default class Wrpc {
 
       let msg: CloudVisionMessage;
       try {
-        msg = this.Parser.parse(event.data, this.connectorOptions.batchResults);
+        msg = this.Parser.parse(
+          event.data,
+          this.connectorOptions.batchResults,
+          this.connectorOptions.nanosecondResolution,
+        );
         if (this.connectorOptions.debugMode) {
           // Used for debugging
           self.postMessage(
