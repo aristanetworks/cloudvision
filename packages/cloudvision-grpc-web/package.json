@@ -62,7 +62,7 @@
     "@arista/protobufjs": "6.11.1",
     "@improbable-eng/grpc-web": "0.15.0",
     "google-protobuf": "3.19.2",
-    "rxjs": "7.5.1"
+    "rxjs": "7.5.2"
   },
   "devDependencies": {
     "@arista/prettier-config": "1.1.4",
