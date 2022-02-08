@@ -26,7 +26,7 @@
     "msgpack-unpack": "2.1.1",
     "msgpack5": "5.3.2",
     "notepack.io": "2.3.0",
-    "ts-node": "10.4.0",
+    "ts-node": "10.5.0",
     "tslib": "2.3.1",
     "typescript": "4.5.5"
   },
