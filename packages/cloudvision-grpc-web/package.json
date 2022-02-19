@@ -89,7 +89,7 @@
     "rollup-plugin-terser": "7.0.2",
     "ts-jest": "27.1.1",
     "ts-proto": "1.105.2",
-    "tsc-alias": "1.6.0",
+    "tsc-alias": "1.6.1",
     "tslib": "2.3.1",
     "typedoc": "0.22.11",
     "typedoc-plugin-markdown": "3.11.14",
