@@ -300,7 +300,7 @@ export function sortTimestamp(first: RawNotification, second: RawNotification): 
 export function decodeNotifications(
   result: CloudVisionRawNotifs,
   batchResults: boolean,
-  nanosecondResolution = false,
+  nanosecondResolution: boolean,
 ): CloudVisionBatchedNotifications | CloudVisionNotifs {
   result.notifications.sort(sortTimestamp);
 
