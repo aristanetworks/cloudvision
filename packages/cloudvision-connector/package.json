@@ -84,7 +84,7 @@
     "jest-environment-jsdom": "27.4.6",
     "js-yaml": "4.1.0",
     "mock-socket": "9.1.2",
-    "prettier": "2.5.1",
+    "prettier": "2.6.0",
     "rimraf": "3.0.2",
     "rollup": "2.69.1",
     "rollup-plugin-terser": "7.0.2",
