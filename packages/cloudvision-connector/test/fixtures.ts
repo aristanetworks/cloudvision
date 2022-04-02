@@ -86,20 +86,7 @@ export const sixthNotif: RawNotification = {
 export const expectedRootNotif: ConvertedNotification = {
   path_elements: [],
   timestamp: 1539822611000,
-  updates: {
-    xA1CYXNlYmFsbCBUZWFt: {
-      key: 'Baseball Team',
-      value: 'Dodgers',
-    },
-    xA1CYXkgQXJlYSBUZWFt: {
-      key: 'Bay Area Team',
-      value: 'Athletics',
-    },
-  },
-};
-export const expectedRootNotifNanos: ConvertedNotification = {
-  path_elements: [],
-  timestamp: '1539822611000883496',
+  nanos: 883496,
   updates: {
     xA1CYXNlYmFsbCBUZWFt: {
       key: 'Baseball Team',
@@ -112,22 +99,9 @@ export const expectedRootNotifNanos: ConvertedNotification = {
   },
 };
 export const expectedFirstNotif: ConvertedNotification = {
+  nanos: 883496678,
   path_elements: path1,
   timestamp: 1539822611883,
-  updates: {
-    xA1CYXNlYmFsbCBUZWFt: {
-      key: 'Baseball Team',
-      value: 'Dodgers',
-    },
-    xA1CYXkgQXJlYSBUZWFt: {
-      key: 'Bay Area Team',
-      value: 'Athletics',
-    },
-  },
-};
-export const expectedFirstNotifNanos: ConvertedNotification = {
-  path_elements: path1,
-  timestamp: '1539822611883496678',
   updates: {
     xA1CYXNlYmFsbCBUZWFt: {
       key: 'Baseball Team',
@@ -142,16 +116,7 @@ export const expectedFirstNotifNanos: ConvertedNotification = {
 export const expectedSecondNotif: ConvertedNotification = {
   path_elements: path2,
   timestamp: 1539822631000,
-  updates: {
-    xApCYXNrZXRiYWxs: {
-      key: 'Basketball',
-      value: 'NBA',
-    },
-  },
-};
-export const expectedSecondNotifNanos: ConvertedNotification = {
-  path_elements: path2,
-  timestamp: '1539822631000883496',
+  nanos: 883496,
   updates: {
     xApCYXNrZXRiYWxs: {
       key: 'Basketball',
@@ -162,21 +127,7 @@ export const expectedSecondNotifNanos: ConvertedNotification = {
 export const expectedThirdNotif: ConvertedNotification = {
   path_elements: path1,
   timestamp: 1539822611000,
-  updates: {
-    gcQFc3BvcnTECGJhc2ViYWxs: {
-      key: { sport: 'baseball' },
-      value: ['NL', 'AL'],
-    },
-  },
-  deletes: {
-    xA1CYXkgQXJlYSBUZWFt: {
-      key: 'Bay Area Team',
-    },
-  },
-};
-export const expectedThirdNotifNanos: ConvertedNotification = {
-  path_elements: path1,
-  timestamp: '1539822611000000000',
+  nanos: 0,
   updates: {
     gcQFc3BvcnTECGJhc2ViYWxs: {
       key: { sport: 'baseball' },
@@ -190,6 +141,7 @@ export const expectedThirdNotifNanos: ConvertedNotification = {
   },
 };
 export const expectedFourthNotif: ConvertedNotification = {
+  nanos: 9934968754,
   path_elements: path1,
   timestamp: 1539822631993,
   deletes: {
@@ -198,28 +150,11 @@ export const expectedFourthNotif: ConvertedNotification = {
     },
   },
 };
-export const expectedFourthNotifNanos: ConvertedNotification = {
-  path_elements: path1,
-  timestamp: '15398226319934968754',
-  deletes: {
-    xA1CYXNlYmFsbCBUZWFt: {
-      key: 'Baseball Team',
-    },
-  },
-};
+
 export const expectedFifthNotif: ConvertedNotification = {
   path_elements: path3,
   timestamp: 1539822631000,
-  updates: {
-    xApCYXNrZXRiYWxs: {
-      key: 'Basketball',
-      value: 'NBA',
-    },
-  },
-};
-export const expectedFifthNotifNanos: ConvertedNotification = {
-  path_elements: path3,
-  timestamp: '1539822631000993496',
+  nanos: 993496,
   updates: {
     xApCYXNrZXRiYWxs: {
       key: 'Basketball',
@@ -230,11 +165,7 @@ export const expectedFifthNotifNanos: ConvertedNotification = {
 export const expectedSixthNotif: ConvertedNotification = {
   path_elements: path1,
   timestamp: 1539832611883,
-  deletes: {},
-};
-export const expectedSixthNotifNanos: ConvertedNotification = {
-  path_elements: path1,
-  timestamp: '1539832611883496678',
+  nanos: 883496678,
   deletes: {},
 };
 
