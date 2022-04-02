@@ -25,6 +25,7 @@ export interface CloudVisionDatapoint<K, V> {
 
 export interface CloudVisionNotification<PE, T, U, D> {
   timestamp: T;
+  nanos?: T;
 
   delete_all?: boolean; // eslint-disable-line @typescript-eslint/naming-convention
   deletes?: D;
@@ -48,7 +49,7 @@ export type CloudVisionDelete<K> = CloudVisionDeletes<K>;
 
 export type ConvertedNotification<K = unknown, V = unknown> = CloudVisionNotification<
   PathElements,
-  string | number,
+  number,
   CloudVisionUpdates<K, V>,
   CloudVisionDeletes<K>
 >;

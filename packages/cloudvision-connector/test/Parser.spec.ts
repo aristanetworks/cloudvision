@@ -26,19 +26,12 @@ import {
   encodedQuery,
   encodedQueryWithKeys,
   expectedFifthNotif,
-  expectedFifthNotifNanos,
   expectedFirstNotif,
-  expectedFirstNotifNanos,
   expectedFourthNotif,
-  expectedFourthNotifNanos,
   expectedRootNotif,
-  expectedRootNotifNanos,
   expectedSecondNotif,
-  expectedSecondNotifNanos,
   expectedSixthNotif,
-  expectedSixthNotifNanos,
   expectedThirdNotif,
-  expectedThirdNotifNanos,
   fifthNotif,
   firstNotif,
   firstNotifPublishRaw,
@@ -102,19 +95,6 @@ describe('Parser', () => {
         [JSON.stringify(path2)]: [expectedSecondNotif],
       },
     };
-    const batchedResultNanos: CloudVisionBatchedNotifications = {
-      dataset: { type: DEVICE_DATASET_TYPE, name: 'Dodgers' },
-      metadata: {},
-      notifications: {
-        [JSON.stringify(path1)]: [
-          expectedThirdNotifNanos,
-          expectedFirstNotifNanos,
-          expectedFourthNotifNanos,
-          expectedSixthNotifNanos,
-        ],
-        [JSON.stringify(path2)]: [expectedSecondNotifNanos],
-      },
-    };
 
     const rawResult: CloudVisionNotifs = {
       dataset: { type: DEVICE_DATASET_TYPE, name: 'Dodgers' },
@@ -127,29 +107,14 @@ describe('Parser', () => {
         expectedSixthNotif,
       ],
     };
-    const rawResultNanos: CloudVisionNotifs = {
-      dataset: { type: DEVICE_DATASET_TYPE, name: 'Dodgers' },
-      metadata: {},
-      notifications: [
-        expectedThirdNotifNanos,
-        expectedFirstNotifNanos,
-        expectedSecondNotifNanos,
-        expectedFourthNotifNanos,
-        expectedSixthNotifNanos,
-      ],
-    };
     const data = {
       result: encodedData,
       status: {},
       token: 'someToken',
     };
     const expectedBatchData = {
+      error: undefined,
       result: batchedResult,
-      status: {},
-      token: 'someToken',
-    };
-    const expectedBatchDataNanos = {
-      result: batchedResultNanos,
       status: {},
       token: 'someToken',
     };
@@ -158,38 +123,17 @@ describe('Parser', () => {
       status: {},
       token: 'someToken',
     };
-    const expectedRawFormatNanos = {
-      result: rawResultNanos,
-      status: {},
-      token: 'someToken',
-    };
-
-    test('decode messages in batch format (Nanos)', () => {
-      expect(Parser.parse(JSON.stringify(data), true, true)).toEqual(expectedBatchDataNanos);
-    });
 
     test('decode messages in batch format', () => {
-      expect(Parser.parse(JSON.stringify(data), true, false)).toEqual(expectedBatchData);
-    });
-
-    test('decode messages in raw format (Nanos)', () => {
-      expect(Parser.parse(JSON.stringify(data), false, true)).toEqual(expectedRawFormatNanos);
+      expect(Parser.parse(JSON.stringify(data), true)).toEqual(expectedBatchData);
     });
 
     test('decode messages in raw format', () => {
-      expect(Parser.parse(JSON.stringify(data), false, false)).toEqual(expectedRawFormat);
-    });
-
-    test('decode empty result (Nanos)', () => {
-      expect(Parser.parse(JSON.stringify({}), false, true)).toEqual({
-        result: undefined,
-        status: undefined,
-        token: undefined,
-      });
+      expect(Parser.parse(JSON.stringify(data), false)).toEqual(expectedRawFormat);
     });
 
     test('decode empty result', () => {
-      expect(Parser.parse(JSON.stringify({}), false, false)).toEqual({
+      expect(Parser.parse(JSON.stringify({}), false)).toEqual({
         result: undefined,
         status: undefined,
         token: undefined,
@@ -306,25 +250,8 @@ describe('decodeNotifications', () => {
         [JSON.stringify(path2)]: [expectedSecondNotif],
       },
     };
-    const expectedNotifNanos: CloudVisionBatchedNotifications = {
-      dataset: { type: DEVICE_DATASET_TYPE, name: 'device1' },
-      metadata: {},
-      notifications: {
-        [JSON.stringify(path1)]: [
-          expectedThirdNotifNanos,
-          expectedFirstNotifNanos,
-          expectedFourthNotifNanos,
-        ],
-        [JSON.stringify(path2)]: [expectedSecondNotifNanos],
-      },
-    };
 
-    const decodedNotifNanos = decodeNotifications(notif, true, true);
-
-    expect(decodedNotifNanos).toEqual(expectedNotifNanos);
-    expect(decodedNotifNanos).not.toBe(expectedNotifNanos);
-
-    const decodedNotif = decodeNotifications(notif, true, false);
+    const decodedNotif = decodeNotifications(notif, true);
 
     expect(decodedNotif).toEqual(expectedNotif);
     expect(decodedNotif).not.toBe(expectedNotif);
@@ -343,20 +270,7 @@ describe('decodeNotifications', () => {
       },
     };
 
-    const expectedNotifNanos: CloudVisionBatchedNotifications = {
-      dataset: { type: DEVICE_DATASET_TYPE, name: 'device1' },
-      metadata: {},
-      notifications: {
-        [JSON.stringify(path1)]: [expectedThirdNotifNanos, expectedFirstNotifNanos],
-      },
-    };
-
-    const batchedNotifNanos = decodeNotifications(notif, true, true);
-
-    expect(batchedNotifNanos).toEqual(expectedNotifNanos);
-    expect(batchedNotifNanos).not.toBe(expectedNotifNanos);
-
-    const batchedNotif = decodeNotifications(notif, true, false);
+    const batchedNotif = decodeNotifications(notif, true);
 
     expect(batchedNotif).toEqual(expectedNotif);
     expect(batchedNotif).not.toBe(expectedNotif);
@@ -374,20 +288,8 @@ describe('decodeNotifications', () => {
         [JSON.stringify([])]: [expectedRootNotif],
       },
     };
-    const expectedNotifNanos: CloudVisionBatchedNotifications = {
-      dataset: { type: DEVICE_DATASET_TYPE, name: 'device1' },
-      metadata: {},
-      notifications: {
-        [JSON.stringify([])]: [expectedRootNotifNanos],
-      },
-    };
 
-    const batchedNotifNanos = decodeNotifications(notif, true, true);
-
-    expect(batchedNotifNanos).toEqual(expectedNotifNanos);
-    expect(batchedNotifNanos).not.toBe(expectedNotifNanos);
-
-    const batchedNotif = decodeNotifications(notif, true, false);
+    const batchedNotif = decodeNotifications(notif, true);
 
     expect(batchedNotif).toEqual(expectedNotif);
     expect(batchedNotif).not.toBe(expectedNotif);
@@ -406,20 +308,8 @@ describe('decodeNotifications', () => {
         [JSON.stringify(path1)]: [expectedThirdNotif, expectedFirstNotif],
       },
     };
-    const expectedNotifNanos: CloudVisionBatchedNotifications = {
-      dataset: { type: DEVICE_DATASET_TYPE, name: 'device1' },
-      metadata: { Dodgers: 'Rule!' },
-      notifications: {
-        [JSON.stringify(path1)]: [expectedThirdNotifNanos, expectedFirstNotifNanos],
-      },
-    };
 
-    const batchedNotifNanos = decodeNotifications(notif, true, true);
-
-    expect(batchedNotifNanos).toEqual(expectedNotifNanos);
-    expect(batchedNotifNanos).not.toBe(expectedNotifNanos);
-
-    const batchedNotif = decodeNotifications(notif, true, false);
+    const batchedNotif = decodeNotifications(notif, true);
 
     expect(batchedNotif).toEqual(expectedNotif);
     expect(batchedNotif).not.toBe(expectedNotif);
@@ -440,23 +330,8 @@ describe('decodeNotifications', () => {
         expectedFourthNotif,
       ],
     };
-    const expectedNotifNanos: CloudVisionNotifs = {
-      dataset: { type: DEVICE_DATASET_TYPE, name: 'device1' },
-      metadata: {},
-      notifications: [
-        expectedThirdNotifNanos,
-        expectedFirstNotifNanos,
-        expectedSecondNotifNanos,
-        expectedFourthNotifNanos,
-      ],
-    };
 
-    const decodedNotifNanos = decodeNotifications(notif, false, true);
-
-    expect(decodedNotifNanos).toEqual(expectedNotifNanos);
-    expect(decodedNotifNanos).not.toBe(expectedNotifNanos);
-
-    const decodedNotif = decodeNotifications(notif, false, false);
+    const decodedNotif = decodeNotifications(notif, false);
 
     expect(decodedNotif).toEqual(expectedNotif);
     expect(decodedNotif).not.toBe(expectedNotif);
@@ -473,18 +348,7 @@ describe('decodeNotifications', () => {
       notifications: [expectedThirdNotif, expectedFirstNotif],
     };
 
-    const expectedNotifNanos: CloudVisionNotifs = {
-      dataset: { type: DEVICE_DATASET_TYPE, name: 'device1' },
-      metadata: {},
-      notifications: [expectedThirdNotifNanos, expectedFirstNotifNanos],
-    };
-
-    const batchedNotifNanos = decodeNotifications(notif, false, true);
-
-    expect(batchedNotifNanos).toEqual(expectedNotifNanos);
-    expect(batchedNotifNanos).not.toBe(expectedNotifNanos);
-
-    const batchedNotif = decodeNotifications(notif, false, false);
+    const batchedNotif = decodeNotifications(notif, false);
 
     expect(batchedNotif).toEqual(expectedNotif);
     expect(batchedNotif).not.toBe(expectedNotif);
@@ -502,18 +366,7 @@ describe('decodeNotifications', () => {
       notifications: [expectedThirdNotif, expectedFirstNotif],
     };
 
-    const expectedNotifNanos: CloudVisionNotifs = {
-      dataset: { type: DEVICE_DATASET_TYPE, name: 'device1' },
-      metadata: { Dodgers: 'Rule!' },
-      notifications: [expectedThirdNotifNanos, expectedFirstNotifNanos],
-    };
-
-    const batchedNotifNanos = decodeNotifications(notif, false, true);
-
-    expect(batchedNotifNanos).toEqual(expectedNotifNanos);
-    expect(batchedNotifNanos).not.toBe(expectedNotifNanos);
-
-    const batchedNotif = decodeNotifications(notif, false, false);
+    const batchedNotif = decodeNotifications(notif, false);
 
     expect(batchedNotif).toEqual(expectedNotif);
     expect(batchedNotif).not.toBe(expectedNotif);
@@ -532,20 +385,7 @@ describe('decodeNotifications', () => {
       },
     };
 
-    const expectedNotifNanos: CloudVisionBatchedNotifications = {
-      dataset: { type: DEVICE_DATASET_TYPE, name: 'device1' },
-      metadata: {},
-      notifications: {
-        [JSON.stringify(path1)]: [expectedFirstNotifNanos, expectedSixthNotifNanos],
-      },
-    };
-
-    const decodedNotifNanos = decodeNotifications(notif, true, true);
-
-    expect(decodedNotifNanos).toEqual(expectedNotifNanos);
-    expect(decodedNotifNanos).not.toBe(expectedNotifNanos);
-
-    const decodedNotif = decodeNotifications(notif, true, false);
+    const decodedNotif = decodeNotifications(notif, true);
 
     expect(decodedNotif).toEqual(expectedNotif);
     expect(decodedNotif).not.toBe(expectedNotif);
@@ -567,23 +407,7 @@ describe('decodeNotifications', () => {
       ],
     };
 
-    const expectedNotifNanos: CloudVisionNotifs = {
-      dataset: { type: DEVICE_DATASET_TYPE, name: 'device1' },
-      metadata: {},
-      notifications: [
-        expectedThirdNotifNanos,
-        expectedFirstNotifNanos,
-        expectedFifthNotifNanos,
-        expectedFourthNotifNanos,
-      ],
-    };
-
-    const batchedNotifNanos = decodeNotifications(notif, false, true);
-
-    expect(batchedNotifNanos).toEqual(expectedNotifNanos);
-    expect(batchedNotifNanos).not.toBe(expectedNotifNanos);
-
-    const batchedNotif = decodeNotifications(notif, false, false);
+    const batchedNotif = decodeNotifications(notif, false);
 
     expect(batchedNotif).toEqual(expectedNotif);
     expect(batchedNotif).not.toBe(expectedNotif);
