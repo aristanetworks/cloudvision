@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.12.2](https://github.com/aristanetworks/cloudvision/compare/v4.12.1...v4.12.2) (2022-04-04)
+
+
+### Bug Fixes
+
+* **timestamps:** Add nanosecond support to timestamps ([#762](https://github.com/aristanetworks/cloudvision/issues/762)) ([93ae5cc](https://github.com/aristanetworks/cloudvision/commit/93ae5ccd3c395bcacf504cfa44181245cba16795))
+
+
+
+
+
 ## [4.12.1](https://github.com/aristanetworks/cloudvision/compare/v4.12.0...v4.12.1) (2022-03-21)
 
 
