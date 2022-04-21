@@ -61,7 +61,7 @@
   "dependencies": {
     "@arista/protobufjs": "6.11.1",
     "@improbable-eng/grpc-web": "0.15.0",
-    "google-protobuf": "3.19.4",
+    "google-protobuf": "3.20.1",
     "rxjs": "7.5.5"
   },
   "devDependencies": {
