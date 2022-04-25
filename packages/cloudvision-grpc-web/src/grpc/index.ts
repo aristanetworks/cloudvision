@@ -60,7 +60,16 @@ export function fromGrpcInvoke<Req extends grpc.ProtobufMessage, Res extends grp
   const request = grpc.invoke(methodDescriptor, rpcOptions);
 
   return {
-    data: dataSubject.pipe(finalize(request.close), share()),
+    data: dataSubject.pipe(
+      finalize(() => {
+        try {
+          request.close();
+        } catch (e) {
+          // Do nothing ATM
+        }
+      }),
+      share(),
+    ),
     messages: controlMessageSubject.asObservable(),
   };
 }
