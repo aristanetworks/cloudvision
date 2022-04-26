@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.13.0](https://github.com/aristanetworks/cloudvision/compare/v4.12.2...v4.13.0) (2022-04-26)
+
+
+### Bug Fixes
+
+* **cloudvision-grpc-web:** Add a try/catch around request close ([#773](https://github.com/aristanetworks/cloudvision/issues/773)) ([1350e56](https://github.com/aristanetworks/cloudvision/commit/1350e564d384f07440052d86e8d70d3b27137daa))
+
+
+### Features
+
+* **cloudvision-grpc-web:** Add support to close requests on unsubscribe ([#770](https://github.com/aristanetworks/cloudvision/issues/770)) ([4656263](https://github.com/aristanetworks/cloudvision/commit/46562635baedec15d2fb03c233992ec8e663d2a6))
+
+
+
+
+
 ## [4.12.2](https://github.com/aristanetworks/cloudvision/compare/v4.12.1...v4.12.2) (2022-04-04)
 
 
