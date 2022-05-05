@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.13.1](https://github.com/aristanetworks/cloudvision/compare/v4.13.0...v4.13.1) (2022-05-05)
+
+
+### Bug Fixes
+
+* **cloudvision-grpc-web:** Defer requests until an observer is listening ([#785](https://github.com/aristanetworks/cloudvision/issues/785)) ([43e4281](https://github.com/aristanetworks/cloudvision/commit/43e4281b4e21ae74076eac6c8d4e7c9d0f760b24))
+
+
+
+
+
 # [4.13.0](https://github.com/aristanetworks/cloudvision/compare/v4.12.2...v4.13.0) (2022-04-26)
 
 
