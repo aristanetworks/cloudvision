@@ -1,6 +1,6 @@
 import { grpc } from '@improbable-eng/grpc-web';
 import { ControlFunctions, GrpcControlMessage, GrpcSource, RpcOptions } from '@types';
-import { finalize, share, Subject } from 'rxjs';
+import { defer, finalize, share, Subject } from 'rxjs';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const DEFAULT_CONTROL_FUNCTIONS: ControlFunctions<any> = {
@@ -57,10 +57,10 @@ export function fromGrpcInvoke<Req extends grpc.ProtobufMessage, Res extends grp
     },
   };
 
-  const request = grpc.invoke(methodDescriptor, rpcOptions);
+  const response$ = defer(() => {
+    const request = grpc.invoke(methodDescriptor, rpcOptions);
 
-  return {
-    data: dataSubject.pipe(
+    return dataSubject.pipe(
       finalize(() => {
         try {
           request.close();
@@ -68,8 +68,11 @@ export function fromGrpcInvoke<Req extends grpc.ProtobufMessage, Res extends grp
           // Do nothing ATM
         }
       }),
-      share(),
-    ),
+    );
+  }).pipe(share());
+
+  return {
+    data: response$,
     messages: controlMessageSubject.asObservable(),
   };
 }
