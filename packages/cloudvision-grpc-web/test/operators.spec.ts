@@ -1,4 +1,4 @@
-import { ignoreElements, mergeMapTo, NEVER, throwError, timer } from 'rxjs';
+import { ignoreElements, mergeMap, NEVER, throwError, timer } from 'rxjs';
 import { TestScheduler } from 'rxjs/testing';
 
 import { bufferOnce } from '../src/operators';
@@ -55,7 +55,7 @@ describe('bufferOnce', () => {
       const error = 'oh no!';
 
       const source = cold('1-2-3-4-5');
-      const notifier = timer(5).pipe(mergeMapTo(throwError(() => error)));
+      const notifier = timer(5).pipe(mergeMap(() => throwError(() => error)));
       const observable = source.pipe(bufferOnce(notifier));
 
       expectObservable(observable).toBe('-----#', undefined, error);

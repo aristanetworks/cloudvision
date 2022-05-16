@@ -1,52 +1,41 @@
-import { grpc } from '@improbable-eng/grpc-web';
-import { Observable, Subject } from 'rxjs';
+import type { grpc } from '@improbable-eng/grpc-web';
+import type { Observable } from 'rxjs';
 
-/**
- * Represents the combination of the GRPC code along with any message
- * detailing the failure.
- */
+export interface GrpcEnd {
+  code: grpc.Code;
+  message: string;
+  trailers: grpc.Metadata;
+}
+
+export interface GrpcInvoke<T> {
+  end$: Observable<GrpcEnd>;
+  headers$: Observable<grpc.Metadata>;
+  message$: Observable<T>;
+}
+
+/** Represents the combination of the GRPC code along with any message detailing the failure. */
 export interface GrpcCodeWithMessage {
   code: grpc.Code;
   message: string;
+
+  trailers?: grpc.Metadata;
 }
 
-/**
- * Represents a GRPC control message. If the message is metadata, then the
- * `metadata` property will be specified. If the message is an error, the `error`
- * property will be populated.
- */
-export interface GrpcControlMessage {
-  error?: GrpcCodeWithMessage;
-  metadata?: grpc.Metadata;
+export interface GrpcControlErrorMessage {
+  error: GrpcCodeWithMessage;
 }
 
-export interface ControlFunctions<T> {
-  onEnd(
-    controlMessageSubject: Subject<GrpcControlMessage>,
-    dataSubject: Subject<T>,
-    code: grpc.Code,
-    message: string,
-  ): void;
-  onHeaders(
-    controlMessageSubject: Subject<GrpcControlMessage>,
-    dataSubject: Subject<T>,
-    headers: grpc.Metadata,
-  ): void;
-  onMessage(
-    controlMessageSubject: Subject<GrpcControlMessage>,
-    dataSubject: Subject<T>,
-    response: T,
-  ): void;
+export interface GrpcControlMetaDataMessage {
+  metadata: grpc.Metadata;
 }
 
-/**
- * The [RXJS Observable](https://rxjs.dev/api/index/class/Observable) representing a GRPC
- * call. All data will be pushed to the `data` source and any metadata or errors
- * will be pushed to the `messages` source.
- */
+export type GrpcControlMessage = GrpcControlErrorMessage | GrpcControlMetaDataMessage;
+
 export interface GrpcSource<T> {
-  data: Observable<T>;
-  messages: Observable<GrpcControlMessage>;
+  /** gRPC response messages. */
+  data$: Observable<T>;
+  /** gRPC control messages. */
+  message$: Observable<GrpcControlMessage>;
 }
 
 /**
