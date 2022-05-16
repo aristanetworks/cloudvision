@@ -1,17 +1,18 @@
-import { GrpcSource } from '@types';
+import { grpc } from '@improbable-eng/grpc-web';
+import type { GrpcControlMessage, StreamingResourceResponse } from '@types';
 
-import { bufferUntilInitialSyncComplete } from './operators';
+import { INITIAL_SYNC_COMPLETE_MESSAGE } from './constants';
 
-/**
- * Buffers a resource call until the "INITIAL_SYNC_COMPLETE" message is encountered.
- *
- * @param resourceSource The GRPC service method definition to be queried.
- * @returns An object with the properties `data` and `message`, which are
- * [RXJS Observables](https://rxjs.dev/api/index/class/Observable) that can be subscribed to.
- */
-export function bufferResource<T>({ data, messages }: GrpcSource<T>): GrpcSource<T[]> {
-  return {
-    data: data.pipe(bufferUntilInitialSyncComplete(messages)),
-    messages,
-  };
+export function isInitialSyncCompleteMessage(message: GrpcControlMessage): boolean {
+  return (
+    'error' in message &&
+    message.error.code === INITIAL_SYNC_COMPLETE_MESSAGE.error.code &&
+    message.error.message === INITIAL_SYNC_COMPLETE_MESSAGE.error.message
+  );
+}
+
+export function isStreamResponse(
+  response: grpc.ProtobufMessage,
+): response is StreamingResourceResponse {
+  return 'type' in response;
 }

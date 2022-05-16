@@ -1,16 +1,12 @@
-import { grpc } from '@improbable-eng/grpc-web';
-import { GrpcControlMessage } from '@types';
-import { Observable, OperatorFunction } from 'rxjs';
+import type { GrpcControlMessage } from '@types';
+import { filter, Observable, OperatorFunction } from 'rxjs';
 
-import { bufferUntilMessage } from '../grpc';
+import { bufferOnce } from '../operators';
 
-import { INITIAL_SYNC_COMPLETE } from './constants';
+import { isInitialSyncCompleteMessage } from './utils';
 
 export function bufferUntilInitialSyncComplete<T>(
   message$: Observable<GrpcControlMessage>,
 ): OperatorFunction<T, T[]> {
-  return bufferUntilMessage(message$, {
-    code: grpc.Code.OK,
-    message: INITIAL_SYNC_COMPLETE,
-  });
+  return bufferOnce(message$.pipe(filter(isInitialSyncCompleteMessage)));
 }

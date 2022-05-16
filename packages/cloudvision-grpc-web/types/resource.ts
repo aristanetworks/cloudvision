@@ -1,13 +1,13 @@
-import { Operation } from '@generated/arista/subscriptions/subscriptions';
-import { grpc } from '@improbable-eng/grpc-web';
+import type { Operation } from '@generated/arista/subscriptions/subscriptions';
+import type { grpc } from '@improbable-eng/grpc-web';
 
-import { RpcOptions } from './grpc';
+import type { RpcOptions } from './grpc';
 
 /**
  * A GRPC response the represents a response from a streaming resource.
  */
 export interface StreamingResourceResponse extends grpc.ProtobufMessage {
-  type?: Operation;
+  type: Operation;
 }
 
 /**
@@ -16,5 +16,5 @@ export interface StreamingResourceResponse extends grpc.ProtobufMessage {
  */
 export type ResourceRpcOptions<
   Req extends grpc.ProtobufMessage,
-  Res extends StreamingResourceResponse,
+  Res extends grpc.ProtobufMessage,
 > = RpcOptions<Req, Res>;
