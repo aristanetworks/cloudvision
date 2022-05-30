@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.14.0](https://github.com/aristanetworks/cloudvision/compare/v4.13.1...v4.14.0) (2022-05-30)
+
+
+### Features
+
+* **grpc-web:** Refactor fromGrpcInvoke ([#786](https://github.com/aristanetworks/cloudvision/issues/786)) ([e8794e2](https://github.com/aristanetworks/cloudvision/commit/e8794e2f2d17d0884aeb695c7c8c1217323ab4a3))
+
+
+
+
+
 ## [4.13.1](https://github.com/aristanetworks/cloudvision/compare/v4.13.0...v4.13.1) (2022-05-05)
 
 
