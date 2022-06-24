@@ -28,7 +28,7 @@
     "notepack.io": "2.3.0",
     "ts-node": "10.8.1",
     "tslib": "2.4.0",
-    "typescript": "4.6.4"
+    "typescript": "4.7.4"
   },
   "devDependencies": {
     "@types/benchmark": "2.1.1",
