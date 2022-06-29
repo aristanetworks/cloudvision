@@ -3,7 +3,7 @@
   "private": true,
   "devDependencies": {
     "gh-pages": "4.0.0",
-    "lerna": "4.0.0",
+    "lerna": "5.1.6",
     "typedoc": "0.23.2",
     "typescript": "4.7.4"
   },
