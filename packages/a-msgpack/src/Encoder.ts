@@ -284,7 +284,7 @@ export class Encoder {
       (JSBI.LE(value, 0x7fffffff) && JSBI.GE(value, -0xffffffff)) ||
       (strValue < '0' && JSBI.GE(value, -0xffffffff))
     ) {
-      this.encodeNumber(Number(value));
+      this.encodeNumber(JSBI.toNumber(value));
     } else if (strValue < '0') {
       this.writeU8(0xd3);
       this.writeI64(strValue);
