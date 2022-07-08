@@ -91,7 +91,7 @@
     "ts-proto": "1.117.0",
     "tsc-alias": "1.6.11",
     "tslib": "2.4.0",
-    "typedoc": "0.23.5",
+    "typedoc": "0.23.6",
     "typedoc-plugin-markdown": "3.13.3",
     "typescript": "4.7.4"
   }
