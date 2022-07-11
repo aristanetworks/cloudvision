@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0](https://github.com/aristanetworks/cloudvision/compare/v4.14.0...v5.0.0) (2022-07-11)
+
+
+* chore(deps)!: update dependency jsbi to v4 (#598) ([c0672d9](https://github.com/aristanetworks/cloudvision/commit/c0672d92c0391a75e081246a4cbb25ff2fc3cfca)), closes [#598](https://github.com/aristanetworks/cloudvision/issues/598)
+
+
+### BREAKING CHANGES
+
+* Upgrade to JSBI v4
+
+
+
+
+
 # [4.14.0](https://github.com/aristanetworks/cloudvision/compare/v4.13.1...v4.14.0) (2022-05-30)
 
 

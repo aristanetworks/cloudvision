@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0](https://github.com/aristanetworks/cloudvision/compare/v4.14.0...v5.0.0) (2022-07-11)
+
+**Note:** Version bump only for package cloudvision-grpc-web
+
+
+
+
+
 # [4.14.0](https://github.com/aristanetworks/cloudvision/compare/v4.13.1...v4.14.0) (2022-05-30)
 
 
