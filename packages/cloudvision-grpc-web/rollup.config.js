@@ -47,7 +47,7 @@ const config = {
 const external = Object.keys(packageJson.dependencies);
 
 const globals = {
-  '@improbable-eng/grpc-web': 'grpc-web',
+  '@arista/grpc-web': 'grpc-web',
   'google-protobuf': 'google-protobuf',
   'rxjs': 'rxjs',
 };

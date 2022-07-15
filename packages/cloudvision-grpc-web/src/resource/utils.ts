@@ -1,5 +1,6 @@
-import { grpc } from '@improbable-eng/grpc-web';
 import type { GrpcControlMessage, StreamingResourceResponse } from '@types';
+
+import { grpc } from '@arista/grpc-web';
 
 import { INITIAL_SYNC_COMPLETE_MESSAGE } from './constants';
 

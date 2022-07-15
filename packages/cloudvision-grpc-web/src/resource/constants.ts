@@ -1,5 +1,6 @@
-import { grpc } from '@improbable-eng/grpc-web';
 import type { GrpcControlErrorMessage } from '@types';
+
+import { grpc } from '@arista/grpc-web';
 
 export const INITIAL_SYNC_COMPLETE = 'INITIAL_SYNC_COMPLETE';
 

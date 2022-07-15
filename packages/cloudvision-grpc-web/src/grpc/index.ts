@@ -1,6 +1,7 @@
-import { grpc } from '@improbable-eng/grpc-web';
 import type { GrpcControlMessage, GrpcEnd, GrpcInvoke, GrpcSource, RpcOptions } from '@types';
 import { map, merge, Observable, Subject } from 'rxjs';
+
+import { grpc } from '@arista/grpc-web';
 
 /**
  * RxJs wrapper around `grpc.invoke` that creates an Observable.

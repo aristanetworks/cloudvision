@@ -59,8 +59,8 @@
     "url": "https://github.com/aristanetworks/cloudvision/issues"
   },
   "dependencies": {
+    "@arista/grpc-web": "0.15.1",
     "@arista/protobufjs": "6.11.1",
-    "@improbable-eng/grpc-web": "0.15.0",
     "google-protobuf": "3.20.1",
     "rxjs": "7.5.6"
   },
