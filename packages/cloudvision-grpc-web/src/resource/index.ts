@@ -1,7 +1,8 @@
 import { Operation } from '@generated/arista/subscriptions/subscriptions';
-import { grpc } from '@improbable-eng/grpc-web';
 import type { GrpcSource, ResourceRpcOptions } from '@types';
 import { map, merge, Observable, partition } from 'rxjs';
+
+import { grpc } from '@arista/grpc-web';
 
 import { fromGrpcSource } from '../grpc';
 

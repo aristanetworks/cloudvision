@@ -1,5 +1,6 @@
 import type { Operation } from '@generated/arista/subscriptions/subscriptions';
-import type { grpc } from '@improbable-eng/grpc-web';
+
+import type { grpc } from '@arista/grpc-web';
 
 import type { RpcOptions } from './grpc';
 

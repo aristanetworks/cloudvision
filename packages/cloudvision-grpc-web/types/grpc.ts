@@ -1,5 +1,6 @@
-import type { grpc } from '@improbable-eng/grpc-web';
 import type { Observable } from 'rxjs';
+
+import type { grpc } from '@arista/grpc-web';
 
 export interface GrpcEnd {
   code: grpc.Code;
