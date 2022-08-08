@@ -88,7 +88,7 @@
     "rollup": "2.77.2",
     "rollup-plugin-terser": "7.0.2",
     "ts-jest": "27.1.5",
-    "ts-proto": "1.121.4",
+    "ts-proto": "1.121.5",
     "tsc-alias": "1.7.0",
     "tslib": "2.4.0",
     "typedoc": "0.23.10",
