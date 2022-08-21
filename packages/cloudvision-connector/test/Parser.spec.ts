@@ -1,14 +1,24 @@
 /* eslint-env jest */
 
-import { GET, PUBLISH, DEVICE_DATASET_TYPE } from '../src/constants';
+import { PathElements } from 'a-msgpack';
+
 import Parser, {
   decodeNotifications,
   decodePathElements,
   encodeNotifications,
   encodePathElementsAndKeysInQuery,
   sortTimestamp,
-} from '../src/parser';
-import { PublishRequest } from '../types/query';
+} from '../src/Parser';
+import { DEVICE_DATASET_TYPE, GET, PUBLISH } from '../src/constants';
+import {
+  BatchPublishRequest,
+  CloudVisionBatchedNotifications,
+  CloudVisionNotifs,
+  CloudVisionQueryMessage,
+  CloudVisionRawNotifs,
+  PublishRequest,
+  RawNotification,
+} from '../types';
 
 import {
   encodedPath1,
@@ -61,19 +71,20 @@ describe('encode/decode path elements', () => {
     expect(decodePathElements(clonedEncodedPath1)).toEqual(path1);
     expect(clonedEncodedPath2).toEqual(encodedPath2);
     expect(clonedEncodedPath1).toEqual(encodedPath1);
-    expect(decodePathElements([])).toEqual([]);
+    expect(decodePathElements([])).toEqual<PathElements>([]);
   });
 });
 
 describe('Parser', () => {
-  const encodedData = {
+  const encodedData: CloudVisionRawNotifs = {
     dataset: { type: DEVICE_DATASET_TYPE, name: 'Dodgers' },
     notifications: [firstNotif, secondNotif, thirdNotif, fourthNotif, sixthNotif],
   };
 
   describe('parse', () => {
-    const batchedResult = {
+    const batchedResult: CloudVisionBatchedNotifications = {
       dataset: { type: DEVICE_DATASET_TYPE, name: 'Dodgers' },
+      metadata: {},
       notifications: {
         [JSON.stringify(path1)]: [
           expectedThirdNotif,
@@ -85,8 +96,9 @@ describe('Parser', () => {
       },
     };
 
-    const rawResult = {
+    const rawResult: CloudVisionNotifs = {
       dataset: { type: DEVICE_DATASET_TYPE, name: 'Dodgers' },
+      metadata: {},
       notifications: [
         expectedThirdNotif,
         expectedFirstNotif,
@@ -101,6 +113,7 @@ describe('Parser', () => {
       token: 'someToken',
     };
     const expectedBatchData = {
+      error: undefined,
       result: batchedResult,
       status: {},
       token: 'someToken',
@@ -129,7 +142,7 @@ describe('Parser', () => {
   });
 
   describe('stringify', () => {
-    const batchedResult = {
+    const batchedResult: BatchPublishRequest = {
       dataset: { type: DEVICE_DATASET_TYPE, name: 'Dodgers' },
       notifications: {
         [JSON.stringify(path1)]: [
@@ -153,7 +166,7 @@ describe('Parser', () => {
       ],
     };
 
-    const expectedPublishData = {
+    const expectedPublishData: CloudVisionQueryMessage = {
       command: PUBLISH,
       token: 'someToken',
       params: {
@@ -163,7 +176,7 @@ describe('Parser', () => {
     };
 
     test('encode messages given in batch format', () => {
-      const publishBatchParams = {
+      const publishBatchParams: CloudVisionQueryMessage = {
         command: PUBLISH,
         token: 'someToken',
         params: {
@@ -177,7 +190,7 @@ describe('Parser', () => {
     });
 
     test('encode messages given in raw format', () => {
-      const publishRawParams = {
+      const publishRawParams: CloudVisionQueryMessage = {
         command: PUBLISH,
         token: 'someToken',
         params: {
@@ -191,7 +204,7 @@ describe('Parser', () => {
     });
 
     test('encode query message', () => {
-      const queryParams = {
+      const queryParams: CloudVisionQueryMessage = {
         command: GET,
         token: 'someToken',
         params: {
@@ -203,7 +216,7 @@ describe('Parser', () => {
           ],
         },
       };
-      const expectedQueryParams = {
+      const expectedQueryParams: CloudVisionQueryMessage = {
         command: GET,
         token: 'someToken',
         params: {
@@ -225,12 +238,13 @@ describe('Parser', () => {
 
 describe('decodeNotifications', () => {
   test('should properly batch requests for multiple paths', () => {
-    const notif = {
+    const notif: CloudVisionRawNotifs = {
       dataset: { type: DEVICE_DATASET_TYPE, name: 'device1' },
       notifications: [firstNotif, secondNotif, thirdNotif, fourthNotif],
     };
-    const expectedNotif = {
+    const expectedNotif: CloudVisionBatchedNotifications = {
       dataset: { type: DEVICE_DATASET_TYPE, name: 'device1' },
+      metadata: {},
       notifications: {
         [JSON.stringify(path1)]: [expectedThirdNotif, expectedFirstNotif, expectedFourthNotif],
         [JSON.stringify(path2)]: [expectedSecondNotif],
@@ -244,12 +258,13 @@ describe('decodeNotifications', () => {
   });
 
   test('should properly batch requests for one path', () => {
-    const notif = {
+    const notif: CloudVisionRawNotifs = {
       dataset: { type: DEVICE_DATASET_TYPE, name: 'device1' },
       notifications: [firstNotif, thirdNotif],
     };
-    const expectedNotif = {
+    const expectedNotif: CloudVisionBatchedNotifications = {
       dataset: { type: DEVICE_DATASET_TYPE, name: 'device1' },
+      metadata: {},
       notifications: {
         [JSON.stringify(path1)]: [expectedThirdNotif, expectedFirstNotif],
       },
@@ -262,12 +277,13 @@ describe('decodeNotifications', () => {
   });
 
   test('should properly batch requests for the root path', () => {
-    const notif = {
+    const notif: CloudVisionRawNotifs = {
       dataset: { type: DEVICE_DATASET_TYPE, name: 'device1' },
       notifications: [rootNotif],
     };
-    const expectedNotif = {
+    const expectedNotif: CloudVisionBatchedNotifications = {
       dataset: { type: DEVICE_DATASET_TYPE, name: 'device1' },
+      metadata: {},
       notifications: {
         [JSON.stringify([])]: [expectedRootNotif],
       },
@@ -279,13 +295,34 @@ describe('decodeNotifications', () => {
     expect(batchedNotif).not.toBe(expectedNotif);
   });
 
+  test('should properly decode metadata when batched', () => {
+    const notif: CloudVisionRawNotifs = {
+      dataset: { type: DEVICE_DATASET_TYPE, name: 'device1' },
+      metadata: { Dodgers: 'Rule!' },
+      notifications: [firstNotif, thirdNotif],
+    };
+    const expectedNotif: CloudVisionBatchedNotifications = {
+      dataset: { type: DEVICE_DATASET_TYPE, name: 'device1' },
+      metadata: { Dodgers: 'Rule!' },
+      notifications: {
+        [JSON.stringify(path1)]: [expectedThirdNotif, expectedFirstNotif],
+      },
+    };
+
+    const batchedNotif = decodeNotifications(notif, true);
+
+    expect(batchedNotif).toEqual(expectedNotif);
+    expect(batchedNotif).not.toBe(expectedNotif);
+  });
+
   test('should properly decode non batch requests for multiple paths', () => {
-    const notif = {
+    const notif: CloudVisionRawNotifs = {
       dataset: { type: DEVICE_DATASET_TYPE, name: 'device1' },
       notifications: [firstNotif, secondNotif, thirdNotif, fourthNotif],
     };
-    const expectedNotif = {
+    const expectedNotif: CloudVisionNotifs = {
       dataset: { type: DEVICE_DATASET_TYPE, name: 'device1' },
+      metadata: {},
       notifications: [
         expectedThirdNotif,
         expectedFirstNotif,
@@ -301,12 +338,31 @@ describe('decodeNotifications', () => {
   });
 
   test('should properly decode non batch requests for for one path', () => {
-    const notif = {
+    const notif: CloudVisionRawNotifs = {
       dataset: { type: DEVICE_DATASET_TYPE, name: 'device1' },
       notifications: [firstNotif, thirdNotif],
     };
-    const expectedNotif = {
+    const expectedNotif: CloudVisionNotifs = {
       dataset: { type: DEVICE_DATASET_TYPE, name: 'device1' },
+      metadata: {},
+      notifications: [expectedThirdNotif, expectedFirstNotif],
+    };
+
+    const batchedNotif = decodeNotifications(notif, false);
+
+    expect(batchedNotif).toEqual(expectedNotif);
+    expect(batchedNotif).not.toBe(expectedNotif);
+  });
+
+  test('should properly decode metadata when not batched', () => {
+    const notif: CloudVisionRawNotifs = {
+      dataset: { type: DEVICE_DATASET_TYPE, name: 'device1' },
+      metadata: { Dodgers: 'Rule!' },
+      notifications: [firstNotif, thirdNotif],
+    };
+    const expectedNotif: CloudVisionNotifs = {
+      dataset: { type: DEVICE_DATASET_TYPE, name: 'device1' },
+      metadata: { Dodgers: 'Rule!' },
       notifications: [expectedThirdNotif, expectedFirstNotif],
     };
 
@@ -317,12 +373,13 @@ describe('decodeNotifications', () => {
   });
 
   test('should properly decode delete all', () => {
-    const notif = {
+    const notif: CloudVisionRawNotifs = {
       dataset: { type: DEVICE_DATASET_TYPE, name: 'device1' },
       notifications: [firstNotif, sixthNotif],
     };
-    const expectedNotif = {
+    const expectedNotif: CloudVisionBatchedNotifications = {
       dataset: { type: DEVICE_DATASET_TYPE, name: 'device1' },
+      metadata: {},
       notifications: {
         [JSON.stringify(path1)]: [expectedFirstNotif, expectedSixthNotif],
       },
@@ -335,12 +392,13 @@ describe('decodeNotifications', () => {
   });
 
   test('should properly sort out of order notifications within the batch', () => {
-    const notif = {
+    const notif: CloudVisionRawNotifs = {
       dataset: { type: DEVICE_DATASET_TYPE, name: 'device1' },
       notifications: [fourthNotif, fifthNotif, firstNotif, thirdNotif],
     };
-    const expectedNotif = {
+    const expectedNotif: CloudVisionNotifs = {
       dataset: { type: DEVICE_DATASET_TYPE, name: 'device1' },
+      metadata: {},
       notifications: [
         expectedThirdNotif,
         expectedFirstNotif,
@@ -357,7 +415,7 @@ describe('decodeNotifications', () => {
 });
 
 describe('encodeNotifications', () => {
-  const rawNotifs = {
+  const rawNotifs: PublishRequest = {
     dataset: { type: DEVICE_DATASET_TYPE, name: 'Dodgers' },
     notifications: [
       rootNotifPublishRaw,
@@ -368,7 +426,7 @@ describe('encodeNotifications', () => {
     ],
   };
 
-  const batchedNotifs = {
+  const batchedNotifs: BatchPublishRequest = {
     dataset: { type: DEVICE_DATASET_TYPE, name: 'Dodgers' },
     notifications: {
       [JSON.stringify(path1)]: [
@@ -381,7 +439,7 @@ describe('encodeNotifications', () => {
     },
   };
 
-  const encodedNotifs = {
+  const encodedNotifs: CloudVisionRawNotifs = {
     dataset: { type: DEVICE_DATASET_TYPE, name: 'Dodgers' },
     notifications: [rootNotif, firstNotif, secondNotif, thirdNotif, fourthNotif],
   };
@@ -390,44 +448,75 @@ describe('encodeNotifications', () => {
     expect(encodeNotifications(rawNotifs)).toEqual(encodedNotifs);
   });
 
+  test('should properly encode CloudVision notifications with no path_elements', () => {
+    const emptyPathElementNotif = {
+      timestamp: { seconds: 1539822631, nanos: 883496 },
+      updates: [
+        {
+          key: 'Basketball',
+          value: 'NBA',
+        },
+      ],
+    };
+    const emptyPathElementEncoded = {
+      timestamp: { seconds: 1539822631, nanos: 883496 },
+      updates: [
+        {
+          key: 'xApCYXNrZXRiYWxs',
+          value: 'xANOQkE=',
+        },
+      ],
+    };
+    const notifs: PublishRequest = {
+      dataset: { type: DEVICE_DATASET_TYPE, name: 'Dodgers' },
+      notifications: [emptyPathElementNotif],
+    };
+    const encoded: CloudVisionRawNotifs = {
+      dataset: { type: DEVICE_DATASET_TYPE, name: 'Dodgers' },
+      notifications: [emptyPathElementEncoded],
+    };
+
+    expect(encodeNotifications(notifs)).toEqual(encoded);
+  });
+
   test('should properly encode batched CloudVision notifications', () => {
     expect(encodeNotifications(batchedNotifs)).toEqual(encodedNotifs);
   });
 });
 
 describe('sortTimestamp', () => {
-  const t1 = { timestamp: { seconds: 99, nanos: 18 } };
-  const t2 = { timestamp: { seconds: 22, nanos: 74 } };
-  const t3 = { timestamp: { seconds: 10, nanos: 35 } };
-  const t4 = { timestamp: { seconds: 10, nanos: 31 } };
-  const t5 = { timestamp: { seconds: 30, nanos: 14 } };
-  const t6 = { timestamp: { seconds: 30 } };
+  const t1: RawNotification = { timestamp: { seconds: 99, nanos: 18 } };
+  const t2: RawNotification = { timestamp: { seconds: 22, nanos: 74 } };
+  const t3: RawNotification = { timestamp: { seconds: 10, nanos: 35 } };
+  const t4: RawNotification = { timestamp: { seconds: 10, nanos: 31 } };
+  const t5: RawNotification = { timestamp: { seconds: 30, nanos: 14 } };
+  const t6: RawNotification = { timestamp: { seconds: 30 } };
 
-  it('should return 1 if the seconds in the first element are larger', () => {
-    expect(sortTimestamp(t1, t2)).toEqual(1);
+  test('should return 1 if the seconds in the first element are larger', () => {
+    expect(sortTimestamp(t1, t2)).toBe(1);
   });
 
-  it('should return -1 if the seconds in the first element are smaller', () => {
-    expect(sortTimestamp(t2, t1)).toEqual(-1);
+  test('should return -1 if the seconds in the first element are smaller', () => {
+    expect(sortTimestamp(t2, t1)).toBe(-1);
   });
 
-  it('should return 1 if the seconds are equal and the nanos in first element are larger', () => {
-    expect(sortTimestamp(t3, t4)).toEqual(1);
+  test('should return 1 if the seconds are equal and the nanos in first element are larger', () => {
+    expect(sortTimestamp(t3, t4)).toBe(1);
   });
 
-  it('should return -1 if the seconds are equal and the nanos in first element are smaller', () => {
-    expect(sortTimestamp(t4, t3)).toEqual(-1);
+  test('should return -1 if the seconds are equal and the nanos in first element are smaller', () => {
+    expect(sortTimestamp(t4, t3)).toBe(-1);
   });
 
-  it('should return 1 if the seconds are equal and there are no nanos in the second element', () => {
-    expect(sortTimestamp(t5, t6)).toEqual(1);
+  test('should return 1 if the seconds are equal and there are no nanos in the second element', () => {
+    expect(sortTimestamp(t5, t6)).toBe(1);
   });
 
-  it('should return -1 if the seconds are equal and there are no nanos in the first element', () => {
-    expect(sortTimestamp(t6, t5)).toEqual(-1);
+  test('should return -1 if the seconds are equal and there are no nanos in the first element', () => {
+    expect(sortTimestamp(t6, t5)).toBe(-1);
   });
 
-  it('should return 0 if the seconds and nanos are equal', () => {
-    expect(sortTimestamp(t1, t1)).toEqual(0);
+  test('should return 0 if the seconds and nanos are equal', () => {
+    expect(sortTimestamp(t1, t1)).toBe(0);
   });
 });

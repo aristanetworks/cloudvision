@@ -3,6 +3,318 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.0.1](https://github.com/aristanetworks/cloudvision/compare/v5.0.0...v5.0.1) (2022-07-18)
+
+**Note:** Version bump only for package a-msgpack
+
+
+
+
+
+# [5.0.0](https://github.com/aristanetworks/cloudvision/compare/v4.14.0...v5.0.0) (2022-07-11)
+
+
+* chore(deps)!: update dependency jsbi to v4 (#598) ([c0672d9](https://github.com/aristanetworks/cloudvision/commit/c0672d92c0391a75e081246a4cbb25ff2fc3cfca)), closes [#598](https://github.com/aristanetworks/cloudvision/issues/598)
+
+
+### BREAKING CHANGES
+
+* Upgrade to JSBI v4
+
+
+
+
+
+# [4.14.0](https://github.com/aristanetworks/cloudvision/compare/v4.13.1...v4.14.0) (2022-05-30)
+
+**Note:** Version bump only for package a-msgpack
+
+
+
+
+
+## [4.13.1](https://github.com/aristanetworks/cloudvision/compare/v4.13.0...v4.13.1) (2022-05-05)
+
+**Note:** Version bump only for package a-msgpack
+
+
+
+
+
+# [4.13.0](https://github.com/aristanetworks/cloudvision/compare/v4.12.2...v4.13.0) (2022-04-26)
+
+**Note:** Version bump only for package a-msgpack
+
+
+
+
+
+## [4.12.2](https://github.com/aristanetworks/cloudvision/compare/v4.12.1...v4.12.2) (2022-04-04)
+
+**Note:** Version bump only for package a-msgpack
+
+
+
+
+
+## [4.12.1](https://github.com/aristanetworks/cloudvision/compare/v4.12.0...v4.12.1) (2022-03-21)
+
+**Note:** Version bump only for package a-msgpack
+
+
+
+
+
+# [4.12.0](https://github.com/aristanetworks/cloudvision/compare/v4.11.0...v4.12.0) (2021-10-05)
+
+**Note:** Version bump only for package a-msgpack
+
+
+
+
+
+# [4.11.0](https://github.com/aristanetworks/cloudvision/compare/v4.10.1...v4.11.0) (2021-10-04)
+
+
+### Bug Fixes
+
+* **msgpack:** encode stripped neat objects ([#568](https://github.com/aristanetworks/cloudvision/issues/568)) ([5498236](https://github.com/aristanetworks/cloudvision/commit/5498236baa65756c5f29aad801963877e7905246))
+
+
+
+
+
+## [4.10.1](https://github.com/aristanetworks/cloudvision/compare/v4.10.0...v4.10.1) (2021-09-17)
+
+**Note:** Version bump only for package a-msgpack
+
+
+
+
+
+# [4.10.0](https://github.com/aristanetworks/cloudvision/compare/v4.9.2...v4.10.0) (2021-09-08)
+
+**Note:** Version bump only for package a-msgpack
+
+
+
+
+
+## [4.9.2](https://github.com/aristanetworks/cloudvision/compare/v4.9.1...v4.9.2) (2021-08-06)
+
+**Note:** Version bump only for package a-msgpack
+
+
+
+
+
+## [4.9.1](https://github.com/aristanetworks/cloudvision/compare/v4.9.0...v4.9.1) (2021-07-22)
+
+
+### Bug Fixes
+
+* update packages ([#470](https://github.com/aristanetworks/cloudvision/issues/470)) ([264d1e0](https://github.com/aristanetworks/cloudvision/commit/264d1e04045ec9ae2efeaf1ff87cf4b9339626c5))
+
+
+
+
+
+# [4.9.0](https://github.com/aristanetworks/cloudvision/compare/v4.8.0...v4.9.0) (2021-06-17)
+
+**Note:** Version bump only for package a-msgpack
+
+
+
+
+
+# [4.8.0](https://github.com/aristanetworks/cloudvision/compare/v4.7.0...v4.8.0) (2021-05-18)
+
+**Note:** Version bump only for package a-msgpack
+
+
+
+
+
+# [4.7.0](https://github.com/aristanetworks/cloudvision/compare/v4.6.5...v4.7.0) (2021-03-08)
+
+**Note:** Version bump only for package a-msgpack
+
+
+
+
+
+## [4.6.5](https://github.com/aristanetworks/cloudvision/compare/v4.6.4...v4.6.5) (2021-01-20)
+
+**Note:** Version bump only for package a-msgpack
+
+
+
+
+
+## [4.6.4](https://github.com/aristanetworks/cloudvision/compare/v4.6.3...v4.6.4) (2021-01-19)
+
+**Note:** Version bump only for package a-msgpack
+
+
+
+
+
+## [4.6.3](https://github.com/aristanetworks/cloudvision/compare/v4.6.2...v4.6.3) (2020-12-15)
+
+**Note:** Version bump only for package a-msgpack
+
+
+
+
+
+## [4.6.2](https://github.com/aristanetworks/cloudvision/compare/v4.6.1...v4.6.2) (2020-12-01)
+
+
+### Bug Fixes
+
+* **a-msgpack:** properly key nested complex values ([#287](https://github.com/aristanetworks/cloudvision/issues/287)) ([0de0421](https://github.com/aristanetworks/cloudvision/commit/0de0421dfd868d29dcd4902a0c899ccd958a941f))
+
+
+
+
+
+## [4.6.1](https://github.com/aristanetworks/cloudvision/compare/v4.6.0...v4.6.1) (2020-11-04)
+
+
+### Bug Fixes
+
+* **a-msgpack:** Always convert int64 to BigInt ([#224](https://github.com/aristanetworks/cloudvision/issues/224)) ([85c4c4e](https://github.com/aristanetworks/cloudvision/commit/85c4c4ed5642d89e44f5a5a705e4891d854c22fc))
+
+
+
+
+
+# [4.6.0](https://github.com/aristanetworks/cloudvision/compare/v4.5.5...v4.6.0) (2020-10-05)
+
+**Note:** Version bump only for package a-msgpack
+
+
+
+
+
+## [4.5.5](https://github.com/aristanetworks/cloudvision/compare/v4.5.4...v4.5.5) (2020-09-16)
+
+**Note:** Version bump only for package a-msgpack
+
+
+
+
+
+## [4.5.4](https://github.com/aristanetworks/cloudvision/compare/v4.5.3...v4.5.4) (2020-08-10)
+
+**Note:** Version bump only for package a-msgpack
+
+
+
+
+
+## [4.5.3](https://github.com/aristanetworks/cloudvision/compare/v4.5.2...v4.5.3) (2020-07-29)
+
+**Note:** Version bump only for package a-msgpack
+
+
+
+
+
+## [4.5.1](https://github.com/aristanetworks/cloudvision/compare/v4.5.0...v4.5.1) (2020-07-28)
+
+**Note:** Version bump only for package a-msgpack
+
+
+
+
+
+# [4.5.0](https://github.com/aristanetworks/cloudvision/compare/v4.4.0...v4.5.0) (2020-07-27)
+
+**Note:** Version bump only for package a-msgpack
+
+
+
+
+
+# [4.4.0](https://github.com/aristanetworks/cloudvision/compare/v4.3.1...v4.4.0) (2020-07-14)
+
+
+### Features
+
+* **a-msgpack:** add Wildcard support ([#124](https://github.com/aristanetworks/cloudvision/issues/124)) ([09d75d7](https://github.com/aristanetworks/cloudvision/commit/09d75d7d80faab8fe70f707e82529f8d5c213d42))
+
+
+
+
+
+## [4.3.1](https://github.com/aristanetworks/cloudvision/compare/v4.3.0...v4.3.1) (2020-07-07)
+
+**Note:** Version bump only for package a-msgpack
+
+
+
+
+
+# [4.3.0](https://github.com/aristanetworks/cloudvision/compare/v4.2.0...v4.3.0) (2020-06-08)
+
+
+### Bug Fixes
+
+* **packages:** add rimraf dev dependency ([#79](https://github.com/aristanetworks/cloudvision/issues/79)) ([15396e7](https://github.com/aristanetworks/cloudvision/commit/15396e72ca26bf7fc13009233c597cefe336d214))
+
+
+
+
+
+# [4.2.0](https://github.com/aristanetworks/cloudvision/compare/v4.1.0...v4.2.0) (2020-05-19)
+
+**Note:** Version bump only for package a-msgpack
+
+
+
+
+
+# [4.1.0](https://github.com/aristanetworks/cloudvision/compare/v4.0.5...v4.1.0) (2020-05-11)
+
+**Note:** Version bump only for package a-msgpack
+
+
+
+
+
+## [4.0.5](https://github.com/aristanetworks/cloudvision/compare/v4.0.4...v4.0.5) (2020-05-06)
+
+**Note:** Version bump only for package a-msgpack
+
+
+
+
+
+## [4.0.4](https://github.com/aristanetworks/cloudvision/compare/v4.0.3...v4.0.4) (2020-04-28)
+
+**Note:** Version bump only for package a-msgpack
+
+
+
+
+
+## [4.0.3](https://github.com/aristanetworks/cloudvision/compare/v4.0.2...v4.0.3) (2020-04-24)
+
+**Note:** Version bump only for package a-msgpack
+
+
+
+
+
+## [4.0.2](https://github.com/aristanetworks/cloudvision/compare/v4.0.1...v4.0.2) (2020-04-21)
+
+**Note:** Version bump only for package a-msgpack
+
+
+
+
+
 ## 4.0.1 (2020-04-15)
 
 **Note:** Version bump only for package a-msgpack

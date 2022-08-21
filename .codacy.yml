@@ -1,0 +1,8 @@
+---
+exclude_paths:
+  - "packages/cloudvision-grpc-web/generated/**"
+  - "packages/cloudvision-connector/CHANGELOG.md"
+  - "packages/a-msgpack/CHANGELOG.md"
+  - "CHANGELOG.md"
+  - "packages/a-msgpack/benchmark-msgpack/CHANGELOG.md"
+  - "packages/cloudvision-grpc-web/CHANGELOG.md"

@@ -1,5 +1,3 @@
-/* eslint-disable no-use-before-define */
-
 // Copyright (c) 2018, Arista Networks, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software
@@ -19,10 +17,9 @@
 
 import { encode, decode, Codec } from 'a-msgpack';
 import { fromByteArray, toByteArray } from 'base64-js';
-import MurmurHash3 from 'imurmurhash';
 
-import { NotifCallback, PlainObject, SubscriptionIdentifier, PublishCallback } from '../types';
 import {
+  CloseParams,
   CloudVisionBatchedNotifications,
   CloudVisionBatchedResult,
   CloudVisionDatasets,
@@ -30,38 +27,29 @@ import {
   CloudVisionResult,
   CloudVisionServiceResult,
   CloudVisionStatus,
-} from '../types/notifications';
-import {
-  CloseParams,
-  CloudVisionParams,
+  NotifCallback,
+  Options,
+  PublishCallback,
   Query,
+  RequestContext,
   SearchOptions,
   SearchType,
-  WsCommand,
-} from '../types/params';
-import { Options, CloudVisionPublishRequest, ServiceRequest } from '../types/query';
+  SubscriptionIdentifier,
+} from '../types';
 
-import { ALL_SEARCH_TYPES, EOF_CODE, SEARCH_TYPE_ANY } from './constants';
+import { ALL_SEARCH_TYPES, EOF_CODE, ERROR, SEARCH_TYPE_ANY } from './constants';
 import Emitter from './emitter';
+import { log } from './logger';
 
 interface ExplicitSearchOptions extends SearchOptions {
   searchType: SearchType;
 }
+
 export interface ExplicitOptions extends Options {
-  start: number | undefined;
   end: number | undefined;
+  start: number | undefined;
+
   versions?: number;
-}
-
-/**
- * Definition for an instance of MurmurHash3, rather than the module.
- */
-interface MurmurHash {
-  result(): number;
-
-  reset(seed?: number): MurmurHash;
-
-  hash(value: string): MurmurHash;
 }
 
 /**
@@ -156,48 +144,6 @@ export function validateQuery(query: Query, callback: NotifCallback, allowEmpty 
 }
 
 /**
- * Recursively hashes an object, given an object and a hashState.
- */
-function hashObjectHelper(object: PlainObject<unknown>, hashState: MurmurHash): string {
-  const objKeys = Object.keys(object);
-  for (let i = 0; i < objKeys.length; i += 1) {
-    const key = objKeys[i];
-    const value = object[key];
-    if (value && typeof value === 'object') {
-      const objValue = value as PlainObject<unknown>;
-      hashState.hash(key).hash(hashObjectHelper(objValue, hashState));
-    } else {
-      hashState.hash(key + '' + value);
-    }
-  }
-
-  return hashState.result().toString();
-}
-
-/**
- * Creates a unique hash given an object.
- */
-export function hashObject(object: PlainObject<unknown>): string {
-  const hashState = MurmurHash3();
-  return hashObjectHelper(object, hashState);
-}
-
-/**
- * Generates token based on the [[WsCommand]] and params ([[CloudVisionParams]],
- * [[CloudVisionPublishRequest]], [[ServiceRequest]]) of a request. This is
- * used to map requests to responses when dispatching response callbacks.
- */
-export function makeToken(
-  command: WsCommand,
-  params: CloudVisionParams | CloudVisionPublishRequest | ServiceRequest,
-): string {
-  return hashObject({
-    command,
-    params,
-  });
-}
-
-/**
  * Creates a notification callback that properly formats the result for the
  * passed callback.
  */
@@ -207,33 +153,40 @@ export function makeNotifCallback(callback: NotifCallback, options: Options = {}
     result?: CloudVisionResult | CloudVisionBatchedResult | CloudVisionServiceResult,
     status?: CloudVisionStatus,
     token?: string,
+    requestContext?: RequestContext,
   ): void => {
     if (status && status.code === EOF_CODE) {
-      callback(null, undefined, status, token);
+      callback(null, undefined, status, token, requestContext);
       return;
     }
     if (err) {
-      callback(`Error: ${err}\nOptions: ${JSON.stringify(options)}`, undefined, status, token);
+      callback(
+        `Error: ${err}\nOptions: ${JSON.stringify(options)}`,
+        undefined,
+        status,
+        token,
+        requestContext,
+      );
       // Send an extra EOF response to mark notification as complete.
-      callback(null, undefined, { code: EOF_CODE }, token);
+      callback(null, undefined, { code: EOF_CODE }, token, requestContext);
       return;
     }
 
     const datasets = result as CloudVisionDatasets;
-    if (datasets && datasets.datasets) {
-      callback(null, datasets, status, token);
+    if (datasets?.datasets) {
+      callback(null, datasets, status, token, requestContext);
       return;
     }
 
     const notifs = result as CloudVisionNotifs | CloudVisionBatchedNotifications;
-    if (notifs && notifs.dataset) {
-      callback(null, notifs, status, token);
+    if (notifs?.dataset) {
+      callback(null, notifs, status, token, requestContext);
       return;
     }
 
     // if none of the cases above apply, then it's a service request
     if (notifs) {
-      callback(null, notifs, status, token);
+      callback(null, notifs, status, token, requestContext);
     }
   };
 
@@ -322,22 +275,22 @@ export function validateResponse(
   const notifResponse = response as CloudVisionNotifs;
   /* eslint-disable no-console */
   if (notifResponse.dataset && !notifResponse.dataset.name) {
-    console.error(`No key 'name' found in dataset for token ${token}`);
+    log(ERROR, "No key 'name' found in dataset", undefined, token);
     return;
   }
 
   if (notifResponse.dataset && !notifResponse.dataset.type) {
-    console.error(`No key 'type' found in dataset for token ${token}`);
+    log(ERROR, "No key 'type' found in dataset", undefined, token);
     return;
   }
 
   if (notifResponse.dataset && !notifResponse.notifications) {
-    console.error(`No key 'notifications' found in response for token ${token}`);
+    log(ERROR, "No key 'notifications' found in response", undefined, token);
     return;
   }
 
   if (!batch && notifResponse.dataset && !Array.isArray(notifResponse.notifications)) {
-    console.error(`Key 'notifications' is not an array for token ${token}`);
+    log(ERROR, "Key 'notifications' is not an array", undefined, token);
   }
   /* eslint-enable no-console */
 }

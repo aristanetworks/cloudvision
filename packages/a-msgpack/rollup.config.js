@@ -10,7 +10,9 @@ const env = process.env.NODE_ENV;
 const config = {
   input: 'src/index.ts',
   onwarn: (warning) => {
-    throw new Error(warning.message);
+    throw new Error(
+      `${warning.message} (${warning.loc.file}):${warning.loc.line}:${warning.loc.column}`,
+    );
   },
   plugins: [resolve(), commonjs(), typescript({ sourceMap: false })],
 };

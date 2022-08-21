@@ -1,6 +1,7 @@
 import { PathElements } from 'a-msgpack';
 
 import { DEVICE_DATASET_TYPE } from '../src/constants';
+import { ConvertedNotification, PublishNotification, Query, RawNotification } from '../types';
 
 export const path1: PathElements = ['some', 'other', { path: 'here' }];
 export const path2: PathElements = ['some', 'path'];
@@ -12,7 +13,7 @@ export const encodedPath3 = ['xARzb21l', 'xARwYXRo', 'gcQEcGF0aMQEaGVyZQ=='];
 export const key1 = 'firstKey';
 export const encodedKey1 = 'xAhmaXJzdEtleQ==';
 
-export const rootNotif = {
+export const rootNotif: RawNotification = {
   timestamp: { seconds: 1539822611, nanos: 883496 },
   updates: [
     {
@@ -26,7 +27,7 @@ export const rootNotif = {
   ],
 };
 
-export const firstNotif = {
+export const firstNotif: RawNotification = {
   path_elements: encodedPath1,
   timestamp: { seconds: 1539822611, nanos: 883496678 },
   updates: [
@@ -40,7 +41,7 @@ export const firstNotif = {
     },
   ],
 };
-export const secondNotif = {
+export const secondNotif: RawNotification = {
   path_elements: encodedPath2,
   timestamp: { seconds: 1539822631, nanos: 883496 },
   updates: [
@@ -50,7 +51,7 @@ export const secondNotif = {
     },
   ],
 };
-export const thirdNotif = {
+export const thirdNotif: RawNotification = {
   path_elements: encodedPath1,
   timestamp: { seconds: 1539822611 },
   updates: [
@@ -61,12 +62,12 @@ export const thirdNotif = {
   ],
   deletes: ['xA1CYXkgQXJlYSBUZWFt'],
 };
-export const fourthNotif = {
+export const fourthNotif: RawNotification = {
   path_elements: encodedPath1,
   timestamp: { seconds: 1539822631, nanos: 9934968754 },
   deletes: ['xA1CYXNlYmFsbCBUZWFt'],
 };
-export const fifthNotif = {
+export const fifthNotif: RawNotification = {
   path_elements: encodedPath3,
   timestamp: { seconds: 1539822631, nanos: 993496 },
   updates: [
@@ -76,15 +77,16 @@ export const fifthNotif = {
     },
   ],
 };
-export const sixthNotif = {
+export const sixthNotif: RawNotification = {
   path_elements: encodedPath1,
   timestamp: { seconds: 1539832611, nanos: 883496678 },
   delete_all: true,
 };
 
-export const expectedRootNotif = {
+export const expectedRootNotif: ConvertedNotification = {
   path_elements: [],
   timestamp: 1539822611000,
+  nanos: 883496,
   updates: {
     xA1CYXNlYmFsbCBUZWFt: {
       key: 'Baseball Team',
@@ -96,7 +98,8 @@ export const expectedRootNotif = {
     },
   },
 };
-export const expectedFirstNotif = {
+export const expectedFirstNotif: ConvertedNotification = {
+  nanos: 883496678,
   path_elements: path1,
   timestamp: 1539822611883,
   updates: {
@@ -110,9 +113,10 @@ export const expectedFirstNotif = {
     },
   },
 };
-export const expectedSecondNotif = {
+export const expectedSecondNotif: ConvertedNotification = {
   path_elements: path2,
   timestamp: 1539822631000,
+  nanos: 883496,
   updates: {
     xApCYXNrZXRiYWxs: {
       key: 'Basketball',
@@ -120,9 +124,10 @@ export const expectedSecondNotif = {
     },
   },
 };
-export const expectedThirdNotif = {
+export const expectedThirdNotif: ConvertedNotification = {
   path_elements: path1,
   timestamp: 1539822611000,
+  nanos: 0,
   updates: {
     gcQFc3BvcnTECGJhc2ViYWxs: {
       key: { sport: 'baseball' },
@@ -135,7 +140,8 @@ export const expectedThirdNotif = {
     },
   },
 };
-export const expectedFourthNotif = {
+export const expectedFourthNotif: ConvertedNotification = {
+  nanos: 9934968754,
   path_elements: path1,
   timestamp: 1539822631993,
   deletes: {
@@ -145,9 +151,10 @@ export const expectedFourthNotif = {
   },
 };
 
-export const expectedFifthNotif = {
+export const expectedFifthNotif: ConvertedNotification = {
   path_elements: path3,
   timestamp: 1539822631000,
+  nanos: 993496,
   updates: {
     xApCYXNrZXRiYWxs: {
       key: 'Basketball',
@@ -155,13 +162,14 @@ export const expectedFifthNotif = {
     },
   },
 };
-export const expectedSixthNotif = {
+export const expectedSixthNotif: ConvertedNotification = {
   path_elements: path1,
   timestamp: 1539832611883,
+  nanos: 883496678,
   deletes: {},
 };
 
-export const firstNotifPublishRaw = {
+export const firstNotifPublishRaw: PublishNotification = {
   path_elements: path1,
   timestamp: { seconds: 1539822611, nanos: 883496678 },
   updates: [
@@ -175,7 +183,7 @@ export const firstNotifPublishRaw = {
     },
   ],
 };
-export const secondNotifPublishRaw = {
+export const secondNotifPublishRaw: PublishNotification = {
   path_elements: path2,
   timestamp: { seconds: 1539822631, nanos: 883496 },
   updates: [
@@ -185,7 +193,7 @@ export const secondNotifPublishRaw = {
     },
   ],
 };
-export const thirdNotifPublishRaw = {
+export const thirdNotifPublishRaw: PublishNotification = {
   path_elements: path1,
   timestamp: { seconds: 1539822611 },
   updates: [
@@ -196,17 +204,17 @@ export const thirdNotifPublishRaw = {
   ],
   deletes: ['Bay Area Team'],
 };
-export const fourthNotifPublishRaw = {
+export const fourthNotifPublishRaw: PublishNotification = {
   path_elements: path1,
   timestamp: { seconds: 1539822631, nanos: 9934968754 },
   deletes: ['Baseball Team'],
 };
-export const sixthNotifPublishRaw = {
+export const sixthNotifPublishRaw: PublishNotification = {
   path_elements: path1,
   timestamp: { seconds: 1539832611, nanos: 883496678 },
   deletes: [],
 };
-export const rootNotifPublishRaw = {
+export const rootNotifPublishRaw: PublishNotification = {
   path_elements: [],
   timestamp: { seconds: 1539822611, nanos: 883496 },
   updates: [
@@ -221,7 +229,7 @@ export const rootNotifPublishRaw = {
   ],
 };
 
-export const query = [
+export const query: Query = [
   {
     dataset: {
       type: DEVICE_DATASET_TYPE,
@@ -249,7 +257,7 @@ export const query = [
   },
 ];
 
-export const queryWithKeys = [
+export const queryWithKeys: Query = [
   {
     dataset: {
       type: DEVICE_DATASET_TYPE,
@@ -278,7 +286,7 @@ export const queryWithKeys = [
   },
 ];
 
-export const encodedQuery = [
+export const encodedQuery: Query = [
   {
     dataset: {
       type: DEVICE_DATASET_TYPE,
@@ -306,7 +314,7 @@ export const encodedQuery = [
   },
 ];
 
-export const encodedQueryWithKeys = [
+export const encodedQueryWithKeys: Query = [
   {
     dataset: {
       type: DEVICE_DATASET_TYPE,
@@ -335,7 +343,7 @@ export const encodedQueryWithKeys = [
   },
 ];
 
-export const queryOneDeviceMultiplePaths = [
+export const queryOneDeviceMultiplePaths: Query = [
   {
     dataset: {
       type: DEVICE_DATASET_TYPE,
@@ -352,7 +360,7 @@ export const queryOneDeviceMultiplePaths = [
   },
 ];
 
-export const encodedQueryOneDeviceMultiplePaths = [
+export const encodedQueryOneDeviceMultiplePaths: Query = [
   {
     dataset: {
       type: DEVICE_DATASET_TYPE,
@@ -369,7 +377,7 @@ export const encodedQueryOneDeviceMultiplePaths = [
   },
 ];
 
-export const queryOneDeviceOnePath = [
+export const queryOneDeviceOnePath: Query = [
   {
     dataset: {
       type: DEVICE_DATASET_TYPE,

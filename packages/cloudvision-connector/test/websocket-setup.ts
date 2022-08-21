@@ -1,17 +1,28 @@
 // A setup script to load a mock websocket for tests
 
+import { WebSocket } from 'mock-socket';
 import util from 'util';
 
-const mockWebSocket = require('mock-socket').WebSocket;
+// TextDecoder implementation that matches the lib dom API
+class TextDE {
+  private decoder = new util.TextDecoder();
 
-global.WebSocket = mockWebSocket;
+  public readonly encoding = 'utf-8';
 
-global.TextDecoder = util.TextDecoder;
+  public readonly fatal = false;
+
+  public readonly ignoreBOM = true;
+
+  public decode(input?: Uint8Array): string {
+    return this.decoder.decode(input);
+  }
+}
+
+global.WebSocket = WebSocket;
+
+global.TextDecoder = TextDE;
 global.TextEncoder = util.TextEncoder;
 
-global.navigator = {
-  userAgent: 'node.js',
-};
 const swallowError = (): void => undefined;
 
 /* eslint-disable no-console */

@@ -15,8 +15,10 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import { EventCallback } from '../types';
-import { EmitterEvents } from '../types/emitter';
+import { EventCallback, RequestContext } from '../types';
+import { EmitterEvents, EmitterRequestContext } from '../types/emitter';
+
+import { DEFAULT_CONTEXT } from './constants';
 
 /**
  * A class that tracks event callbacks by event type.
@@ -26,8 +28,11 @@ import { EmitterEvents } from '../types/emitter';
 class Emitter {
   private events: EmitterEvents;
 
+  private requestContext: EmitterRequestContext;
+
   public constructor() {
     this.events = new Map();
+    this.requestContext = new Map();
   }
 
   /**
@@ -35,6 +40,13 @@ class Emitter {
    */
   public getEventsMap(): EmitterEvents {
     return this.events;
+  }
+
+  /**
+   * Returns the `Map` of requestContext
+   */
+  public getRequestContextMap(): EmitterRequestContext {
+    return this.requestContext;
   }
 
   /**
@@ -49,13 +61,14 @@ class Emitter {
    *
    * @returns The number of callbacks subscribed to the event type
    */
-  public bind(eventType: string, callback: EventCallback): number {
+  public bind(eventType: string, requestContext: RequestContext, callback: EventCallback): number {
     let callbacksForEvent = this.events.get(eventType);
     if (callbacksForEvent) {
       callbacksForEvent.push(callback);
     } else {
       callbacksForEvent = [callback];
       this.events.set(eventType, callbacksForEvent);
+      this.requestContext.set(eventType, requestContext);
     }
 
     return callbacksForEvent.length;
@@ -85,6 +98,7 @@ class Emitter {
 
     if (callbacksForEventLen === 0) {
       this.events.delete(eventType);
+      this.requestContext.delete(eventType);
     }
 
     return callbacksForEventLen;
@@ -96,6 +110,7 @@ class Emitter {
    */
   public unbindAll(eventType: string): void {
     this.events.delete(eventType);
+    this.requestContext.delete(eventType);
   }
 
   /**
@@ -110,7 +125,8 @@ class Emitter {
 
     // iterate in reverse order in case callback calls unbind on the eventType
     for (let i = callbacksForEvent.length - 1; i >= 0; i -= 1) {
-      callbacksForEvent[i](...args);
+      const requestContext = this.requestContext.get(eventType) || DEFAULT_CONTEXT;
+      callbacksForEvent[i](requestContext, ...args);
     }
   }
 
@@ -120,6 +136,7 @@ class Emitter {
    */
   public close(): void {
     this.events.clear();
+    this.requestContext.clear();
   }
 }
 

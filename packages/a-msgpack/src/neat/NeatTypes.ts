@@ -79,7 +79,7 @@ export class Int {
   public constructor(value: unknown, forceJSBI = false) {
     this.type = Int.type;
     if (typeof value === 'string') {
-      let BI;
+      let BI; // This is a type alias for JSBI/BigInt
       if (typeof BigInt === 'undefined' || forceJSBI) {
         BI = JSBI.BigInt;
       } else {
@@ -87,9 +87,8 @@ export class Int {
       }
 
       this.value =
-        parseInt(value, 10) > Number.MAX_SAFE_INTEGER ||
-        parseInt(value, 10) < Number.MAX_SAFE_INTEGER * -1
-          ? BI(value)
+        parseInt(value, 10) > 0xffffffff || parseInt(value, 10) < -0x80000000
+          ? BI(value) // eslint-disable-line new-cap
           : parseInt(value, 10);
     } else if (typeof value === 'bigint' || isJsbi(value)) {
       this.value = value as bigint | JSBI;
@@ -207,17 +206,15 @@ export class Pointer {
       while (ptrArray[0] === '') {
         ptrArray.shift();
       }
-      this.value = ptrArray.map(
-        (pathEl): Element => {
-          try {
-            return JSON.parse(pathEl);
-          } catch (e) {
-            // ignore errors, these are just regular strings
-          }
+      this.value = ptrArray.map((pathEl): Element => {
+        try {
+          return JSON.parse(pathEl);
+        } catch (e) {
+          // ignore errors, these are just regular strings
+        }
 
-          return pathEl;
-        },
-      );
+        return pathEl;
+      });
     } else {
       this.value = value;
     }
@@ -232,5 +229,26 @@ export class Pointer {
         return JSON.stringify(pathEl);
       })
       .join(this.delimiter);
+  }
+}
+
+export class Wildcard {
+  public static type: '*' = '*';
+
+  public value: null;
+
+  public type: '*';
+
+  /**
+   * A class to represent a Wildcard type.
+   * A Wildcard is a type that matches 1 or more path elements
+   */
+  public constructor() {
+    this.type = Wildcard.type;
+    this.value = null;
+  }
+
+  public toString(): string {
+    return '*';
   }
 }

@@ -1,14 +1,11 @@
-import { PathElements } from '../../types/neat';
+/* eslint-disable @typescript-eslint/naming-convention */
+
+import { BasicNeatType, PathElements } from '../../types/neat';
 
 import { Bool, Float32, Float64, Int, Nil, Pointer, Str } from './NeatTypes';
 
 interface SerializedNeatType {
   __neatTypeClass: string;
-  value: unknown;
-}
-
-interface BasicNeatType {
-  type: Bool['type'] | Float32['type'] | Float64['type'] | Int['type'] | Nil['type'] | Str['type'];
   value: unknown;
 }
 
@@ -18,13 +15,42 @@ interface PointerNeatType {
   delimiter: string;
 }
 
-export function isNeatType(value: unknown): boolean {
+export function isFloat32(value: BasicNeatType): value is Float32 {
+  return value.type === 'float32';
+}
+
+export function isFloat64(value: BasicNeatType): value is Float64 {
+  return value.type === 'float64';
+}
+
+export function isInt(value: BasicNeatType): value is Int {
+  return value.type === 'int';
+}
+
+export function isStr(value: BasicNeatType): value is Str {
+  return value.type === 'str';
+}
+
+export function isBool(value: BasicNeatType): value is Bool {
+  return value.type === 'bool';
+}
+
+export function isBasicNeatType(value: unknown): value is BasicNeatType {
   if (typeof value === 'object' && value !== null) {
     if (Object.keys(value).length === 2 && 'type' in value && 'value' in value) {
       const neatValue = value as BasicNeatType;
       return [Bool.type, Float32.type, Float64.type, Int.type, Nil.type, Str.type].includes(
         neatValue.type,
       );
+    }
+  }
+  return false;
+}
+
+export function isNeatType(value: unknown): boolean {
+  if (typeof value === 'object' && value !== null) {
+    if (isBasicNeatType(value)) {
+      return true;
     }
     if (
       Object.keys(value).length === 3 &&

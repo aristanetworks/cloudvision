@@ -10,6 +10,7 @@ const Codec = new ExtensionCodec();
 
 Codec.register({
   type: POINTER_TYPE,
+  identifier: (data: unknown) => data instanceof Pointer,
   encode: encodePointer(Codec),
   decode: decodePointer(Codec),
 });

@@ -1,5 +1,3 @@
-import Connector from './src';
-
-export default Connector;
+export { default } from './src';
 export * from './src';
 export * from './types';

@@ -1,5 +1,5 @@
 import commonjs from '@rollup/plugin-commonjs';
-import nodeResolve from '@rollup/plugin-node-resolve';
+import { nodeResolve } from '@rollup/plugin-node-resolve';
 import replace from '@rollup/plugin-replace';
 import typescript from '@rollup/plugin-typescript';
 import { terser } from 'rollup-plugin-terser';
@@ -11,9 +11,11 @@ const env = process.env.NODE_ENV;
 const config = {
   input: 'src/index.ts',
   onwarn: (warning) => {
-    throw new Error(warning.message);
+    throw new Error(
+      `${warning.message} (${warning.loc.file}):${warning.loc.line}:${warning.loc.column}`,
+    );
   },
-  plugins: [nodeResolve(), typescript({ sourceMap: false })],
+  plugins: [typescript({ sourceMap: false })],
 };
 
 const external = Object.keys(packageJson.dependencies);
@@ -21,7 +23,7 @@ const external = Object.keys(packageJson.dependencies);
 const globals = {
   'a-msgpack': 'msgpack',
   'base64-js': 'base64-js',
-  'imurmurhash': 'MurmurHash3',
+  'uuid': 'uuid',
   'jsbi': 'JSBI',
 };
 
@@ -34,13 +36,16 @@ if (env === 'es' || env === 'cjs') {
     globals,
     indent: false,
   };
-  config.plugins.push(commonjs());
+  config.plugins.push(nodeResolve(), commonjs());
 }
 
 // Replace NODE_ENV variable
-if (env === 'development' || env === 'production' || env === 'try') {
+if (env === 'development' || env === 'production') {
   if (!process.env.INCLUDE_EXTERNAL) {
     config.external = external;
+    config.plugins.push(nodeResolve());
+  } else {
+    config.plugins.push(nodeResolve({ browser: true }));
   }
   config.output = {
     exports: 'named',
@@ -51,16 +56,19 @@ if (env === 'development' || env === 'production' || env === 'try') {
   };
   config.plugins.push(
     replace({
-      'process.env.NODE_ENV': JSON.stringify(env),
-      'process.env.TEXT_ENCODING': JSON.stringify('always'),
-      'process.env.TEXT_DECODER': JSON.stringify('always'),
+      preventAssignment: true,
+      values: {
+        'process.env.NODE_ENV': JSON.stringify(env),
+        'process.env.TEXT_ENCODING': JSON.stringify('always'),
+        'process.env.TEXT_DECODER': JSON.stringify('always'),
+      },
     }),
     commonjs(),
   );
 }
 
 if (env === 'production') {
-  config.plugins.push(terser());
+  config.plugins.push(nodeResolve(), terser());
 }
 
 export default config;

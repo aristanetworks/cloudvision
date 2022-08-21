@@ -17,37 +17,67 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+
 import {
   APP_DATASET_TYPE,
+  CONFIG_DATASET_TYPE,
   DEVICE_DATASET_TYPE,
-  EOF_CODE,
   EOF,
+  EOF_CODE,
+  ERROR,
+  GET,
   SEARCH_TYPE_ANY,
   SEARCH_TYPE_IP,
   SEARCH_TYPE_MAC,
+  SUBSCRIBE,
 } from '../src/constants';
 import Emitter from '../src/emitter';
+import { log } from '../src/logger';
 import {
   createCloseParams,
-  hashObject,
   invalidParamMsg,
   isMicroSeconds,
   isValidArg,
   makeNotifCallback,
   makePublishCallback,
-  makeToken,
   sanitizeOptions,
   sanitizeSearchOptions,
+  toBinaryKey,
   validateOptions,
   validateQuery,
   validateResponse,
 } from '../src/utils';
-import { CloudVisionDatasets, CloudVisionNotifs } from '../types/notifications';
-import { Query } from '../types/params';
+import {
+  CloseParams,
+  CloudVisionDatasets,
+  CloudVisionNotifs,
+  CloudVisionServiceResult,
+  CloudVisionStatus,
+  Options,
+  Query,
+  RequestContext,
+  SearchOptions,
+  SubscriptionIdentifier,
+  WsCommand,
+} from '../types';
 
-const EOF_STATUS = {
+const EOF_STATUS: CloudVisionStatus = {
   code: EOF_CODE,
 };
+
+jest.mock('../src/logger', () => {
+  return { log: jest.fn() };
+});
+jest.spyOn(console, 'groupCollapsed').mockImplementation();
+
+function createRequestContext(command: WsCommand, token: string, params: unknown): RequestContext {
+  return {
+    command,
+    token,
+    encodedParams: toBinaryKey(params),
+  };
+}
 
 describe('invalidParamMsg', () => {
   test('should generate a proper error message given parameters', () => {
@@ -59,37 +89,37 @@ describe('invalidParamMsg', () => {
 
 describe('sanitizeOptions', () => {
   test('should convert millisecond timestamps to microseconds', () => {
-    const options = {
+    const options: Options = {
       start: 1498053512,
       end: 1498093512,
     };
 
-    expect(sanitizeOptions(options)).toEqual({
-      start: options.start * 1e6,
-      end: options.end * 1e6,
+    expect(sanitizeOptions(options)).toEqual<Options>({
+      start: options.start! * 1e6,
+      end: options.end! * 1e6,
       versions: undefined,
     });
   });
 
   test('should not convert microseconds timestamps', () => {
-    const options = {
+    const options: Options = {
       start: 1498053512 * 1e6,
       end: 1498093512 * 1e6,
     };
 
-    expect(sanitizeOptions(options)).toEqual({
+    expect(sanitizeOptions(options)).toEqual<Options>({
       ...options,
       versions: undefined,
     });
   });
 
   test('should convert float timestamps', () => {
-    const options = {
+    const options: Options = {
       start: 1498053512.589,
       end: 1498093512.1,
     };
 
-    expect(sanitizeOptions(options)).toEqual({
+    expect(sanitizeOptions(options)).toEqual<Options>({
       start: 1498053512 * 1e6,
       end: 1498093512 * 1e6,
       versions: undefined,
@@ -97,11 +127,11 @@ describe('sanitizeOptions', () => {
   });
 
   test('should convert float version', () => {
-    const options = {
+    const options: Options = {
       versions: 10.5,
     };
 
-    expect(sanitizeOptions(options)).toEqual({
+    expect(sanitizeOptions(options)).toEqual<Options>({
       start: undefined,
       end: undefined,
       versions: 10,
@@ -145,7 +175,7 @@ describe('validateOptions', () => {
   });
 
   test('should pass validation if start < end', () => {
-    const options = {
+    const options: Options = {
       start: 1000,
       end: 2000,
     };
@@ -155,7 +185,7 @@ describe('validateOptions', () => {
   });
 
   test('should pass validation if start given but not end', () => {
-    const options = {
+    const options: Options = {
       start: 2000,
     };
 
@@ -164,7 +194,7 @@ describe('validateOptions', () => {
   });
 
   test('should not pass validation if start > end', () => {
-    const options = {
+    const options: Options = {
       start: 2000,
       end: 1000,
     };
@@ -174,7 +204,7 @@ describe('validateOptions', () => {
   });
 
   test('should not pass validation if start === end', () => {
-    const options = {
+    const options: Options = {
       start: 2000,
       end: 2000,
     };
@@ -184,7 +214,7 @@ describe('validateOptions', () => {
   });
 
   test('should not pass validation if start and versions are defined', () => {
-    const options = {
+    const options: Options = {
       start: 2000,
       versions: 10,
     };
@@ -204,7 +234,7 @@ describe('validateQuery', () => {
   test('should pass validation if query is an array with elements', () => {
     const query = [{}];
 
-    // @ts-ignore
+    // @ts-expect-error explicity testings an invalid input
     expect(validateQuery(query, spyCallback)).toBe(true);
     expect(spyCallback).not.toHaveBeenCalled();
   });
@@ -226,7 +256,7 @@ describe('validateQuery', () => {
   test('should fail validation if query is not an array', () => {
     const query = {};
 
-    // @ts-ignore
+    // @ts-expect-error explicity testings an invalid input
     expect(validateQuery(query, spyCallback)).toBe(false);
     expect(spyCallback).toHaveBeenCalledTimes(1);
   });
@@ -234,64 +264,16 @@ describe('validateQuery', () => {
   test('should fail validation if query is undefined', () => {
     const query = undefined;
 
-    // @ts-ignore
+    // @ts-expect-error explicity testings an invalid input
     expect(validateQuery(query, spyCallback)).toBe(false);
     expect(spyCallback).toHaveBeenCalledTimes(1);
-  });
-});
-
-describe('hashObject', () => {
-  test('should return equal hashes for equal objects', () => {
-    const creators = [
-      () => ({ a: 1, b: 2, c: 'test' }),
-      () => ({ a: { b: { c: { d: 1, e: 'hello' }, f: 89 } } }),
-    ];
-    creators.forEach((creator) => {
-      expect(hashObject(creator())).toEqual(hashObject(creator()));
-    });
-  });
-
-  test('should return different hashes for different simple objects', () => {
-    expect(hashObject({ a: 'silver' })).not.toEqual(hashObject({ a: 'gold' }));
-    expect(hashObject({ a: 'silver' })).not.toEqual(hashObject({ b: 'silver' }));
-    expect(hashObject({ a: 1, b: 2 })).not.toEqual(hashObject({ a: 2, b: 1 }));
-  });
-
-  test('should return different hashes for different deep objects', () => {
-    expect(hashObject({ a: { b: 'c' } })).not.toEqual(hashObject({ a: { d: 'e' } }));
-    expect(hashObject({ a: { b: 'c' } })).not.toEqual(hashObject({ a: { b: 7 } }));
-    expect(hashObject({ a: { b: 'c' } })).not.toEqual(hashObject({ a: { c: 'b' } }));
-    expect(hashObject({ a: { b: [1, 2, 3] } })).not.toEqual(hashObject({ a: { b: [1, 23] } }));
-  });
-
-  test('should return different hashes for deep objects differing only in top-level key', () => {
-    const apples = { apples: { count: 5 } };
-    const oranges = { oranges: { count: 5 } };
-
-    expect(hashObject(apples)).not.toEqual(hashObject(oranges));
-  });
-});
-
-describe('makeToken', () => {
-  test('should make token using hashObject', () => {
-    const command = 'get';
-    const params = {
-      hello: true,
-    };
-    const expectedToken = hashObject({
-      command,
-      params,
-    });
-
-    const token = makeToken(command, params);
-
-    expect(token).toBe(expectedToken);
   });
 });
 
 describe('makeNotifCallback', () => {
   const token = 'Dodgers';
   const callbackSpy = jest.fn();
+  const requestContext = createRequestContext(GET, token, {});
 
   beforeEach(() => {
     callbackSpy.mockReset();
@@ -308,31 +290,32 @@ describe('makeNotifCallback', () => {
   test('should send undefined on `EOF`', () => {
     const notifCallback = makeNotifCallback(callbackSpy);
 
-    notifCallback(EOF, undefined, EOF_STATUS, token);
+    notifCallback(EOF, undefined, EOF_STATUS, token, requestContext);
 
     expect(callbackSpy).toHaveBeenCalledTimes(1);
-    expect(callbackSpy).toHaveBeenCalledWith(null, undefined, EOF_STATUS, token);
+    expect(callbackSpy).toHaveBeenCalledWith(null, undefined, EOF_STATUS, token, requestContext);
   });
 
   test('should invoke a callack with the result, when there is no error', () => {
     const notifCallback = makeNotifCallback(callbackSpy);
-    const notif = {
+    const notif: CloudVisionNotifs = {
       dataset: { name: 'device1', type: DEVICE_DATASET_TYPE },
+      metadata: {},
       notifications: [
         { path_elements: ['path1'], timestamp: 101000002000000 },
         { path_elements: ['path1'], timestamp: 103000004000000 },
       ],
     };
 
-    notifCallback(null, notif, undefined, token);
+    notifCallback(null, notif, undefined, token, requestContext);
 
     expect(callbackSpy).toHaveBeenCalledTimes(1);
-    expect(callbackSpy).toHaveBeenCalledWith(null, notif, undefined, token);
+    expect(callbackSpy).toHaveBeenCalledWith(null, notif, undefined, token, requestContext);
   });
 
   test('should invoke the callback properly for dataset responses', () => {
     const notifCallback = makeNotifCallback(callbackSpy);
-    const notif = {
+    const notif: CloudVisionDatasets = {
       datasets: [
         {
           type: DEVICE_DATASET_TYPE,
@@ -342,35 +325,46 @@ describe('makeNotifCallback', () => {
           type: APP_DATASET_TYPE,
           name: 'app1',
         },
+        {
+          type: CONFIG_DATASET_TYPE,
+          name: 'config1',
+        },
       ],
+      metadata: {},
     };
 
-    notifCallback(null, notif, undefined, token);
+    notifCallback(null, notif, undefined, token, requestContext);
 
     expect(callbackSpy).toHaveBeenCalledTimes(1);
-    expect(callbackSpy).toHaveBeenCalledWith(null, notif, undefined, token);
+    expect(callbackSpy).toHaveBeenCalledWith(null, notif, undefined, token, requestContext);
   });
 
   test('should invoke the callback properly for service responses', () => {
     const notifCallback = makeNotifCallback(callbackSpy);
-    const notif = {
+    const notif: CloudVisionServiceResult = {
       Dodgers: 'the best team in baseball',
     };
 
-    notifCallback(null, notif, undefined, token);
+    notifCallback(null, notif, undefined, token, requestContext);
 
     expect(callbackSpy).toHaveBeenCalledTimes(1);
-    expect(callbackSpy).toHaveBeenCalledWith(null, notif, undefined, token);
+    expect(callbackSpy).toHaveBeenCalledWith(null, notif, undefined, token, requestContext);
   });
 
   test('should invoke the callback if there is an error', () => {
     const notifCallback = makeNotifCallback(callbackSpy);
     const errorText = 'Some Error';
 
-    notifCallback(errorText, undefined, undefined, token);
+    notifCallback(errorText, undefined, undefined, token, requestContext);
 
     expect(callbackSpy).toHaveBeenCalledTimes(2);
-    expect(callbackSpy).toHaveBeenLastCalledWith(null, undefined, { code: EOF_CODE }, token);
+    expect(callbackSpy).toHaveBeenLastCalledWith(
+      null,
+      undefined,
+      { code: EOF_CODE },
+      token,
+      requestContext,
+    );
     expect(callbackSpy.mock.calls[0][0]).toContain(errorText);
   });
 });
@@ -379,42 +373,45 @@ describe('createCloseParams', () => {
   let emitter: Emitter;
   const streamCallback = jest.fn();
   const streamToken = 'DodgerBlue';
-  const stream = {
+  const stream: SubscriptionIdentifier = {
     token: streamToken,
     callback: streamCallback,
   };
   const streamCallback2 = jest.fn();
   const streamToken2 = 'VinScully';
-  const stream2 = {
+  const stream2: SubscriptionIdentifier = {
     token: streamToken2,
     callback: streamCallback2,
   };
 
+  const requestContext = createRequestContext(SUBSCRIBE, streamToken, {});
+  const requestContext2 = createRequestContext(SUBSCRIBE, streamToken2, {});
+
   beforeEach(() => {
     emitter = new Emitter();
-    emitter.bind(streamToken, streamCallback);
-    emitter.bind(streamToken2, streamCallback2);
+    emitter.bind(streamToken, requestContext, streamCallback);
+    emitter.bind(streamToken2, requestContext2, streamCallback2);
   });
 
   test('should create the proper stream close params for one stream', () => {
-    const expectedCloseParams = { [streamToken]: true };
+    const expectedCloseParams: CloseParams = { [streamToken]: true };
     const closeParams = createCloseParams(stream, emitter);
 
     expect(closeParams).toEqual(expectedCloseParams);
     expect(streamCallback).not.toHaveBeenCalled();
-    expect(emitter.getEventsMap().get(streamToken)).toBe(undefined);
+    expect(emitter.getEventsMap().get(streamToken)).toBeUndefined();
   });
 
   test('should create the proper stream close params for multiple streams', () => {
     const streams = [stream, stream2];
-    const expectedCloseParams = { [streamToken]: true, [streamToken2]: true };
+    const expectedCloseParams: CloseParams = { [streamToken]: true, [streamToken2]: true };
     const closeParams = createCloseParams(streams, emitter);
 
     expect(closeParams).toEqual(expectedCloseParams);
     expect(streamCallback).not.toHaveBeenCalled();
-    expect(emitter.getEventsMap().get(streamToken)).toBe(undefined);
+    expect(emitter.getEventsMap().get(streamToken)).toBeUndefined();
     expect(streamCallback2).not.toHaveBeenCalled();
-    expect(emitter.getEventsMap().get(streamToken2)).toBe(undefined);
+    expect(emitter.getEventsMap().get(streamToken2)).toBeUndefined();
   });
 
   test(
@@ -423,7 +420,7 @@ describe('createCloseParams', () => {
     () => {
       const anotherCallback = jest.fn();
       const expectedCloseParams = null;
-      emitter.bind(streamToken, anotherCallback);
+      emitter.bind(streamToken, requestContext, anotherCallback);
 
       const closeParams = createCloseParams(stream, emitter);
 
@@ -439,19 +436,19 @@ describe('createCloseParams', () => {
       'all are unbound',
     () => {
       const anotherCallback = jest.fn();
-      const expectedCloseParams = { [streamToken]: true };
-      const annotherStream = {
+      const expectedCloseParams: CloseParams = { [streamToken]: true };
+      const annotherStream: SubscriptionIdentifier = {
         token: streamToken,
         callback: anotherCallback,
       };
       const streams = [stream, annotherStream];
-      emitter.bind(streamToken, anotherCallback);
+      emitter.bind(streamToken, requestContext, anotherCallback);
 
       const closeParams = createCloseParams(streams, emitter);
 
       expect(closeParams).toEqual(expectedCloseParams);
       expect(streamCallback).not.toHaveBeenCalled();
-      expect(emitter.getEventsMap().get(streamToken)).toBe(undefined);
+      expect(emitter.getEventsMap().get(streamToken)).toBeUndefined();
       expect(anotherCallback).not.toHaveBeenCalled();
     },
   );
@@ -492,103 +489,109 @@ describe('validateResponse', () => {
   const token = 'some token';
 
   beforeEach(() => {
-    jest.spyOn(console, 'error');
+    jest.resetAllMocks();
   });
 
-  /* eslint-disable no-console */
-  it('should not log an error for a valid response', () => {
+  test('should not log an error for a valid response', () => {
     const notifResponse: CloudVisionNotifs = {
       dataset: { name: 'Max', type: APP_DATASET_TYPE },
+      metadata: {},
       notifications: [{ path_elements: ['Muncy'], timestamp: 1 }],
     };
     const datasetResponse: CloudVisionDatasets = {
       datasets: [{ name: 'Max', type: APP_DATASET_TYPE }],
+      metadata: {},
     };
 
     validateResponse(notifResponse, {}, token, false);
     validateResponse(datasetResponse, {}, token, false);
 
-    expect(console.error).not.toHaveBeenCalled();
+    expect(log).not.toHaveBeenCalled();
   });
 
-  it('should log an error for a response with a non array type for notifications', () => {
+  test('should log an error for a response with a non array type for notifications', () => {
     const response: CloudVisionNotifs = {
-      // @ts-ignore
       dataset: { name: 'Max', type: APP_DATASET_TYPE },
-      // @ts-ignore
+      // @ts-expect-error explicity testings an invalid input
       notifications: { lastName: 'Muncy' },
     };
     validateResponse(response, {}, token, false);
-    expect(console.error).toHaveBeenCalledWith(
-      `Key 'notifications' is not an array for token ${token}`,
+    expect(log).toHaveBeenCalledWith(
+      ERROR,
+      "Key 'notifications' is not an array",
+      undefined,
+      token,
     );
   });
 
-  it('should log an error for a response without notifications', () => {
-    // @ts-ignore
+  test('should log an error for a response without notifications', () => {
+    // @ts-expect-error explicity testings an invalid input
     const response: CloudVisionNotifs = { dataset: { name: 'Max', type: 'beast' } };
     validateResponse(response, {}, token, false);
-    expect(console.error).toHaveBeenCalledWith(
-      `No key 'notifications' found in response for token ${token}`,
+    expect(log).toHaveBeenCalledWith(
+      ERROR,
+      "No key 'notifications' found in response",
+      undefined,
+      token,
     );
   });
 
-  it('should log an error for a response without type for dataset', () => {
-    // @ts-ignore
+  test('should log an error for a response without type for dataset', () => {
+    // @ts-expect-error explicity testings an invalid input
     const response: CloudVisionNotifs = { dataset: { name: 'Max' } };
     validateResponse(response, {}, token, false);
-    expect(console.error).toHaveBeenCalledWith(`No key 'type' found in dataset for token ${token}`);
+    expect(log).toHaveBeenCalledWith(ERROR, "No key 'type' found in dataset", undefined, token);
   });
 
-  it('should log an error for a response without name for dataset', () => {
-    // @ts-ignore
+  test('should log an error for a response without name for dataset', () => {
+    // @ts-expect-error explicity testings an invalid input
     const response: CloudVisionNotifs = { dataset: {} };
     validateResponse(response, {}, token, false);
-    expect(console.error).toHaveBeenCalledWith(`No key 'name' found in dataset for token ${token}`);
+    expect(log).toHaveBeenCalledWith(ERROR, "No key 'name' found in dataset", undefined, token);
   });
 
-  it('should not log an error for a status response', () => {
-    // @ts-ignore
+  test('should not log an error for a status response', () => {
+    // @ts-expect-error explicity testings an invalid input
     const response: CloudVisionNotifs = {};
     validateResponse(response, { code: 1101 }, token, false);
-    expect(console.error).not.toHaveBeenCalledWith();
+    expect(log).not.toHaveBeenCalledWith();
   });
   /* eslint-enable no-console */
 });
 
 describe('sanitizeSearchOptions', () => {
-  it('should return `ANY` as search type if none is given', () => {
-    const searchOptions = { search: 'Dodgers' };
+  test('should return `ANY` as search type if none is given', () => {
+    const searchOptions: SearchOptions = { search: 'Dodgers' };
 
-    expect(sanitizeSearchOptions(searchOptions)).toEqual({
+    expect(sanitizeSearchOptions(searchOptions)).toEqual<SearchOptions>({
       search: 'Dodgers',
       searchType: SEARCH_TYPE_ANY,
     });
   });
 
-  it('should return `ANY` as search type, if the type does not match a proper search type', () => {
-    const searchOptions = { search: 'Dodgers' };
+  test('should return `ANY` as search type, if the type does not match a proper search type', () => {
+    const searchOptions: SearchOptions = { search: 'Dodgers' };
 
-    expect(sanitizeSearchOptions(searchOptions)).toEqual({
+    expect(sanitizeSearchOptions(searchOptions)).toEqual<SearchOptions>({
       search: 'Dodgers',
       searchType: SEARCH_TYPE_ANY,
     });
   });
 
-  it('should return the given search type, if it matches a proper search type', () => {
-    const searchOptionsMac = { search: 'Dodgers', searchType: SEARCH_TYPE_MAC };
-    const searchOptionsAny = { search: 'Dodgers', searchType: SEARCH_TYPE_ANY };
-    const searchOptionsIp = { search: 'Dodgers', searchType: SEARCH_TYPE_IP };
+  test('should return the given search type, if it matches a proper search type', () => {
+    const searchOptionsMac: SearchOptions = { search: 'Dodgers', searchType: SEARCH_TYPE_MAC };
+    const searchOptionsAny: SearchOptions = { search: 'Dodgers', searchType: SEARCH_TYPE_ANY };
+    const searchOptionsIp: SearchOptions = { search: 'Dodgers', searchType: SEARCH_TYPE_IP };
 
-    expect(sanitizeSearchOptions(searchOptionsMac)).toEqual({
+    expect(sanitizeSearchOptions(searchOptionsMac)).toEqual<SearchOptions>({
       search: 'Dodgers',
       searchType: SEARCH_TYPE_MAC,
     });
-    expect(sanitizeSearchOptions(searchOptionsAny)).toEqual({
+    expect(sanitizeSearchOptions(searchOptionsAny)).toEqual<SearchOptions>({
       search: 'Dodgers',
       searchType: SEARCH_TYPE_ANY,
     });
-    expect(sanitizeSearchOptions(searchOptionsIp)).toEqual({
+    expect(sanitizeSearchOptions(searchOptionsIp)).toEqual<SearchOptions>({
       search: 'Dodgers',
       searchType: SEARCH_TYPE_IP,
     });

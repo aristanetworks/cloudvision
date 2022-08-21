@@ -2,9 +2,19 @@
   "extends": [
     "config:base",
     ":semanticCommits",
-    ":semanticCommitTypeAll(chore)",
-    "schedule:earlyMondays"
+    ":semanticCommitTypeAll(chore)"
   ],
-  "assignees": ["rufman"],
-  "labels": ["dependencies"]
+  "labels": ["dependencies"],
+  "packageRules": [
+    {
+      "updateTypes": ["minor", "patch", "pin", "digest"],
+      "automerge": true,
+      "automergeType": "pr"
+    }
+  ],
+  "lockFileMaintenance": {
+    "enabled": true,
+    "automerge": true
+  },
+  "schedule": ["after 10pm and before 5am on every weekday", "every weekend"]
 }

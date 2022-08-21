@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/prefer-for-of */
+// Allow usage of for loops, since here performance is paramount
+
 // Copyright (c) 2018, Arista Networks, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software
@@ -15,29 +18,31 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import { encode, decode, Codec, PathElements, Timestamp } from 'a-msgpack';
+import { encode, decode, Codec, PathElements } from 'a-msgpack';
 import { fromByteArray, toByteArray } from 'base64-js';
 
 import {
+  BatchPublishRequest,
   CloudVisionBatchedNotifications,
   CloudVisionDatapoint,
-  CloudVisionDelete,
+  CloudVisionDeletes,
   CloudVisionMessage,
-  CloudVisionNotification,
   CloudVisionNotifs,
-  CloudVisionRawNotifs,
-  CloudVisionUpdate,
-  ConvertedNotification,
-  RawNotification,
-} from '../types/notifications';
-import { CloudVisionParams, PathObject, Query, QueryObject, QueryParams } from '../types/params';
-import {
-  BatchPublishRequest,
+  CloudVisionParams,
   CloudVisionPublishRequest,
   CloudVisionQueryMessage,
+  CloudVisionRawNotifs,
+  CloudVisionUpdates,
+  ConvertedNotification,
+  NewConvertedNotification,
+  PathObject,
   PublishRequest,
+  Query,
+  QueryObject,
+  QueryParams,
+  RawNotification,
   ServiceRequest,
-} from '../types/query';
+} from '../types';
 
 const msgpack = {
   encode: (inputs: unknown): Uint8Array => encode(inputs, { extensionCodec: Codec }),
@@ -116,8 +121,8 @@ export function decodePathElements(pathElements: string[]): PathElements {
  */
 function decodeNotifs(
   notif: CloudVisionDatapoint<string, string>[],
-): CloudVisionUpdate<unknown, unknown> {
-  const decodedNotifs: CloudVisionUpdate<unknown, unknown> = {};
+): CloudVisionUpdates<unknown, unknown> {
+  const decodedNotifs: CloudVisionUpdates<unknown, unknown> = {};
   for (let i = 0; i < notif.length; i += 1) {
     const key = notif[i].key;
     const value = notif[i].value;
@@ -176,8 +181,8 @@ function encodeDeletes(deletes: unknown[]): string[] {
  * @param deletes an array of NEAT encoded `key` values.
  * @returns an array of decoded keys
  */
-function decodeDeletes(deletes: string[]): CloudVisionDelete<unknown> {
-  const decodedDeletes: CloudVisionDelete<unknown> = {};
+function decodeDeletes(deletes: string[]): CloudVisionDeletes<unknown> {
+  const decodedDeletes: CloudVisionDeletes<unknown> = {};
   for (let i = 0; i < deletes.length; i += 1) {
     const key = deletes[i];
     decodedDeletes[key] = {
@@ -195,9 +200,6 @@ function decodeDeletes(deletes: string[]): CloudVisionDelete<unknown> {
  *
  * This converts timestamps in all notifications to milliseconds for use with
  * JS Date().
- *
- * **NOTE** this is deprecated and in upcoming versions the timestamp will be passed on in its full
- * resolution. This behavior will become an option that can be turned on.
  */
 function convertNotif(notif: RawNotification): ConvertedNotification {
   const convertedNotif: ConvertedNotification = {
@@ -211,7 +213,9 @@ function convertNotif(notif: RawNotification): ConvertedNotification {
     nanos += notif.timestamp.nanos;
   }
   nanos = nanos.padStart(9, '0');
-  convertedNotif.timestamp = parseInt(('' + notif.timestamp.seconds + nanos).slice(0, 13), 10);
+  const timestampAsString = '' + notif.timestamp.seconds + nanos;
+  convertedNotif.nanos = parseInt(nanos, 10);
+  convertedNotif.timestamp = parseInt(timestampAsString.slice(0, 13), 10);
 
   if (notif.updates) {
     convertedNotif.updates = decodeNotifs(notif.updates);
@@ -294,6 +298,7 @@ export function decodeNotifications(
   if (batchResults) {
     const batch: CloudVisionBatchedNotifications = {
       dataset: result.dataset,
+      metadata: result.metadata || {},
       notifications: {},
     };
 
@@ -306,6 +311,7 @@ export function decodeNotifications(
 
   const notif: CloudVisionNotifs = {
     dataset: result.dataset,
+    metadata: result.metadata || {},
     notifications: [],
   };
   for (let i = 0; i < result.notifications.length; i += 1) {
@@ -322,19 +328,12 @@ export function decodeNotifications(
  * @param notif a single unencoded notification.
  * @returns the NEAT encoded notifications that can be sent to the server
  */
-function encodeNotification(
-  notif: CloudVisionNotification<
-    PathElements,
-    Timestamp,
-    CloudVisionDatapoint<unknown, unknown>[],
-    unknown[]
-  >,
-): RawNotification {
+function encodeNotification(notif: NewConvertedNotification): RawNotification {
   const encodedNotif: RawNotification = {
     timestamp: notif.timestamp,
   };
 
-  if (notif.path_elements && notif.path_elements.length) {
+  if (notif.path_elements?.length) {
     encodedNotif.path_elements = encodePathElements(notif.path_elements);
   }
 
@@ -391,7 +390,7 @@ export function encodeNotifications(
  * Implements stringify, so that requests can be sent to the server in the proper format.
  * Implements parse which decodes responses sent by the server.
  */
-class Parser {
+export default class Parser {
   public static parse(data: string, batch: boolean): CloudVisionMessage {
     const message = JSON.parse(data);
     const result = message.result;
@@ -444,5 +443,3 @@ class Parser {
     return publishParams.sync !== undefined && publishParams.batch !== undefined;
   }
 }
-
-export default Parser;

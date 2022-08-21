@@ -1,31 +1,46 @@
 import { NeatType, PathElements } from 'a-msgpack';
 
-export type DatasetCommand = 'DEVICES_DATASET_ID';
-type get = 'get';
-type subscribe = 'subscribe';
-type close = 'close';
-type getDatasets = 'getDatasets';
-type publish = 'publish';
-type search = 'alpha/search';
-type searchSubscribe = 'alpha/searchSubscribe';
-type pause = 'pause';
-type resume = 'resume';
-type serviceRequest = 'serviceRequest';
-export type WsCommand =
-  | GetCommands
-  | StreamCommands
-  | close
-  | publish
-  | pause
-  | resume
-  | serviceRequest;
-export type GetCommands = get | getDatasets | search;
-export type StreamCommands = subscribe | searchSubscribe | serviceRequest;
-export type DatasetTypes = 'device' | 'app';
-export type SearchType = 'MAC' | 'IP' | 'ANY';
+import {
+  CLOSE,
+  GET,
+  GET_AND_SUBSCRIBE,
+  GET_DATASETS,
+  GET_REGIONS_AND_CLUSTERS,
+  PUBLISH,
+  SEARCH,
+  SEARCH_SUBSCRIBE,
+  SEARCH_TYPE_ANY,
+  SEARCH_TYPE_IP,
+  SEARCH_TYPE_MAC,
+  SERVICE_REQUEST,
+  SUBSCRIBE,
+} from '../src/constants';
+
+export type GetCommand =
+  | typeof GET
+  | typeof GET_DATASETS
+  | typeof GET_REGIONS_AND_CLUSTERS
+  | typeof SEARCH;
+
+/** @deprecated: Use `GetCommand`. */
+export type GetCommands = GetCommand;
+
+export type StreamCommand =
+  | typeof SERVICE_REQUEST
+  | typeof SEARCH_SUBSCRIBE
+  | typeof SUBSCRIBE
+  | typeof GET_AND_SUBSCRIBE;
+
+/** @deprecated: Use `StreamCommand`. */
+export type StreamCommands = StreamCommand;
+
+export type WsCommand = GetCommand | StreamCommand | typeof CLOSE | typeof PUBLISH;
+
+export type SearchType = typeof SEARCH_TYPE_ANY | typeof SEARCH_TYPE_IP | typeof SEARCH_TYPE_MAC;
 
 export interface PathObject {
-  path_elements: PathElements;
+  path_elements: PathElements; // eslint-disable-line @typescript-eslint/naming-convention
+
   keys?: readonly NeatType[];
 }
 
@@ -35,8 +50,10 @@ export interface SearchOptions {
 }
 
 export interface DatasetObject {
-  type: DatasetTypes;
   name: string;
+  type: string;
+
+  parent?: DatasetObject;
 }
 
 export interface QueryObject {
@@ -91,20 +108,22 @@ export type Query = QueryObject[];
 
 export interface QueryParams {
   query: Query;
+
   start?: number;
   end?: number;
   versions?: number;
 }
 
-export interface AppParams {
-  types?: DatasetTypes[];
+export interface DatasetParams {
+  types?: string[];
 }
 
 export interface SearchParams {
-  end?: number;
   query: Query;
   search: string;
   searchType: SearchType;
+
+  end?: number;
   start?: number;
 }
 
@@ -115,18 +134,4 @@ export interface CloseParams {
   [token: string]: boolean;
 }
 
-export interface PauseParams {
-  pauseStreams: boolean;
-}
-
-export interface ResumeParams {
-  token: string;
-}
-
-export type CloudVisionParams =
-  | QueryParams
-  | AppParams
-  | CloseParams
-  | SearchParams
-  | PauseParams
-  | ResumeParams;
+export type CloudVisionParams = CloseParams | DatasetParams | QueryParams | SearchParams;

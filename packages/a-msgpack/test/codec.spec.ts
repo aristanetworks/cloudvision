@@ -72,11 +72,12 @@ interface YamlTest {
   f32: number;
   f64: string;
   str: string;
-  map: object;
+  map: Record<string, unknown>;
   array: unknown[];
   pointer: Element[];
-  complex: [object, unknown][];
+  complex: [Record<string, unknown>, unknown][];
   bytes: number[];
+  wildcard: string;
 }
 
 function createComplexMap(complexArr: unknown[]) {
@@ -100,7 +101,7 @@ function createComplexMap(complexArr: unknown[]) {
   return map;
 }
 
-function createComplexKey(key: object): string {
+function createComplexKey(key: Record<string, unknown>): string {
   const mapArr: [unknown, unknown][] = [];
   Object.entries(key).forEach((entry) => {
     mapArr.push([
@@ -115,7 +116,7 @@ function createComplexKey(key: object): string {
 function createExpectedComplexObject(complexArr: unknown[]) {
   const obj: PlainObject<unknown> = {};
   for (let i = 0; i < complexArr.length; i += 2) {
-    const key = complexArr[i] as object;
+    const key = complexArr[i] as Record<string, unknown>;
     obj[createComplexKey(key)] = {
       _key: key,
       _value: complexArr[i + 1],
@@ -125,7 +126,7 @@ function createExpectedComplexObject(complexArr: unknown[]) {
 }
 
 describe('NEAT codec', () => {
-  const tests = yaml.safeLoad(fs.readFileSync(process.cwd() + '/test/codec_tests.yaml', 'utf8'));
+  const tests = yaml.load(fs.readFileSync(process.cwd() + '/test/codec_tests.yaml', 'utf8'));
   const arrayTests: YamlTest[] = [];
   const boolTests: YamlTest[] = [];
   const complexTests: YamlTest[] = [];
@@ -140,38 +141,43 @@ describe('NEAT codec', () => {
   const stringTests: YamlTest[] = [];
   const nilTests: YamlTest[] = [];
   const bytesTests: YamlTest[] = [];
+  const wildcardTests: YamlTest[] = [];
 
-  tests.tests.forEach((test: YamlTest) => {
-    if (test.bool !== undefined) {
-      boolTests.push(test);
-    } else if (test.i8 !== undefined) {
-      int8Tests.push(test);
-    } else if (test.i16 !== undefined) {
-      int16Tests.push(test);
-    } else if (test.i32 !== undefined) {
-      int32Tests.push(test);
-    } else if (test.i64 !== undefined) {
-      int64Tests.push(test);
-    } else if (test.f32 !== undefined) {
-      float32Tests.push(test);
-    } else if (test.f64 !== undefined) {
-      float64Tests.push(test);
-    } else if (test.str !== undefined) {
-      stringTests.push(test);
-    } else if (test.map !== undefined) {
-      mapTests.push(test);
-    } else if (test.array !== undefined) {
-      arrayTests.push(test);
-    } else if (test.pointer !== undefined) {
-      pointerTests.push(test);
-    } else if (test.complex !== undefined) {
-      complexTests.push(test);
-    } else if (test.bytes !== undefined) {
-      bytesTests.push(test);
-    } else {
-      nilTests.push(test);
-    }
-  });
+  if (typeof tests === 'object') {
+    (tests as { tests: YamlTest[] }).tests.forEach((test: YamlTest) => {
+      if (test.bool !== undefined) {
+        boolTests.push(test);
+      } else if (test.i8 !== undefined) {
+        int8Tests.push(test);
+      } else if (test.i16 !== undefined) {
+        int16Tests.push(test);
+      } else if (test.i32 !== undefined) {
+        int32Tests.push(test);
+      } else if (test.i64 !== undefined) {
+        int64Tests.push(test);
+      } else if (test.f32 !== undefined) {
+        float32Tests.push(test);
+      } else if (test.f64 !== undefined) {
+        float64Tests.push(test);
+      } else if (test.str !== undefined) {
+        stringTests.push(test);
+      } else if (test.map !== undefined) {
+        mapTests.push(test);
+      } else if (test.array !== undefined) {
+        arrayTests.push(test);
+      } else if (test.pointer !== undefined) {
+        pointerTests.push(test);
+      } else if (test.complex !== undefined) {
+        complexTests.push(test);
+      } else if (test.bytes !== undefined) {
+        bytesTests.push(test);
+      } else if (test.wildcard !== undefined) {
+        wildcardTests.push(test);
+      } else {
+        nilTests.push(test);
+      }
+    });
+  }
 
   test('should properly encode/decode nil', () => {
     nilTests.forEach((test) => {
@@ -239,7 +245,9 @@ describe('NEAT codec', () => {
         expect(msgpackCustomCodec.decode(new Uint8Array(test.out))).toEqual(int.value);
       } else {
         expect(msgpackCustomCodec.decode(new Uint8Array(test.out))).toEqual(BigInt(test.i64));
-        expect(msgpackCustomCodec.decode(new Uint8Array(test.out))).toEqual(BigInt(int.value));
+        expect(msgpackCustomCodec.decode(new Uint8Array(test.out))).toEqual(
+          BigInt(int.value as unknown as string),
+        );
         const int64 = new NeatTypes.Int(BigInt(test.i64));
         expect(msgpackCustomCodec.encode(int64)).toEqual(new Uint8Array(test.out));
         expect(msgpackCustomCodec.decode(new Uint8Array(test.out))).toEqual(int64.value);
@@ -402,6 +410,13 @@ describe('NEAT codec', () => {
     });
   });
 
+  test('should properly encode/decode wildcards', () => {
+    wildcardTests.forEach((test) => {
+      expect(msgpackCustomCodec.encode(new NeatTypes.Wildcard())).toEqual(new Uint8Array(test.out));
+      expect(msgpackCustomCodec.decode(new Uint8Array(test.out))).toEqual(new NeatTypes.Wildcard());
+    });
+  });
+
   test('should properly encode/decode maps with complex keys', () => {
     complexTests.forEach((test) => {
       expect(msgpackCustomCodec.encode(createComplexMap(test.complex))).toEqual(
@@ -411,6 +426,25 @@ describe('NEAT codec', () => {
         createExpectedComplexObject(test.complex),
       );
     });
+  });
+
+  test('should properly encode/decode a map value with non string keys', () => {
+    const aMap = new Map([[{ c: 'd' }, 'e']]);
+    const bMap = new Map([[{ d: 'd' }, 'e']]);
+    const testInput = new Map<string, unknown>([
+      ['a', aMap],
+      ['b', bMap],
+    ]);
+    const expectedDecodedValue = {
+      a: { 'gcQBY8QBZA==': { _key: { c: 'd' }, _value: 'e' } },
+      b: { 'gcQBZMQBZA==': { _key: { d: 'd' }, _value: 'e' } },
+    };
+    const testOutput = [
+      130, 196, 1, 97, 129, 129, 196, 1, 99, 196, 1, 100, 196, 1, 101, 196, 1, 98, 129, 129, 196, 1,
+      100, 196, 1, 100, 196, 1, 101,
+    ];
+    expect(msgpackCustomCodec.encode(testInput)).toEqual(new Uint8Array(testOutput));
+    expect(msgpackCustomCodec.decode(new Uint8Array(testOutput))).toEqual(expectedDecodedValue);
   });
 
   test('should properly encode/decode map with complex key and undefined object value', () => {

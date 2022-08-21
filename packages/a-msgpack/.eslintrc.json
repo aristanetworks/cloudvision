@@ -1,19 +1,19 @@
 {
-  "extends": ["airbnb-base", "arista-js"],
-  "rules": {
-    "import/no-extraneous-dependencies": [
-      "error",
-      {
-        "packageDir": [".", "../.."]
-      }
-    ],
-    "no-plusplus": "off",
-    "no-bitwise": "off"
-  },
   "overrides": [
     {
+      "files": ["**/*.js"],
+      "extends": ["arista-js"]
+    },
+    {
       "files": ["**/*.ts"],
-      "extends": ["arista-ts"]
+      "extends": ["arista-ts"],
+      "parserOptions": {
+        "project": "./tsconfig.json"
+      },
+      "rules": {
+        "no-plusplus": "off",
+        "no-bitwise": "off"
+      }
     }
   ]
 }

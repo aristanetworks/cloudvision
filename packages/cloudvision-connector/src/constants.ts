@@ -15,58 +15,67 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import {
-  DatasetCommand,
-  DatasetTypes,
-  GetCommands,
-  SearchType,
-  StreamCommands,
-  WsCommand,
-} from '../types/params';
+import { RequestContext, SearchType } from '../types';
+
+export const ERROR = 'ERROR';
+export const INFO = 'INFO';
+export const WARN = 'WARN';
 
 export const EOF = 'EOF';
+
 /**
  * Status code for EOF (End Of File).
  */
 export const EOF_CODE = 1001;
+
 /**
  * Status code for Active (when a subscription has been created and is active).
  */
 export const ACTIVE_CODE = 3001;
-/**
- * Status code for Paused (when the incoming results for a request have been paused).
- */
-export const PAUSED_CODE = 1002;
 
 /**
  * Error status sent when a request has finished streaming data.
  */
 export const RESPONSE_COMPLETED = 'RESPONSE_COMPLETED';
 
-export const CLOSE: WsCommand = 'close';
-export const DEVICES_DATASET_ID: DatasetCommand = 'DEVICES_DATASET_ID';
-export const GET: GetCommands = 'get';
-export const GET_DATASETS: GetCommands = 'getDatasets';
-export const PAUSE: WsCommand = 'pause';
-export const PUBLISH: WsCommand = 'publish';
-export const RESUME: WsCommand = 'resume';
-export const SUBSCRIBE: StreamCommands = 'subscribe';
-export const SEARCH: GetCommands = 'alpha/search';
-export const SEARCH_SUBSCRIBE: StreamCommands = 'alpha/searchSubscribe';
-export const SERVICE_REQUEST: StreamCommands = 'serviceRequest';
+export const GET_REQUEST_COMPLETED = 'GetRequest';
 
-export const APP_DATASET_TYPE: DatasetTypes = 'app';
-export const DEVICE_DATASET_TYPE: DatasetTypes = 'device';
+export const CLOSE = 'close';
+export const DEVICES_DATASET_ID = 'DEVICES_DATASET_ID';
+export const GET = 'get';
+export const GET_DATASETS = 'getDatasets';
+export const GET_AND_SUBSCRIBE = 'getAndSubscribe';
+export const GET_REGIONS_AND_CLUSTERS = 'getRegionsAndClusters';
+export const PUBLISH = 'publish';
+export const SUBSCRIBE = 'subscribe';
+export const SEARCH = 'alpha/search';
+export const SEARCH_SUBSCRIBE = 'alpha/searchSubscribe';
+export const SERVICE_REQUEST = 'serviceRequest';
 
-export const SEARCH_TYPE_ANY: SearchType = 'ANY';
-export const SEARCH_TYPE_IP: SearchType = 'IP';
-export const SEARCH_TYPE_MAC: SearchType = 'MAC';
-export const ALL_SEARCH_TYPES: Set<string> = new Set([
+export const APP_DATASET_TYPE = 'app';
+export const CONFIG_DATASET_TYPE = 'config';
+export const DEVICE_DATASET_TYPE = 'device';
+export const ALL_DATASET_TYPES: string[] = [
+  APP_DATASET_TYPE,
+  CONFIG_DATASET_TYPE,
+  DEVICE_DATASET_TYPE,
+];
+
+export const SEARCH_TYPE_ANY = 'ANY';
+export const SEARCH_TYPE_IP = 'IP';
+export const SEARCH_TYPE_MAC = 'MAC';
+export const ALL_SEARCH_TYPES = new Set<SearchType>([
   SEARCH_TYPE_ANY,
-  SEARCH_TYPE_MAC,
   SEARCH_TYPE_IP,
+  SEARCH_TYPE_MAC,
 ]);
 
 export const CONNECTED = 'connected';
 export const DISCONNECTED = 'disconnected';
 export const ID = 'cloudvision-connector';
+
+export const DEFAULT_CONTEXT: RequestContext = {
+  command: 'NO_COMMAND',
+  token: 'NO_TOKEN',
+  encodedParams: 'NO_PARAMS',
+};

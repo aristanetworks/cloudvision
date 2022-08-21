@@ -16,22 +16,22 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "@arista/prettier-config": "1.1.3",
-    "@msgpack/msgpack": "^1.11.0",
-    "benchmark": "^2.1.4",
-    "lodash": "^4.17.15",
-    "msgpack-js": "^0.3.0",
-    "msgpack-js-v5": "^0.3.0-v5",
-    "msgpack-lite": "^0.1.26",
-    "msgpack-unpack": "^2.1.1",
-    "msgpack5": "^4.2.1",
-    "notepack.io": "^2.2.0",
-    "ts-node": "^8.6.2",
-    "tslib": "^1.10.0",
-    "typescript": "^3.7.5"
+    "@arista/prettier-config": "1.1.4",
+    "@msgpack/msgpack": "2.7.2",
+    "benchmark": "2.1.4",
+    "lodash": "4.17.21",
+    "msgpack-js": "0.3.0",
+    "msgpack-js-v5": "0.3.0-v5",
+    "msgpack-lite": "0.1.26",
+    "msgpack-unpack": "2.1.1",
+    "msgpack5": "6.0.2",
+    "notepack.io": "3.0.1",
+    "ts-node": "10.9.1",
+    "tslib": "2.4.0",
+    "typescript": "4.7.4"
   },
   "devDependencies": {
-    "@types/benchmark": "^1.0.31",
-    "@types/lodash": "^4.14.149"
+    "@types/benchmark": "2.1.1",
+    "@types/lodash": "4.14.184"
   }
 }

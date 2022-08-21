@@ -1,0 +1,22 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "target": "ES6",
+    "paths": {
+      "@generated/*": ["./generated/*"],
+      "@types": ["./types"]
+    }
+  },
+  "exclude": ["generated/**"],
+  "typedocOptions": {
+    "cleanOutputDir": true,
+    "entryPoints": ["src/index.ts"],
+    "exclude": "test/**",
+    "excludeExternals": true,
+    "excludePrivate": true,
+    "hideGenerator": true,
+    "out": "docs",
+    "readme": "./README.md"
+  }
+}

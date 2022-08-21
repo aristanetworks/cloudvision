@@ -1,5 +1,3 @@
-/* eslint-disable no-console */
-
 // Copyright (c) 2018, Arista Networks, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software
@@ -17,68 +15,65 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import { ConnectionCallback, NotifCallback, SubscriptionIdentifier, EventCallback } from '../types';
+import { v4 as uuidv4 } from 'uuid';
+
 import {
+  CloseParams,
   CloudVisionBatchedResult,
   CloudVisionMessage,
-  CloudVisionResult,
-  CloudVisionServiceResult,
-  CloudVisionStatus,
-} from '../types/notifications';
-import {
-  WsCommand,
-  GetCommands,
-  StreamCommands,
+  CloudVisionMetaData,
   CloudVisionParams,
-  PauseParams,
-  ResumeParams,
-  CloseParams,
-} from '../types/params';
-import { CloudVisionPublishRequest, ServiceRequest } from '../types/query';
+  CloudVisionPublishRequest,
+  CloudVisionResult,
+  CloudVisionStatus,
+  ConnectionCallback,
+  EventCallback,
+  GetCommand,
+  NotifCallback,
+  RequestContext,
+  ServiceRequest,
+  StreamCommand,
+  SubscriptionIdentifier,
+  WsCommand,
+} from '../types';
 
+import Parser from './Parser';
 import {
   ACTIVE_CODE,
   CLOSE,
   CONNECTED,
   DISCONNECTED,
+  EOF,
   EOF_CODE,
+  ERROR,
+  GET_REQUEST_COMPLETED,
   ID,
-  PAUSE,
-  PAUSED_CODE,
-  RESUME,
   PUBLISH,
-  SERVICE_REQUEST,
   SEARCH,
+  SERVICE_REQUEST,
 } from './constants';
 import Emitter from './emitter';
-import Parser from './parser';
-import { createCloseParams, makeToken, validateResponse } from './utils';
-
-type StreamArgs = [string, WsCommand, CloudVisionParams | ServiceRequest];
+import Instrumentation, { InstrumentationConfig } from './instrumentation';
+import { log } from './logger';
+import { createCloseParams, toBinaryKey, validateResponse } from './utils';
 
 /**
  * Options passed to the constructor, that configure some global options
- *
- * `pauseStreams`: Negotiates the enabling of pause/resume with the server.
- *    Pause/resume is a way to add backpressure to the server, so that it stops
- *    sending notifications when the client cannot keep up.
  */
 interface ConnectorOptions {
-  pauseStreams: boolean;
   batchResults: boolean;
   debugMode: boolean;
+  instrumentationConfig?: InstrumentationConfig;
 }
 
 /**
  * Wraps a given WebSocket with CloudVision API streaming and data querying
  * methods.
  */
-class WRPC {
-  public static CONNECTED: string;
+export default class Wrpc {
+  public static CONNECTED: typeof CONNECTED = CONNECTED;
 
-  public static DISCONNECTED: string;
-
-  private closingStreams: Map<string, string>;
+  public static DISCONNECTED: typeof DISCONNECTED = DISCONNECTED;
 
   private connectionEvents: Emitter;
 
@@ -90,11 +85,7 @@ class WRPC {
 
   private Parser: typeof Parser;
 
-  private waitingStreams: Map<string, StreamArgs[]>;
-
-  private activeStreams: Set<string>;
-
-  private activeRequests: Set<string>;
+  private instrumentation: Instrumentation;
 
   private ws!: WebSocket;
 
@@ -102,23 +93,19 @@ class WRPC {
 
   public constructor(
     options: ConnectorOptions = {
-      pauseStreams: false,
       batchResults: true,
       debugMode: false,
     },
-    websocketClass: typeof WebSocket = WebSocket,
-    parser: typeof Parser = Parser,
+    websocketClass = WebSocket,
+    parser = Parser,
   ) {
     this.connectorOptions = options;
     this.isRunning = false;
     this.connectionEvents = new Emitter(); // State of the websocket connection
     this.events = new Emitter();
-    this.closingStreams = new Map();
-    this.waitingStreams = new Map();
-    this.activeStreams = new Set();
-    this.activeRequests = new Set();
     this.WebSocket = websocketClass;
     this.Parser = parser;
+    this.instrumentation = new Instrumentation(options.instrumentationConfig);
   }
 
   public get websocket(): WebSocket {
@@ -131,25 +118,6 @@ class WRPC {
 
   public get eventsEmitter(): Emitter {
     return this.events;
-  }
-
-  public get streams(): Set<string> {
-    return this.activeStreams;
-  }
-
-  public get streamInClosingState(): Map<string, string> {
-    return this.closingStreams;
-  }
-
-  private addWaitingStream(
-    waitingOnToken: string,
-    token: string,
-    command: StreamCommands,
-    params: CloudVisionParams | ServiceRequest,
-  ): void {
-    const streamsWaiting = this.waitingStreams.get(waitingOnToken) || [];
-    streamsWaiting.push([token, command, params]);
-    this.waitingStreams.set(waitingOnToken, streamsWaiting);
   }
 
   /**
@@ -171,27 +139,20 @@ class WRPC {
       callback('Connection is down');
       return null;
     }
-    const token: string = makeToken(command, params);
-    if (!this.activeRequests.has(token)) {
-      // only execute request if not already getting data
-      this.activeRequests.add(token);
-      const callbackWithUnbind = this.makeCallbackWithUnbind(token, callback);
-      this.events.bind(token, callbackWithUnbind);
-      this.sendMessageOrError(token, command, params, callbackWithUnbind);
-    } else {
-      const queuedCallbackWithUnbind = this.makeQueuedCallbackWithUnbind(token, callback);
-      this.events.bind(token, queuedCallbackWithUnbind);
-    }
+    const token: string = uuidv4();
+    const requestContext = { command, encodedParams: toBinaryKey(params), token };
+    const callbackWithUnbind = this.makeCallbackWithUnbind(token, callback);
+    this.events.bind(token, requestContext, callbackWithUnbind);
+    this.sendMessageOrError(token, command, params, requestContext);
 
     return token;
   }
 
   /**
-   * Cleans up all event emitters and active streams.
+   * Cleans up all event emitters.
    * All bound callbacks will be unbound.
    */
   public cleanUpConnections(): void {
-    this.activeStreams.clear();
     this.events.close();
   }
 
@@ -208,7 +169,7 @@ class WRPC {
   private closeWs(event: CloseEvent): void {
     this.isRunning = false;
     this.cleanUpConnections();
-    this.connectionEvents.emit('connection', WRPC.DISCONNECTED, event);
+    this.connectionEvents.emit('connection', Wrpc.DISCONNECTED, event);
   }
 
   private closeCommand(
@@ -216,14 +177,21 @@ class WRPC {
     closeParams: CloseParams,
     callback: NotifCallback,
   ): string {
-    const closeToken: string = makeToken(CLOSE, closeParams);
-    this.setStreamClosingState(streams, closeToken, callback);
+    const closeToken: string = uuidv4();
+    const requestContext: RequestContext = {
+      command: CLOSE,
+      encodedParams: toBinaryKey(streams),
+      token: closeToken,
+    };
+
+    const callbackWithUnbind = this.makeCallbackWithUnbind(closeToken, callback);
+    this.events.bind(closeToken, requestContext, callbackWithUnbind);
+
     try {
-      this.sendMessage(closeToken, CLOSE, closeParams);
+      this.sendMessage(closeToken, CLOSE, requestContext, closeParams);
     } catch (err) {
-      console.error(err);
-      this.removeStreamClosingState(streams, closeToken);
-      callback(err, undefined, undefined, closeToken);
+      log(ERROR, err as string);
+      callback(err as string, undefined, undefined, closeToken);
     }
     return closeToken;
   }
@@ -252,25 +220,25 @@ class WRPC {
 
   /**
    * Subscribes a callback to connection events.
-   * The callback can receive either `WRPC.CONNECTED or `WRPC.DISCONNECTED`.
+   * The callback can receive either `Wrpc.CONNECTED or `Wrpc.DISCONNECTED`.
    */
   public connection(callback: ConnectionCallback): () => void {
-    this.connectionEvents.bind('connection', callback);
+    const connectionCallback = (
+      _requestContext: RequestContext,
+      connEvent: string,
+      wsEvent: Event,
+    ): void => {
+      callback(connEvent, wsEvent);
+    };
+    this.connectionEvents.bind(
+      'connection',
+      { command: 'connection', encodedParams: '', token: '' },
+      connectionCallback,
+    );
 
     return (): void => {
-      this.connectionEvents.unbind('connection', callback);
+      this.connectionEvents.unbind('connection', connectionCallback);
     };
-  }
-
-  /**
-   * Enables any session wide options by negotiating with the server
-   */
-  private enableOptions(callback: NotifCallback): void {
-    if (this.connectorOptions.pauseStreams) {
-      this.pause({ pauseStreams: true }, callback);
-    } else {
-      callback(null);
-    }
   }
 
   /**
@@ -278,7 +246,7 @@ class WRPC {
    * connected. The response is received via the provided callback function.
    */
   public get(
-    command: GetCommands,
+    command: GetCommand,
     params: CloudVisionParams,
     callback: NotifCallback,
   ): string | null {
@@ -287,32 +255,20 @@ class WRPC {
 
   private makeCallbackWithUnbind(token: string, callback: NotifCallback): EventCallback {
     const callbackWithUnbind = (
+      requestContext: RequestContext,
       err: string | null,
       result?: CloudVisionBatchedResult | CloudVisionResult,
       status?: CloudVisionStatus,
     ): void => {
       if (err) {
         // Unbind callback when any error message is received
-        this.activeRequests.delete(token);
         this.events.unbind(token, callbackWithUnbind);
+        this.instrumentation.callInfo(requestContext.command, requestContext, {
+          error: err,
+        });
       }
-      callback(err, result, status, token);
-    };
-
-    return callbackWithUnbind;
-  }
-
-  private makeQueuedCallbackWithUnbind(token: string, callback: NotifCallback): EventCallback {
-    const callbackWithUnbind = (
-      err: string | null,
-      result?: CloudVisionBatchedResult | CloudVisionResult,
-      status?: CloudVisionStatus,
-    ): void => {
-      if (err) {
-        // Unbind callback and invoke callback only when any error message is received
-        this.events.unbind(token, callbackWithUnbind);
-        callback(err, result, status, token);
-      }
+      this.instrumentation.callEnd(requestContext.command, requestContext);
+      callback(err, result, status, token, requestContext);
     };
 
     return callbackWithUnbind;
@@ -327,59 +283,10 @@ class WRPC {
   }
 
   /**
-   * Cleans up the steam closing state set in `setStreamClosingState`, as well
-   * as re-subscribing to any streams (with the same token as the stream that
-   * was just closed) opened up during the closing of the current stream.
-   */
-  private removeStreamClosingState(
-    streams: SubscriptionIdentifier[] | SubscriptionIdentifier,
-    closeToken: string,
-  ): void {
-    if (Array.isArray(streams)) {
-      const streamsLen = streams.length;
-      for (let i = 0; i < streamsLen; i += 1) {
-        const { token } = streams[i];
-        this.closingStreams.delete(token);
-        const streamsArgs = this.waitingStreams.get(closeToken);
-        if (streamsArgs) {
-          const streamsArgsLen = streamsArgs.length;
-          for (let j = 0; j < streamsArgsLen; j += 1) {
-            this.reSubscribeStream(streamsArgs[j], closeToken);
-          }
-        }
-      }
-    } else {
-      this.closingStreams.delete(streams.token);
-      const streamArgs = this.waitingStreams.get(closeToken);
-      if (streamArgs) {
-        this.reSubscribeStream(streamArgs[0], closeToken);
-      }
-    }
-  }
-
-  /**
    * Send a service request command to the CloudVision API
    */
   public requestService(request: ServiceRequest, callback: NotifCallback): string | null {
     return this.callCommand(SERVICE_REQUEST, request, callback);
-  }
-
-  /**
-   * Re initiates a subscribe if there has been a `subscribe` call for the
-   * stream while the stream was closing.
-   */
-  private reSubscribeStream(streamArgs: StreamArgs, closeToken: string): void {
-    this.events.unbindAll(closeToken);
-    this.waitingStreams.delete(closeToken);
-    this.sendMessage(...streamArgs);
-  }
-
-  /**
-   * PRIVATE METHOD
-   * Requests the server to resume one of the currently paused streams.
-   */
-  private resume(params: ResumeParams, callback: NotifCallback): string | null {
-    return this.callCommand(RESUME, params, callback);
   }
 
   /**
@@ -394,9 +301,9 @@ class WRPC {
    * Sets the specified WebSocket on the class and binds `onopen`, `onclose`, and
    * `onmessage` listeners.
    *
-   * - onopen: The `WRPC.CONNECTED` event is emitted, and the WebSocket is set
+   * - onopen: The `Wrpc.CONNECTED` event is emitted, and the WebSocket is set
    * to isRunning equals `true`.
-   * - onclose: The `WRPC.DISCONNECTED` event is emitted, and the WebSocket is
+   * - onclose: The `Wrpc.DISCONNECTED` event is emitted, and the WebSocket is
    * set to isRunning equals `false`.
    * - onmessage: The message is parsed and the event type `msg.token` is
    * emitted. This results in the calling of all callbacks bound to that event
@@ -406,15 +313,8 @@ class WRPC {
     this.ws = ws;
     this.ws.onopen = (event): void => {
       if (!this.isRunning) {
-        // Enable any options if they have been configured
         this.isRunning = true;
-        this.enableOptions((err, _res, status, token): void => {
-          // We're good to go
-          if (status && status.code !== EOF_CODE) {
-            console.error(err, status, token);
-          }
-          this.connectionEvents.emit('connection', WRPC.CONNECTED, event);
-        });
+        this.connectionEvents.emit('connection', Wrpc.CONNECTED, event);
       }
     };
 
@@ -443,12 +343,12 @@ class WRPC {
           );
         }
       } catch (err) {
-        console.error(err);
+        log(ERROR, err as string);
         return;
       }
 
       if (!msg || !msg.token) {
-        console.error('No message body or message token');
+        log(ERROR, 'No message body or message token');
         return;
       }
 
@@ -461,21 +361,13 @@ class WRPC {
 
       validateResponse(msg.result, status, token, this.connectorOptions.batchResults);
 
-      // Automatically resume streams that have been paused by the server
-      if (status && status.code === PAUSED_CODE) {
-        const cb = (
-          err: string | null,
-          _result?: CloudVisionBatchedResult | CloudVisionResult | CloudVisionServiceResult,
-          resumeStatus?: CloudVisionStatus,
-        ): void => {
-          if (err) {
-            console.error(err, resumeStatus);
-          }
-        };
-        this.resume({ token }, cb);
-        return;
-      }
       this.events.emit(token, null, msg.result, status);
+      if (
+        msg.result?.metadata &&
+        (msg.result.metadata as CloudVisionMetaData<string>)[GET_REQUEST_COMPLETED] === EOF
+      ) {
+        this.events.emit(token, null, null, { message: GET_REQUEST_COMPLETED, code: EOF_CODE });
+      }
     };
   }
 
@@ -490,6 +382,7 @@ class WRPC {
   private sendMessage(
     token: string,
     command: WsCommand,
+    requestContext: RequestContext,
     params: CloudVisionParams | CloudVisionPublishRequest | ServiceRequest,
   ): void {
     if (this.connectorOptions.debugMode) {
@@ -507,6 +400,7 @@ class WRPC {
         '*',
       );
     }
+    this.instrumentation.callStart(command, requestContext);
     this.ws.send(
       this.Parser.stringify({
         token,
@@ -520,48 +414,15 @@ class WRPC {
     token: string,
     command: WsCommand,
     params: CloudVisionParams | CloudVisionPublishRequest | ServiceRequest,
-    notifAndUnBindCallback: EventCallback,
+    requestContext: RequestContext,
   ): void {
     try {
-      this.sendMessage(token, command, params);
+      this.sendMessage(token, command, requestContext, params);
     } catch (err) {
-      console.error(err);
-      notifAndUnBindCallback(err, undefined, undefined, token);
+      log(ERROR, err as string);
+      // notifAndUnBindCallback(err, undefined, undefined, token);
+      this.events.emit(token, err, undefined, undefined);
     }
-  }
-
-  /**
-   * Sets all the parameters for one or more streams when they are closed.
-   * When the `close` request has been successfully processed,
-   * `removeStreamClosingState` is called to clean up any closing state.
-   */
-  private setStreamClosingState(
-    streams: SubscriptionIdentifier[] | SubscriptionIdentifier,
-    closeToken: string,
-    callback: NotifCallback,
-  ): void {
-    const closeCallback = (
-      err: string | null,
-      result?: CloudVisionBatchedResult | CloudVisionResult,
-      status?: CloudVisionStatus,
-    ): void => {
-      this.removeStreamClosingState(streams, closeToken);
-      callback(err, result, status, closeToken);
-    };
-
-    if (Array.isArray(streams)) {
-      const streamsLen = streams.length;
-      for (let i = 0; i < streamsLen; i += 1) {
-        const { token } = streams[i];
-        const oldToken = this.closingStreams.get(token);
-        this.waitingStreams.delete(oldToken || '');
-        this.closingStreams.set(token, closeToken);
-      }
-    } else {
-      this.closingStreams.set(streams.token, closeToken);
-    }
-
-    this.events.bind(closeToken, closeCallback);
   }
 
   /**
@@ -573,7 +434,7 @@ class WRPC {
    * at once via `closeStream`.
    */
   public stream(
-    command: StreamCommands,
+    command: StreamCommand,
     params: CloudVisionParams | ServiceRequest,
     callback: NotifCallback,
   ): SubscriptionIdentifier | null {
@@ -581,8 +442,10 @@ class WRPC {
       callback('Connection is down');
       return null;
     }
-    const token = makeToken(command, params);
+    const token = uuidv4();
+    const callerRequestContext = { command, encodedParams: toBinaryKey(params), token };
     const callbackWithUnbind: EventCallback = (
+      requestContext: RequestContext,
       err: string | null,
       result?: CloudVisionBatchedResult | CloudVisionResult,
       status?: CloudVisionStatus,
@@ -591,47 +454,21 @@ class WRPC {
         // Unbind callback when any error message is received.
         // No need to send close to server because it will close them automatically.
         this.events.unbind(token, callbackWithUnbind);
+        this.instrumentation.callInfo(callerRequestContext.command, callerRequestContext, {
+          error: err,
+        });
+        this.instrumentation.callEnd(requestContext.command, requestContext);
       }
       if (status && status.code === ACTIVE_CODE) {
-        this.activeStreams.add(token);
+        this.instrumentation.callInfo(callerRequestContext.command, callerRequestContext, {
+          message: 'stream active',
+        });
       }
-      callback(err, result, status, token);
+      callback(err, result, status, token, requestContext);
     };
-    const numCallbacks = this.events.bind(token, callbackWithUnbind);
-    if (numCallbacks === 1) {
-      // Only execute the request on the first callback.
-      // If there are open request to the same data, just attach the callback
-      const closingStreamToken = this.closingStreams.get(token);
-      if (closingStreamToken) {
-        // The stream is still closing, so wait for it to close before re requesting
-        this.addWaitingStream(closingStreamToken, token, command, params);
-      } else {
-        this.sendMessageOrError(token, command, params, callbackWithUnbind);
-      }
-    } else if (this.activeStreams.has(token)) {
-      // The stream is already open immediately call get
-      callback(null, undefined, { code: ACTIVE_CODE }, token);
-    }
+    this.events.bind(token, callerRequestContext, callbackWithUnbind);
+    this.sendMessageOrError(token, command, params, callerRequestContext);
 
     return { token, callback: callbackWithUnbind };
   }
-
-  /**
-   * Configures pausing of results on the server. When the pause feature is enabled,
-   * the server pauses the results returned to the client every x number of bytes.
-   *
-   * When pausing is enabled, only the new streams created after that will be paused
-   * (i.e. existing streams are not affected). To continue receiving results, a
-   * wrpc client has to send a 'resume' command with the desired stream token to
-   * unpause. Currently, the cloudvision-connector automatically resumes any streams
-   * paused by the server.
-   */
-  private pause(params: PauseParams, callback: NotifCallback): string | null {
-    return this.callCommand(PAUSE, params, callback);
-  }
 }
-
-WRPC.CONNECTED = CONNECTED;
-WRPC.DISCONNECTED = DISCONNECTED;
-
-export default WRPC;

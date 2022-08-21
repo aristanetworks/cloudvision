@@ -1,18 +1,121 @@
 version: 2.1
 orbs:
-  node: circleci/node@1.1.6
+  node: circleci/node@5.0.2
+commands:
+  configure:
+    steps:
+      - run:
+          name: Git config email
+          command: git config --global user.email "arastra.bot@gmail.com"
+      - run:
+          name: Git config name
+          command: git config --global user.name "Arastra"
+      - run:
+          name: Git config tag push
+          command: git config --global push.followTags true
+  protect-branch:
+    parameters:
+      enforce:
+        type: boolean
+        default: true
+    steps:
+      - run: run.py --access-token $GITHUB_TOKEN --branch trunk --owner aristanetworks --repo cloudvision --enforce_admins << parameters.enforce >>
+parameters:
+  deploy_version:
+    type: boolean
+    default: false
+  is_build:
+    type: boolean
+    default: true
+executors:
+  cloudvision-builder:
+    docker:
+      - image: circleci/node:lts
 jobs:
   build-and-test:
     executor:
-      name: node/default
+      name: cloudvision-builder
     steps:
       - checkout
-      - node/with-cache:
-          steps:
-            - run: npm install
-            - run: npm run ci
+      - node/install-packages
+      - run: npm run ci
+  open-branch:
+    docker:
+      - image: rufman/branch-protection-bot:release-v1.0.0
+    steps:
+      - protect-branch:
+          enforce: false
+  protect-branch:
+    docker:
+      - image: rufman/branch-protection-bot:release-v1.0.0
+    steps:
+      - protect-branch:
+          enforce: true
+  publish-docs:
+    executor:
+      name: cloudvision-builder
+    steps:
+      - checkout
+      - configure
+      - add_ssh_keys:
+          fingerprints:
+            - $DEPLOY_KEY_FINGERPRINT
+      - node/install-packages
+      - run: npm run docs:deploy
+  version-packages:
+    executor:
+      name: cloudvision-builder
+    steps:
+      - checkout
+      - configure
+      - node/install-packages
+      - run: npm run bootstrap
+      - run: git checkout package-lock.json
+      - run:
+          name: Version packages and create commit
+          command: npm run lerna-version
+      - run:
+          name: Push version commit with tags to GitHub
+          command: git push origin
+  publish:
+    executor:
+      name: cloudvision-builder
+    steps:
+      - checkout
+      - node/install-packages
+      - run: git checkout package-lock.json
+      - run:
+          name: Publish to NPM
+          command: |
+            npm set //registry.npmjs.org/:_authToken=$NPM_TOKEN
+            npx lerna publish from-git --yes
 workflows:
   version: 2
   build-and-test:
+    when: << pipeline.parameters.is_build >>
     jobs:
       - build-and-test
+      - publish-docs:
+          requires:
+            - build-and-test
+          filters:
+            branches:
+              only: trunk
+  version-and-push:
+    when: << pipeline.parameters.deploy_version >>
+    jobs:
+      - open-branch
+      - version-packages:
+          requires:
+            - open-branch
+      - protect-branch:
+          requires:
+            - version-packages
+  tagged-deploy:
+    jobs:
+      - publish:
+          filters:
+            tags:
+              only: /v[0-9]+(\.[0-9]+)*/
+            branches:
+              ignore: /.*/

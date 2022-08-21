@@ -6,11 +6,11 @@ import { CloudVisionParams, DatasetObject, WsCommand } from './params';
 /**
  * Please refer to the [[CloudVisionNotification]] definition.
  */
-type PublishNotification = CloudVisionNotification<
+export type PublishNotification<K = unknown, V = unknown> = CloudVisionNotification<
   PathElements,
   Timestamp,
-  CloudVisionDatapoint<unknown, unknown>[],
-  unknown[]
+  CloudVisionDatapoint<K, V>[],
+  K[]
 >;
 
 /**
@@ -23,11 +23,16 @@ export interface PublishRequest {
   dataset: DatasetObject;
   notifications: PublishNotification[];
 }
+
 export interface BatchPublishRequest {
   dataset: DatasetObject;
   notifications: {
     [path: string]: PublishNotification[];
   };
+}
+
+export interface PublishCallback {
+  (success: boolean, err?: string): void;
 }
 
 /**
@@ -60,24 +65,24 @@ export interface BatchPublishRequest {
  * ```
  */
 export interface Options {
-  start?: EpochTimestamp;
   end?: EpochTimestamp;
+  start?: EpochTimestamp;
   versions?: number;
 }
 
 export interface CloudVisionPublishRequest {
-  sync: boolean;
   batch: PublishRequest | BatchPublishRequest;
-}
-
-export interface CloudVisionQueryMessage {
-  token: string;
-  command: WsCommand;
-  params: CloudVisionParams | CloudVisionPublishRequest | ServiceRequest;
+  sync: boolean;
 }
 
 export interface ServiceRequest {
-  service: string;
-  method: string;
   body: {};
+  method: string;
+  service: string;
+}
+
+export interface CloudVisionQueryMessage {
+  command: WsCommand;
+  params: CloudVisionParams | CloudVisionPublishRequest | ServiceRequest;
+  token: string;
 }

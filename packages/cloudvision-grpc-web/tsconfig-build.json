@@ -1,0 +1,8 @@
+{
+  "compilerOptions": {
+    "declaration": true,
+    "outDir": "typings"
+  },
+  "extends": "./tsconfig.json",
+  "exclude": ["generated/**", "node_modules", "**/*.spec.ts", "test/**"]
+}

@@ -1,7 +1,7 @@
 {
   "command": {
     "publish": {
-      "allowBranch": "master",
+      "allowBranch": "trunk",
       "ignoreChanges": [
         "**/.eslintrc",
         "**/.gitignore",
@@ -17,5 +17,5 @@
   "packages": [
     "packages/*"
   ],
-  "version": "4.0.1"
+  "version": "5.0.1"
 }
