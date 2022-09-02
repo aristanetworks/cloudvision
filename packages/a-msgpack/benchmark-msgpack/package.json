@@ -17,7 +17,7 @@
   },
   "dependencies": {
     "@arista/prettier-config": "1.1.4",
-    "@msgpack/msgpack": "2.7.2",
+    "@msgpack/msgpack": "2.8.0",
     "benchmark": "2.1.4",
     "lodash": "4.17.21",
     "msgpack-js": "0.3.0",
