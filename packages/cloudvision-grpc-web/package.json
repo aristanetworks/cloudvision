@@ -68,7 +68,7 @@
     "@arista/prettier-config": "1.1.4",
     "@rollup/plugin-alias": "3.1.9",
     "@rollup/plugin-commonjs": "22.0.2",
-    "@rollup/plugin-node-resolve": "13.3.0",
+    "@rollup/plugin-node-resolve": "14.1.0",
     "@rollup/plugin-replace": "4.0.0",
     "@rollup/plugin-typescript": "8.5.0",
     "@types/google-protobuf": "3.15.6",
