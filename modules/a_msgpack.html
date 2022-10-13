@@ -14,9 +14,50 @@
 <li><a href="a_msgpack.html">a-msgpack</a></li></ul>
 <h1>Module a-msgpack</h1></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/aristanetworks/cloudvision/blob/ed0fa402/packages/a-msgpack/src/index.ts#L1">packages/a-msgpack/src/index.ts:1</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/aristanetworks/cloudvision/blob/2aac030e/packages/a-msgpack/src/index.ts#L1">packages/a-msgpack/src/index.ts:1</a></li></ul></aside>
 <section class="tsd-panel-group">
-<section class="tsd-panel tsd-typography"></section></section>
+<section class="tsd-panel tsd-typography">
+<a href="#a-msgpack" id="a-msgpack" style="color: inherit; text-decoration: none;">
+  <h1>a-msgpack</h1>
+</a>
+<p>MessagePack, but for Arista. This is based on the official msgpack library for JS
+(@msgpack/msgpack), but implements our specific NEAT protocol.</p>
+
+<a href="#installation" id="installation" style="color: inherit; text-decoration: none;">
+  <h2>Installation</h2>
+</a>
+<pre><code class="language-bash"><span class="hl-0">npm install a-msgpack</span>
+</code></pre>
+<p>or</p>
+<pre><code class="language-bash"><span class="hl-0">npm install a-msgpack</span>
+</code></pre>
+
+<a href="#usage" id="usage" style="color: inherit; text-decoration: none;">
+  <h2>Usage</h2>
+</a>
+<pre><code class="language-js"><span class="hl-1">import</span><span class="hl-0"> { </span><span class="hl-2">encode</span><span class="hl-0">, </span><span class="hl-2">decode</span><span class="hl-0">, </span><span class="hl-2">Codec</span><span class="hl-0"> } </span><span class="hl-1">from</span><span class="hl-0"> </span><span class="hl-3">&#39;a-msgpack&#39;</span><span class="hl-0">;</span><br/><br/><span class="hl-4">const</span><span class="hl-0"> </span><span class="hl-5">uint8array</span><span class="hl-0"> = </span><span class="hl-2">msgpack</span><span class="hl-0">.</span><span class="hl-6">encode</span><span class="hl-0">({ </span><span class="hl-2">Dodgers:</span><span class="hl-0"> </span><span class="hl-3">&#39;#1&#39;</span><span class="hl-0">, </span><span class="hl-2">Astros:</span><span class="hl-0"> </span><span class="hl-3">&#39;Cheaters&#39;</span><span class="hl-0"> }, { </span><span class="hl-2">extensionCodec:</span><span class="hl-0"> </span><span class="hl-2">Codec</span><span class="hl-0"> });</span><br/><span class="hl-4">const</span><span class="hl-0"> </span><span class="hl-5">object</span><span class="hl-0"> = </span><span class="hl-2">msgpack</span><span class="hl-0">.</span><span class="hl-6">decode</span><span class="hl-0">(</span><span class="hl-2">uint8array</span><span class="hl-0">);</span>
+</code></pre>
+
+<a href="#browser-support" id="browser-support" style="color: inherit; text-decoration: none;">
+  <h2>Browser Support</h2>
+</a>
+<p>In the browser, <code>a-msgpack</code> requires the
+<a href="https://developer.mozilla.org/en-US/docs/Web/API/Encoding_API">Encoding API</a> to work a peak
+performance. If the Encoding API is unavailable, there is a fallback JS implementation.</p>
+
+<a href="#benchmarks" id="benchmarks" style="color: inherit; text-decoration: none;">
+  <h2>Benchmarks</h2>
+</a>
+<p>The lastest code benchmarks and profiling is stored in <code>last-benchmark-results.txt</code>. This also
+compares this implementation to other msgpack libraries. Note, that the decoding results should be
+comparable to @msgpack/msgpack, but encoding will be slower because NEAT requires that map keys be
+sorted by binary value.</p>
+
+<a href="#license" id="license" style="color: inherit; text-decoration: none;">
+  <h2>License</h2>
+</a>
+<p><a href="https://github.com/JoshuaWise/tiny-msgpack/blob/trunk/LICENSE">MIT</a></p>
+</section></section>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <h3 class="tsd-index-heading uppercase">Index</h3>

@@ -14,9 +14,270 @@
 <li><a href="cloudvision_connector.html">cloudvision-connector</a></li></ul>
 <h1>Module cloudvision-connector</h1></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/aristanetworks/cloudvision/blob/ed0fa402/packages/cloudvision-connector/src/index.ts#L18">packages/cloudvision-connector/src/index.ts:18</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/aristanetworks/cloudvision/blob/2aac030e/packages/cloudvision-connector/src/index.ts#L18">packages/cloudvision-connector/src/index.ts:18</a></li></ul></aside>
 <section class="tsd-panel-group">
-<section class="tsd-panel tsd-typography"></section></section>
+<section class="tsd-panel tsd-typography">
+<a href="#cloudvision-connector" id="cloudvision-connector" style="color: inherit; text-decoration: none;">
+  <h1>CloudVision Connector</h1>
+</a>
+<p>The CloudVision Connector is a simple JavaScript module using WebSockets that enables you to
+transmit data over an open connection with the CloudVision API server. The CloudVision Connector
+supports subscribing to data, which lets clients receive streaming updates as data changes in
+real-time.</p>
+
+<a href="#installation" id="installation" style="color: inherit; text-decoration: none;">
+  <h2>Installation</h2>
+</a>
+<p>with yarn:</p>
+<pre><code class="language-bash"><span class="hl-0">yarn add cloudvision-connector</span>
+</code></pre>
+<p>or npm:</p>
+<pre><code class="language-bash"><span class="hl-0">npm install --save cloudvision-connector</span>
+</code></pre>
+
+<a href="#usage" id="usage" style="color: inherit; text-decoration: none;">
+  <h2>Usage</h2>
+</a>
+
+<a href="#getting-started" id="getting-started" style="color: inherit; text-decoration: none;">
+  <h3>Getting Started</h3>
+</a>
+<p>Quick introduction into to how to connect to the API server</p>
+
+<a href="#getting-datasets" id="getting-datasets" style="color: inherit; text-decoration: none;">
+  <h4>Getting Datasets</h4>
+</a>
+<pre><code class="language-js"><span class="hl-4">const</span><span class="hl-0"> </span><span class="hl-6">parseDatasets</span><span class="hl-0"> = (</span><span class="hl-2">err</span><span class="hl-0">, </span><span class="hl-2">datasets</span><span class="hl-0">) </span><span class="hl-4">=&gt;</span><span class="hl-0"> {...};</span><br/><span class="hl-7">// Add a callback</span><br/><span class="hl-2">connector</span><span class="hl-0">.</span><span class="hl-6">getDatasets</span><span class="hl-0">(</span><span class="hl-2">parseDatasets</span><span class="hl-0">);</span><br/><br/><span class="hl-7">// datasets returned in `parseDatasets` is a list of dataset ids</span><br/><span class="hl-2">datasets</span><span class="hl-0"> = [</span><br/><span class="hl-0">  </span><span class="hl-3">&#39;JPE15076475&#39;</span><span class="hl-0">,</span><br/><span class="hl-0">  </span><span class="hl-3">&#39;JPE12111270&#39;</span><span class="hl-0">,</span><br/><span class="hl-0">  </span><span class="hl-3">&#39;app-turbine&#39;</span><span class="hl-0">,</span><br/><span class="hl-0">  </span><span class="hl-3">&#39;HSH14525062&#39;</span><span class="hl-0">,</span><br/><span class="hl-0">  </span><span class="hl-3">&#39;CloudTracer&#39;</span><span class="hl-0">,</span><br/><span class="hl-0">];</span>
+</code></pre>
+<p>You can also get datasets use <code>getWithOptions</code> (see details below). This is done by calling
+<code>getWithOptions</code> with <code>Connector.DEVICES_DATASET_ID</code> as the first parameter.</p>
+<pre><code class="language-js"><span class="hl-4">const</span><span class="hl-0"> </span><span class="hl-6">parseDevices</span><span class="hl-0"> = (</span><span class="hl-2">err</span><span class="hl-0">, </span><span class="hl-2">datasets</span><span class="hl-0">) </span><span class="hl-4">=&gt;</span><span class="hl-0"> {...};</span><br/><span class="hl-4">const</span><span class="hl-0"> </span><span class="hl-5">query</span><span class="hl-0"> = </span><span class="hl-2">Connector</span><span class="hl-0">.</span><span class="hl-5">DEVICES_DATASET_ID</span><span class="hl-0">;</span><br/><br/><span class="hl-2">connector</span><span class="hl-0">.</span><span class="hl-6">getWithOptions</span><span class="hl-0">(</span><span class="hl-2">query</span><span class="hl-0">, </span><span class="hl-2">handleResponse</span><span class="hl-0">);</span>
+</code></pre>
+
+<a href="#getting-data" id="getting-data" style="color: inherit; text-decoration: none;">
+  <h4>Getting Data</h4>
+</a>
+<p>The CloudVision Connector allows you to query notifications for multiple paths on a dataset, as well
+as multiple paths within multiple datasets.</p>
+
+<a href="#getwithoptionsquery-callback-options" id="getwithoptionsquery-callback-options" style="color: inherit; text-decoration: none;">
+  <h5>getWithOptions(query, callback, options)</h5>
+</a>
+<p>Returns all notifications that match the given query and options.</p>
+<ul>
+<li><code>query</code>: an object in the shape of a query (see &quot;Query&quot;)</li>
+<li><code>callback</code>: a function that is called when notifications are received (see &quot;Notifications Callback&quot;)</li>
+<li><code>options</code>: an object in the shape of query options (see &quot;Options&quot;)</li>
+<li><strong>Returns</strong>: the token (unique identifier) of the request.</li>
+</ul>
+
+<a href="#example" id="example" style="color: inherit; text-decoration: none;">
+  <h5>Example</h5>
+</a>
+<pre><code class="language-js"><span class="hl-4">const</span><span class="hl-0"> </span><span class="hl-5">query</span><span class="hl-0"> = [{</span><br/><span class="hl-0">  </span><span class="hl-2">dataset:</span><span class="hl-0"> {</span><br/><span class="hl-0">    </span><span class="hl-2">type:</span><span class="hl-0"> </span><span class="hl-3">&#39;app&#39;</span><span class="hl-0">,</span><br/><span class="hl-0">    </span><span class="hl-2">name:</span><span class="hl-0"> </span><span class="hl-3">&#39;analytics&#39;</span><br/><span class="hl-0">  },</span><br/><span class="hl-0">  </span><span class="hl-2">paths:</span><span class="hl-0"> [{</span><br/><span class="hl-0">    </span><span class="hl-2">path_elements:</span><span class="hl-0"> [</span><span class="hl-3">&#39;events&#39;</span><span class="hl-0">,</span><span class="hl-3">&#39;activeEvents&#39;</span><span class="hl-0">],</span><br/><span class="hl-0">  }],</span><br/><span class="hl-0">}, {</span><br/><span class="hl-0">  </span><span class="hl-2">dataset:</span><span class="hl-0"> {</span><br/><span class="hl-0">    </span><span class="hl-2">type:</span><span class="hl-0"> </span><span class="hl-3">&#39;app&#39;</span><span class="hl-0">,</span><br/><span class="hl-0">    </span><span class="hl-2">name:</span><span class="hl-0"> </span><span class="hl-3">&#39;analytics&#39;</span><br/><span class="hl-0">  },</span><br/><span class="hl-0">  </span><span class="hl-2">paths:</span><span class="hl-0"> [{</span><br/><span class="hl-0">    </span><span class="hl-2">path_elements:</span><span class="hl-0"> [</span><span class="hl-3">&#39;tags&#39;</span><span class="hl-0">,</span><span class="hl-3">&#39;stats&#39;</span><span class="hl-0">],</span><br/><span class="hl-0">  }, {</span><br/><span class="hl-0">    </span><span class="hl-2">path_elements:</span><span class="hl-0"> [</span><span class="hl-3">&#39;BugAlerts&#39;</span><span class="hl-0">,</span><span class="hl-3">&#39;bugs&#39;</span><span class="hl-0">],</span><br/><span class="hl-0">  }],</span><br/><span class="hl-0">}];</span><br/><span class="hl-4">const</span><span class="hl-0"> </span><span class="hl-6">handleResponse</span><span class="hl-0"> = (</span><span class="hl-2">err</span><span class="hl-0">, </span><span class="hl-2">res</span><span class="hl-0">, </span><span class="hl-2">status</span><span class="hl-0">) </span><span class="hl-4">=&gt;</span><span class="hl-0"> {...};</span><br/><span class="hl-4">const</span><span class="hl-0"> </span><span class="hl-5">options</span><span class="hl-0"> = {</span><br/><span class="hl-0">  </span><span class="hl-2">start:</span><span class="hl-0"> </span><span class="hl-8">1504113817725</span><span class="hl-0">,</span><br/><span class="hl-0">  </span><span class="hl-2">end:</span><span class="hl-0"> </span><span class="hl-8">1504113917725</span><span class="hl-0">,</span><br/><span class="hl-0">};</span><br/><br/><span class="hl-7">// open the stream</span><br/><span class="hl-4">const</span><span class="hl-0"> </span><span class="hl-5">token</span><span class="hl-0"> = </span><span class="hl-2">connector</span><span class="hl-0">.</span><span class="hl-6">getWithOptions</span><span class="hl-0">(</span><span class="hl-2">query</span><span class="hl-0">, </span><span class="hl-2">handleResponse</span><span class="hl-0">), </span><span class="hl-5">options</span><span class="hl-0">;</span>
+</code></pre>
+
+<a href="#subscribing-to-data" id="subscribing-to-data" style="color: inherit; text-decoration: none;">
+  <h4>Subscribing to Data</h4>
+</a>
+<p>In addition to getting data, you can use the same query to subscribe to any updates to the data as
+it changes.</p>
+
+<a href="#getandsubscribequery-callback-options" id="getandsubscribequery-callback-options" style="color: inherit; text-decoration: none;">
+  <h5>getAndSubscribe(query, callback, options)</h5>
+</a>
+<p>Returns all notifications that match the given query and options, in addition to subscribing to
+updates. This will return notifications as new updates to the data requested come in.</p>
+<ul>
+<li><code>query</code>: an object in the shape of a query (see &quot;Query&quot;)</li>
+<li><code>callback</code>: a function that is called when notifications are received (see &quot;Notifications Callback&quot;)</li>
+<li><code>options</code>: an object in the shape of query options (see &quot;Options&quot;)</li>
+<li><strong>Returns</strong>: a the subscription identifier. This is an object constaining the token and the callback</li>
+</ul>
+
+<a href="#example-1" id="example-1" style="color: inherit; text-decoration: none;">
+  <h5>Example</h5>
+</a>
+<pre><code class="language-js"><span class="hl-4">const</span><span class="hl-0"> </span><span class="hl-5">query</span><span class="hl-0"> = [{</span><br/><span class="hl-0">  </span><span class="hl-2">dataset:</span><span class="hl-0"> {</span><br/><span class="hl-0">    </span><span class="hl-2">type:</span><span class="hl-0"> </span><span class="hl-3">&#39;app&#39;</span><span class="hl-0">,</span><br/><span class="hl-0">    </span><span class="hl-2">name:</span><span class="hl-0"> </span><span class="hl-3">&#39;analytics&#39;</span><br/><span class="hl-0">  },</span><br/><span class="hl-0">  </span><span class="hl-2">paths:</span><span class="hl-0"> [{</span><br/><span class="hl-0">    </span><span class="hl-2">path_elements:</span><span class="hl-0"> [</span><span class="hl-3">&#39;events&#39;</span><span class="hl-0">,</span><span class="hl-3">&#39;activeEvents&#39;</span><span class="hl-0">],</span><br/><span class="hl-0">  }],</span><br/><span class="hl-0">}, {</span><br/><span class="hl-0">  </span><span class="hl-2">dataset:</span><span class="hl-0"> {</span><br/><span class="hl-0">    </span><span class="hl-2">type:</span><span class="hl-0"> </span><span class="hl-3">&#39;app&#39;</span><span class="hl-0">,</span><br/><span class="hl-0">    </span><span class="hl-2">name:</span><span class="hl-0"> </span><span class="hl-3">&#39;analytics&#39;</span><br/><span class="hl-0">  },</span><br/><span class="hl-0">  </span><span class="hl-2">paths:</span><span class="hl-0"> [{</span><br/><span class="hl-0">    </span><span class="hl-2">path_elements:</span><span class="hl-0"> [</span><span class="hl-3">&#39;tags&#39;</span><span class="hl-0">,</span><span class="hl-3">&#39;stats&#39;</span><span class="hl-0">],</span><br/><span class="hl-0">  }, {</span><br/><span class="hl-0">    </span><span class="hl-2">path_elements:</span><span class="hl-0"> [</span><span class="hl-3">&#39;BugAlerts&#39;</span><span class="hl-0">,</span><span class="hl-3">&#39;bugs&#39;</span><span class="hl-0">],</span><br/><span class="hl-0">  }],</span><br/><span class="hl-0">}];</span><br/><span class="hl-4">const</span><span class="hl-0"> </span><span class="hl-6">handleResponse</span><span class="hl-0"> = (</span><span class="hl-2">err</span><span class="hl-0">, </span><span class="hl-2">res</span><span class="hl-0">, </span><span class="hl-2">status</span><span class="hl-0">) </span><span class="hl-4">=&gt;</span><span class="hl-0"> {...};</span><br/><br/><span class="hl-7">// open the stream</span><br/><span class="hl-4">const</span><span class="hl-0"> </span><span class="hl-5">subscribptionsIdentifier</span><span class="hl-0"> = </span><span class="hl-2">connector</span><span class="hl-0">.</span><span class="hl-6">subscribe</span><span class="hl-0">(</span><span class="hl-2">query</span><span class="hl-0">, </span><span class="hl-2">handleResponse</span><span class="hl-0">);</span>
+</code></pre>
+
+<a href="#notifications-callback" id="notifications-callback" style="color: inherit; text-decoration: none;">
+  <h4>Notifications Callback</h4>
+</a>
+<p>This is the callback, which is called when notifications are received.</p>
+<pre><code class="language-js"><span class="hl-4">const</span><span class="hl-0"> </span><span class="hl-6">handler</span><span class="hl-0"> = (</span><span class="hl-2">err</span><span class="hl-0">, </span><span class="hl-2">res</span><span class="hl-0">, </span><span class="hl-2">status</span><span class="hl-0">, </span><span class="hl-2">token</span><span class="hl-0">) </span><span class="hl-4">=&gt;</span><span class="hl-0"> {...}</span>
+</code></pre>
+<p>Arguments:</p>
+<ul>
+<li><p><code>err</code>: either a string or <code>null</code>. If <code>null</code> then there is no error. If it is a string, then an error occurred.</p>
+</li>
+<li><p><code>res</code>: an object with the properties <code>dataset</code> and <code>notifications</code>. e.g.</p>
+<pre><code class="language-js"><span class="hl-2">res</span><span class="hl-0"> = {</span><br/><span class="hl-0">  </span><span class="hl-2">dataset:</span><span class="hl-0"> </span><span class="hl-3">&quot;someDevice&quot;</span><span class="hl-0">,</span><br/><span class="hl-0">  </span><span class="hl-2">notifications:</span><span class="hl-0"> {</span><br/><span class="hl-0">    </span><span class="hl-3">&quot;[&#39;path&#39;, &#39;to&#39;, &#39;some&#39;, &#39;data&#39;]&quot;</span><span class="hl-2">:</span><span class="hl-0">    [...],</span><br/><span class="hl-0">    </span><span class="hl-3">&quot;[&#39;path&#39;, &#39;to&#39;, &#39;another&#39;, &#39;data&#39;]&quot;</span><span class="hl-2">:</span><span class="hl-0"> [...],</span><br/><span class="hl-0">    ...</span><br/><span class="hl-0">  }</span><br/><span class="hl-0">}</span>
+</code></pre>
+</li>
+</ul>
+<p>Each <code>[...]</code> above is an array of notifications which each have a <code>timestamp</code>, <code>path</code>, collection of
+<code>updates</code>, and <code>deletes</code> (see &quot;Data Model&quot; section for more information).</p>
+<ul>
+<li>status: An object with the status code and a message. See the &quot;Notification Statuses&quot; section for more details.</li>
+<li><code>token</code>: The token id that was created for the request.</li>
+</ul>
+
+<a href="#notification-statuses" id="notification-statuses" style="color: inherit; text-decoration: none;">
+  <h4>Notification Statuses</h4>
+</a>
+<p>A status object has an optional <code>message</code> key containing a string describing the status, in addition
+to a <code>code</code> key with the code number.</p>
+<p>Possible status codes: |Code|JS Constant|Description| |1001|EOF_CODE|Signals that this is the last
+notification for the request| |3001|ACTIVE_CODE|Signals that the stream (subscription), has been
+established|</p>
+
+<a href="#options" id="options" style="color: inherit; text-decoration: none;">
+  <h4>Options</h4>
+</a>
+<p>There are a number of options you can supply to the query which limit it&#39;s scope. Options are passed
+as an object, where the <strong>key</strong> is the name of the option and the <strong>value</strong> is the value for that
+option.</p>
+<p>The options are <code>start</code>, <code>end</code> and <code>versions</code>. There are different combinations of options that are
+valid, each of them is listed below.</p>
+<p>Range query (returns one or more data points):</p>
+<ul>
+<li><code>start</code>: the epoch timestamp in (milliseconds) of the first data point.</li>
+<li><code>end</code>: the epoch timestamp in (milliseconds) of the last data point.</li>
+</ul>
+<p>Point in time query (returns exactly one data point):</p>
+<ul>
+<li><code>end</code>: the epoch timestamp in (milliseconds) of the data point.</li>
+</ul>
+<p>Limit query (returns <code>versions</code> + 1 number of data points):</p>
+<ul>
+<li><code>end</code>: the epoch timestamp in (milliseconds) of the last data point.</li>
+<li><code>versions</code>: the number of versions of data (in the past) to request in addition to the data point for <code>end</code>.</li>
+</ul>
+
+<a href="#query" id="query" style="color: inherit; text-decoration: none;">
+  <h4>Query</h4>
+</a>
+<p>A query is an array of objects with a <strong>dataset</strong> key and <strong>paths</strong> key.</p>
+<p>The value of each <strong>dataset</strong> is an object with a <strong>type</strong> (the type of the dataset, which can be
+<strong>device</strong> or <strong>app</strong>) and <strong>name</strong> (the identifier for the dataset e.g. &#39;JPE13262133&#39;) key.</p>
+<p>The value of the <strong>paths</strong> key is an array of objects with a <strong>path_elements</strong> (an array of the
+component parts of a path) key and an optional <strong>keys</strong> key. The value of <strong>keys</strong> is an object that
+defines the shape of how you want the data to be returned. Think of it like a map that points to
+certain fields in CloudVision api.</p>
+<pre><code class="language-js"><span class="hl-2">query</span><span class="hl-0"> = [{</span><br/><span class="hl-0">  </span><span class="hl-2">dataset:</span><span class="hl-0"> {</span><br/><span class="hl-0">    </span><span class="hl-2">type:</span><span class="hl-0"> </span><span class="hl-9">&lt;</span><span class="hl-10">dataset</span><span class="hl-0"> </span><span class="hl-11">type</span><span class="hl-9">&gt;</span><span class="hl-0">,</span><br/><span class="hl-0">    name: </span><span class="hl-9">&lt;</span><span class="hl-10">dataset</span><span class="hl-9">&gt;</span><span class="hl-0">,</span><br/><span class="hl-0">  },</span><br/><span class="hl-0">  paths: [</span><span class="hl-4">{</span><br/><span class="hl-12">    </span><span class="hl-2">path_elements</span><span class="hl-12">: </span><span class="hl-9">&lt;</span><span class="hl-10">path</span><span class="hl-12"> </span><span class="hl-13">1&gt;,</span><br/><span class="hl-12">  </span><span class="hl-13">},</span><span class="hl-12"> </span><span class="hl-4">{</span><br/><span class="hl-12">    </span><span class="hl-2">path_elements</span><span class="hl-12">: </span><span class="hl-9">&lt;</span><span class="hl-10">path</span><span class="hl-12"> </span><span class="hl-13">2&gt;,</span><br/><span class="hl-12">    </span><span class="hl-13">keys:</span><span class="hl-12"> </span><span class="hl-4">{</span><br/><span class="hl-12">      [</span><span class="hl-2">any_custom_key</span><span class="hl-12">]: {</span><br/><span class="hl-12">        </span><span class="hl-2">key:</span><span class="hl-12"> </span><span class="hl-9">&lt;</span><span class="hl-10">key</span><span class="hl-12"> </span><span class="hl-13">1&gt;,</span><br/><span class="hl-12">      </span><span class="hl-13">}</span><br/><span class="hl-12">    </span><span class="hl-13">}</span><br/><span class="hl-12">  </span><span class="hl-13">}],</span><br/><span class="hl-13">}];</span>
+</code></pre>
+
+<a href="#example-2" id="example-2" style="color: inherit; text-decoration: none;">
+  <h5>Example</h5>
+</a>
+<pre><code class="language-js"><span class="hl-4">const</span><span class="hl-0"> </span><span class="hl-6">handleResponse</span><span class="hl-0"> = (</span><span class="hl-2">err</span><span class="hl-0">, </span><span class="hl-2">res</span><span class="hl-0">) </span><span class="hl-4">=&gt;</span><span class="hl-0"> {...};</span><br/><span class="hl-4">const</span><span class="hl-0"> </span><span class="hl-5">query</span><span class="hl-0"> = [{</span><br/><span class="hl-0">  </span><span class="hl-2">dataset:</span><span class="hl-0"> {</span><br/><span class="hl-0">    </span><span class="hl-2">type:</span><span class="hl-0"> </span><span class="hl-3">&#39;app&#39;</span><span class="hl-0">.</span><br/><span class="hl-0">    </span><span class="hl-2">name</span><span class="hl-0">: </span><span class="hl-3">&#39;analytics&#39;</span><span class="hl-0">,</span><br/><span class="hl-0">  },</span><br/><span class="hl-0">  </span><span class="hl-2">paths:</span><span class="hl-0"> [{</span><br/><span class="hl-0">    </span><span class="hl-2">path_elements:</span><span class="hl-0"> [</span><span class="hl-3">&#39;events&#39;</span><span class="hl-0">, </span><span class="hl-3">&#39;activeEvents&#39;</span><span class="hl-0">],</span><br/><span class="hl-0">  }, {</span><br/><span class="hl-0">    </span><span class="hl-2">path_elements:</span><span class="hl-0"> [</span><span class="hl-3">&#39;Logs&#39;</span><span class="hl-0">, </span><span class="hl-3">&#39;var&#39;</span><span class="hl-0">, </span><span class="hl-3">&#39;log&#39;</span><span class="hl-0">, </span><span class="hl-3">&#39;messages&#39;</span><span class="hl-0">],</span><br/><span class="hl-0">    </span><span class="hl-2">keys:</span><span class="hl-0"> {</span><br/><span class="hl-0">      </span><span class="hl-2">logMessage:</span><span class="hl-0"> {</span><br/><span class="hl-0">        </span><span class="hl-2">key:</span><span class="hl-0"> </span><span class="hl-3">&#39;text&#39;</span><span class="hl-0">,</span><br/><span class="hl-0">      }</span><br/><span class="hl-0">     }</span><br/><span class="hl-0">  }],</span><br/><span class="hl-0">}];</span><br/><span class="hl-4">const</span><span class="hl-0"> </span><span class="hl-5">options</span><span class="hl-0"> = {</span><br/><span class="hl-0">  </span><span class="hl-2">start:</span><span class="hl-0"> </span><span class="hl-8">1504113817725</span><span class="hl-0">,</span><br/><span class="hl-0">  </span><span class="hl-2">end:</span><span class="hl-0"> </span><span class="hl-8">1504113917725</span><span class="hl-0">,</span><br/><span class="hl-0">};</span><br/><br/><span class="hl-2">connector</span><span class="hl-0">.</span><span class="hl-6">getWithOptions</span><span class="hl-0">(</span><span class="hl-2">query</span><span class="hl-0">, </span><span class="hl-4">null</span><span class="hl-0">, </span><span class="hl-2">options</span><span class="hl-0">, </span><span class="hl-2">handleResponse</span><span class="hl-0">);</span>
+</code></pre>
+
+<a href="#getting-data-1" id="getting-data-1" style="color: inherit; text-decoration: none;">
+  <h3>Getting Data</h3>
+</a>
+<p>More in depth information on how to query different data.</p>
+
+<a href="#connecting-to-the-server" id="connecting-to-the-server" style="color: inherit; text-decoration: none;">
+  <h4>Connecting to the Server</h4>
+</a>
+<p>You can connect to the CloudVision API server with any kind of WebSocket. This connector uses the
+regular browser WebSocket, but it also allows you to pass in your own custom implementation of a
+standard WebSocket.</p>
+<p>You can also connect via secure WebSockets (<code>wss</code>), which uses the same SSL certificate as <code>https</code>
+does.</p>
+<p>If you are using wss, you will need to get the authentication cookie from the CVP auth service.</p>
+<pre><code class="language-js"><span class="hl-4">const</span><span class="hl-0"> </span><span class="hl-5">authUrl</span><span class="hl-0"> = </span><span class="hl-3">&#39;https://example.cloudvision.api-server/cvpservice/login/authenticate.do&#39;</span><span class="hl-0">;</span><br/><span class="hl-4">const</span><span class="hl-0"> </span><span class="hl-5">userId</span><span class="hl-0"> = </span><span class="hl-3">&#39;user&#39;</span><span class="hl-0">;</span><br/><span class="hl-4">const</span><span class="hl-0"> </span><span class="hl-5">password</span><span class="hl-0"> = </span><span class="hl-3">&#39;my-password&#39;</span><span class="hl-0">;</span><br/><br/><span class="hl-4">function</span><span class="hl-0"> </span><span class="hl-6">loggedIn</span><span class="hl-0">() {</span><br/><span class="hl-0">  </span><span class="hl-2">console</span><span class="hl-0">.</span><span class="hl-6">log</span><span class="hl-0">(</span><span class="hl-3">&#39;You are logged in&#39;</span><span class="hl-0">);</span><br/><span class="hl-0">}</span><br/><br/><span class="hl-4">function</span><span class="hl-0"> </span><span class="hl-6">authFailure</span><span class="hl-0">(</span><span class="hl-2">message</span><span class="hl-0">) {</span><br/><span class="hl-0">  </span><span class="hl-2">console</span><span class="hl-0">.</span><span class="hl-6">log</span><span class="hl-0">(</span><span class="hl-3">&#39;Auth Failure:&#39;</span><span class="hl-0">, </span><span class="hl-2">message</span><span class="hl-0">);</span><br/><span class="hl-0">}</span><br/><br/><span class="hl-2">window</span><br/><span class="hl-0">  .</span><span class="hl-6">fetch</span><span class="hl-0">(</span><span class="hl-2">authUrl</span><span class="hl-0">, {</span><br/><span class="hl-0">    </span><span class="hl-2">method:</span><span class="hl-0"> </span><span class="hl-3">&#39;POST&#39;</span><span class="hl-0">,</span><br/><span class="hl-0">    </span><span class="hl-2">credentials:</span><span class="hl-0"> </span><span class="hl-3">&#39;include&#39;</span><span class="hl-0">,</span><br/><span class="hl-0">    </span><span class="hl-2">body:</span><span class="hl-0"> </span><span class="hl-5">JSON</span><span class="hl-0">.</span><span class="hl-6">stringify</span><span class="hl-0">({ </span><span class="hl-2">userId</span><span class="hl-0">, </span><span class="hl-2">password</span><span class="hl-0"> }),</span><br/><span class="hl-0">  })</span><br/><span class="hl-0">  .</span><span class="hl-6">then</span><span class="hl-0">((</span><span class="hl-2">response</span><span class="hl-0">) </span><span class="hl-4">=&gt;</span><span class="hl-0"> {</span><br/><span class="hl-0">    </span><span class="hl-7">// Handle JSON response</span><br/><span class="hl-0">    </span><span class="hl-1">return</span><span class="hl-0"> </span><span class="hl-2">response</span><span class="hl-0">.</span><span class="hl-6">json</span><span class="hl-0">();</span><br/><span class="hl-0">  })</span><br/><span class="hl-0">  .</span><span class="hl-6">then</span><span class="hl-0">((</span><span class="hl-2">jsonResp</span><span class="hl-0">) </span><span class="hl-4">=&gt;</span><span class="hl-0"> {</span><br/><span class="hl-0">    </span><span class="hl-1">if</span><span class="hl-0"> (</span><span class="hl-2">jsonResp</span><span class="hl-0">.</span><span class="hl-2">sessionId</span><span class="hl-0">) {</span><br/><span class="hl-0">      </span><span class="hl-7">// We got a session id, so we are now logged in</span><br/><span class="hl-0">      </span><span class="hl-6">loggedIn</span><span class="hl-0">();</span><br/><span class="hl-0">    } </span><span class="hl-1">else</span><span class="hl-0"> </span><span class="hl-1">if</span><span class="hl-0"> (</span><span class="hl-2">jsonResp</span><span class="hl-0">.</span><span class="hl-2">errorMessage</span><span class="hl-0">) {</span><br/><span class="hl-0">      </span><span class="hl-7">// Handle authentication failure</span><br/><span class="hl-0">      </span><span class="hl-6">authFailure</span><span class="hl-0">(</span><span class="hl-2">jsonResp</span><span class="hl-0">.</span><span class="hl-2">errorMessage</span><span class="hl-0">);</span><br/><span class="hl-0">    }</span><br/><span class="hl-0">  })</span><br/><span class="hl-0">  .</span><span class="hl-2">catch</span><br/><span class="hl-0">  </span><span class="hl-7">// Error handling for failed request</span><br/><span class="hl-0">  ();</span>
+</code></pre>
+<p>Once you have completed this request successfully, you will have the authentication cookie which
+will be sent along with the request to open the WebSocket.</p>
+<pre><code class="language-js"><span class="hl-7">// Import module</span><br/><span class="hl-1">import</span><span class="hl-0"> </span><span class="hl-2">Connector</span><span class="hl-0"> </span><span class="hl-1">from</span><span class="hl-0"> </span><span class="hl-3">&#39;cloudvision-connector&#39;</span><span class="hl-0">;</span><br/><br/><span class="hl-7">// Create the connection</span><br/><span class="hl-4">const</span><span class="hl-0"> </span><span class="hl-5">connector</span><span class="hl-0"> = </span><span class="hl-4">new</span><span class="hl-0"> </span><span class="hl-6">Connector</span><span class="hl-0">();</span><br/><br/><span class="hl-7">// Start the connection</span><br/><span class="hl-2">connector</span><span class="hl-0">.</span><span class="hl-6">run</span><span class="hl-0">(</span><span class="hl-3">&#39;ws://example.cloudvision.api-server/api/v3/wrpc/&#39;</span><span class="hl-0">);</span><br/><br/><span class="hl-7">// Start the connection with a custom WebSocket</span><br/><span class="hl-4">class</span><span class="hl-0"> </span><span class="hl-14">CustomWS</span><span class="hl-0"> </span><span class="hl-4">extends</span><span class="hl-0"> </span><span class="hl-14">WebSocket</span><span class="hl-0"> {</span><br/><span class="hl-0"> ...</span><br/><span class="hl-0">};</span><br/><br/><span class="hl-4">const</span><span class="hl-0"> </span><span class="hl-5">connectorWithCustomWS</span><span class="hl-0"> = </span><span class="hl-4">new</span><span class="hl-0"> </span><span class="hl-6">Connector</span><span class="hl-0">(</span><span class="hl-2">CustomWS</span><span class="hl-0">);</span><br/><span class="hl-2">connectorWithCustomWS</span><span class="hl-0">.</span><span class="hl-6">runWithWs</span><span class="hl-0">(</span><span class="hl-3">&#39;ws://example.cloudvision.api-server/api/v3/wrpc/&#39;</span><span class="hl-0">);</span><br/><br/><span class="hl-7">// Start a secure authenticated connection. NOTE: the `wss` vs `ws`</span><br/><span class="hl-2">connector</span><span class="hl-0">.</span><span class="hl-6">run</span><span class="hl-0">(</span><span class="hl-3">&#39;wss://example.cloudvision.api-server/api/v3/wrpc/&#39;</span><span class="hl-0">);</span>
+</code></pre>
+
+<a href="#listening-to-the-connection-status" id="listening-to-the-connection-status" style="color: inherit; text-decoration: none;">
+  <h4>Listening to the Connection Status</h4>
+</a>
+<p>The <code>Connector.connection</code> function adds a status-accepting callback to a <code>Connector</code> and returns an
+unbinding function that may be used to remove the callback. The status passed to the callback is
+either <code>Connector.CONNECTED</code>, or <code>Connector.DISCONNECTED</code>. Additionally, the WebSocket event (see
+WebSocket documentation) is passed as the second argument.</p>
+<ul>
+<li><p><code>Connector.CONNECTED</code> is emitted once the WebSocket connection has been established and the client
+is authenticated. At this point requests can be sent and the server will start sending responses.</p>
+</li>
+<li><p><code>Connector.DISCONNECTED</code> is emitted when the WebSocket is hung up.</p>
+</li>
+</ul>
+
+<a href="#example-3" id="example-3" style="color: inherit; text-decoration: none;">
+  <h5>Example</h5>
+</a>
+<pre><code class="language-js"><span class="hl-4">function</span><span class="hl-0"> </span><span class="hl-6">statusCallback</span><span class="hl-0">(</span><span class="hl-2">status</span><span class="hl-0">, </span><span class="hl-2">wsEvent</span><span class="hl-0">) {</span><br/><span class="hl-0">  </span><span class="hl-1">switch</span><span class="hl-0"> (</span><span class="hl-2">status</span><span class="hl-0">) {</span><br/><span class="hl-0">    </span><span class="hl-1">case</span><span class="hl-0"> </span><span class="hl-2">Connector</span><span class="hl-0">.</span><span class="hl-5">CONNECTED</span><span class="hl-0">:</span><br/><span class="hl-0">      </span><span class="hl-7">// react to connected event</span><br/><span class="hl-0">      </span><span class="hl-1">break</span><span class="hl-0">;</span><br/><span class="hl-0">    </span><span class="hl-1">case</span><span class="hl-0"> </span><span class="hl-2">Connector</span><span class="hl-0">.</span><span class="hl-5">DISCONNECTED</span><span class="hl-0">:</span><br/><span class="hl-0">      </span><span class="hl-7">// react to disconnected event</span><br/><span class="hl-0">      </span><span class="hl-1">break</span><span class="hl-0">;</span><br/><span class="hl-0">  }</span><br/><span class="hl-0">}</span><br/><br/><span class="hl-7">// Add callback</span><br/><span class="hl-4">const</span><span class="hl-0"> </span><span class="hl-5">unbindStatus</span><span class="hl-0"> = </span><span class="hl-2">connector</span><span class="hl-0">.</span><span class="hl-6">connection</span><span class="hl-0">(</span><span class="hl-2">statusCallback</span><span class="hl-0">);</span><br/><span class="hl-0">...</span><br/><span class="hl-7">// Remove callback when done</span><br/><span class="hl-6">unbindStatus</span><span class="hl-0">();</span>
+</code></pre>
+<p>Multiple callbacks may be added to a given <code>Connector</code> via <code>Connector.connection</code>:</p>
+<pre><code class="language-js"><span class="hl-7">// This is es6 arrow function notation (shortcut for function() {} )</span><br/><span class="hl-4">const</span><span class="hl-0"> </span><span class="hl-6">callback1</span><span class="hl-0"> = (</span><span class="hl-2">status</span><span class="hl-0">) </span><span class="hl-4">=&gt;</span><span class="hl-0"> {...}</span><br/><span class="hl-4">const</span><span class="hl-0"> </span><span class="hl-6">callback2</span><span class="hl-0"> = (</span><span class="hl-2">status</span><span class="hl-0">) </span><span class="hl-4">=&gt;</span><span class="hl-0"> {...}</span><br/><span class="hl-4">const</span><span class="hl-0"> </span><span class="hl-5">unbind1</span><span class="hl-0"> = </span><span class="hl-2">connector</span><span class="hl-0">.</span><span class="hl-6">connection</span><span class="hl-0">(</span><span class="hl-2">callback1</span><span class="hl-0">)</span><br/><span class="hl-4">const</span><span class="hl-0"> </span><span class="hl-5">unbind2</span><span class="hl-0"> = </span><span class="hl-2">connector</span><span class="hl-0">.</span><span class="hl-6">connection</span><span class="hl-0">(</span><span class="hl-2">callback2</span><span class="hl-0">)</span>
+</code></pre>
+<p>Callbacks will be called in the order in which they were added.</p>
+
+<a href="#data-endcoding" id="data-endcoding" style="color: inherit; text-decoration: none;">
+  <h2>Data Endcoding</h2>
+</a>
+<p>Data returned from the CloudVision APi is both JSON and NEAT (more strict MessagePack) encoded.
+Additionally NEAT encoded values are base64 encoded for transport. The notification body is JSON
+encoded, while <code>key</code> and <code>value</code> attributes of the notification are NEAT encoded. The parser inside
+the cloudvision-connector library takes care of decoding and encoding notifications for you. Note
+that when notifications are decoded they are decoded into an object keyed key the notification key.
+Since keys can be non strings, the key is the base64 NEAT encoded value. The value of this object
+contains both the decoded <code>key</code> and <code>value</code>.</p>
+
+<a href="#what-is-neat" id="what-is-neat" style="color: inherit; text-decoration: none;">
+  <h2>What is NEAT?</h2>
+</a>
+<p>NEAT is MessagePack with some alterations listed below:</p>
+<ul>
+<li><p>All strings are binary encoded</p>
+</li>
+<li><p>Maps and Object keys are encoded in order of binary value of the key. This means <code>{ a: &#39;b&#39;, c: &#39;d&#39; }</code> and <code>{ c: &#39;d&#39;, a: &#39;b&#39; }</code> are encoded as the same NEAT value.</p>
+</li>
+<li><p>Support for pointer values via the <code>Pointer</code> extention type</p>
+</li>
+<li><p>Support for wildcard values via the <code>Wildcard</code> extention type</p>
+</li>
+</ul>
+
+<a href="#try-it-out" id="try-it-out" style="color: inherit; text-decoration: none;">
+  <h2>Try it out</h2>
+</a>
+<p>To try out the CloudVision Connector in your browser, simply run</p>
+<pre><code class="language-shell"><span class="hl-0">npm install</span>
+</code></pre>
+<p>at the root</p>
+<p>and then</p>
+<pre><code class="language-shell"><span class="hl-0">npm run build:try</span>
+</code></pre>
+<p>in the <strong>packages/cloudvision-connector</strong> directory</p>
+<p>Then open <strong>index.html</strong> in your browser. In the developer console CloudVision Connector will be
+available as <strong>window.CloudVisionConnector</strong>.</p>
+
+<a href="#examples" id="examples" style="color: inherit; text-decoration: none;">
+  <h3>Examples</h3>
+</a>
+<p>Create the connector: <code>conn = new window.CloudVisionConnector()</code> Connect to an API server:
+<code>conn.run(&#39;ws://example.cloudvision.api-server/api/v3/wrpc/&#39;)</code> Run a query:
+<code>conn.getWithOptions(window.CloudVisionConnector.DEVICES_DATASET_ID , (err, res) =&gt; console.log(err, res))</code></p>
+
+<a href="#contributing" id="contributing" style="color: inherit; text-decoration: none;">
+  <h2>Contributing</h2>
+</a>
+<p>Contributing pull requests are welcomed for this repository. Please note that all contributions
+require 100% code test cases and 100% code coverage, otherwise the pull request will be rejected.</p>
+
+<a href="#license" id="license" style="color: inherit; text-decoration: none;">
+  <h2>License</h2>
+</a>
+<p>The CloudVision Connector is <a href="LICENSE">MIT licensed</a>.</p>
+</section></section>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <h3 class="tsd-index-heading uppercase">Index</h3>

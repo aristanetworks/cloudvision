@@ -14,9 +14,32 @@
 <li><a href="cloudvision_grpc_web.html">cloudvision-grpc-web</a></li></ul>
 <h1>Module cloudvision-grpc-web</h1></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/aristanetworks/cloudvision/blob/ed0fa402/packages/cloudvision-grpc-web/src/index.ts#L1">packages/cloudvision-grpc-web/src/index.ts:1</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/aristanetworks/cloudvision/blob/2aac030e/packages/cloudvision-grpc-web/src/index.ts#L1">packages/cloudvision-grpc-web/src/index.ts:1</a></li></ul></aside>
 <section class="tsd-panel-group">
-<section class="tsd-panel tsd-typography"></section></section>
+<section class="tsd-panel tsd-typography">
+<a href="#cloudvision-grpc-web" id="cloudvision-grpc-web" style="color: inherit; text-decoration: none;">
+  <h1>cloudvision-grpc-web</h1>
+</a>
+<p>A grpc-web client for requesting CloudVision data from the frontend. This libraries exposed
+functions and utils that convert the grpc-web calls to Observable streams that can be manipulated
+using <a href="https://rxjs.dev/">RXJS</a>.</p>
+<p>The package expects protobuf definitions to be generated via <a href="https://github.com/stephenh/ts-proto">ts-proto</a></p>
+
+<a href="#installation" id="installation" style="color: inherit; text-decoration: none;">
+  <h2>Installation</h2>
+</a>
+<pre><code class="language-bash"><span class="hl-0">npm install cloudvision-grpc-web</span>
+</code></pre>
+<p>or</p>
+<pre><code class="language-bash"><span class="hl-0">yarn install cloudvision-grpc-web</span>
+</code></pre>
+
+<a href="#usage" id="usage" style="color: inherit; text-decoration: none;">
+  <h2>Usage</h2>
+</a>
+<pre><code class="language-js"><span class="hl-1">import</span><span class="hl-0"> { </span><span class="hl-2">fromResourceGrpcInvoke</span><span class="hl-0"> } </span><span class="hl-1">from</span><span class="hl-0"> </span><span class="hl-3">&#39;cloudvision-grpc-web&#39;</span><span class="hl-0">;</span><br/><br/><span class="hl-1">import</span><span class="hl-0"> { </span><span class="hl-2">DeviceServiceGetAllDesc</span><span class="hl-0">, </span><span class="hl-2">DeviceStreamRequest</span><span class="hl-0"> } </span><span class="hl-1">from</span><span class="hl-0"> </span><span class="hl-3">&#39;../generated/arista/inventory.v1/services.gen&#39;</span><span class="hl-0">;</span><br/><br/><span class="hl-4">const</span><span class="hl-0"> </span><span class="hl-5">requestAllMessage</span><span class="hl-0"> = </span><span class="hl-2">DeviceStreamRequest</span><span class="hl-0">.</span><span class="hl-6">fromPartial</span><span class="hl-0">({});</span><br/><br/><span class="hl-4">const</span><span class="hl-0"> </span><span class="hl-5">grpcRequest</span><span class="hl-0"> = </span><span class="hl-6">fromResourceGrpcInvoke</span><span class="hl-0">(</span><span class="hl-2">DeviceServiceGetAllDesc</span><span class="hl-0">, {</span><br/><span class="hl-0">  </span><span class="hl-2">host:</span><span class="hl-0"> </span><span class="hl-3">&#39;http://cvphost&#39;</span><span class="hl-0">,</span><br/><span class="hl-0">  </span><span class="hl-2">request:</span><span class="hl-0"> { ...</span><span class="hl-2">requestAllMessage</span><span class="hl-0">, ...</span><span class="hl-2">DeviceServiceGetAllDesc</span><span class="hl-0">.</span><span class="hl-2">requestType</span><span class="hl-0"> },</span><br/><span class="hl-0">});</span><br/><br/><span class="hl-7">// Will print out each data message as it arrives</span><br/><span class="hl-2">grpcRequest</span><span class="hl-0">.</span><span class="hl-2">data</span><span class="hl-0">.</span><span class="hl-6">subscribe</span><span class="hl-0">({</span><br/><span class="hl-0">  </span><span class="hl-6">next</span><span class="hl-2">:</span><span class="hl-0"> (</span><span class="hl-2">val</span><span class="hl-0">) </span><span class="hl-4">=&gt;</span><span class="hl-0"> </span><span class="hl-2">console</span><span class="hl-0">.</span><span class="hl-6">log</span><span class="hl-0">(</span><span class="hl-3">&#39;data&#39;</span><span class="hl-0">, </span><span class="hl-2">val</span><span class="hl-0">))</span><br/><span class="hl-0">})</span><br/><br/><span class="hl-7">// Will print out any Grpc metadata or errors as they happen</span><br/><span class="hl-2">grpcRequest</span><span class="hl-0">.</span><span class="hl-2">messages</span><span class="hl-0">.</span><span class="hl-6">subscribe</span><span class="hl-0">({</span><br/><span class="hl-0">  </span><span class="hl-6">next</span><span class="hl-2">:</span><span class="hl-0"> (</span><span class="hl-2">val</span><span class="hl-0">) </span><span class="hl-4">=&gt;</span><span class="hl-0"> </span><span class="hl-2">console</span><span class="hl-0">.</span><span class="hl-6">log</span><span class="hl-0">(</span><span class="hl-3">&#39;control message&#39;</span><span class="hl-0">, </span><span class="hl-2">val</span><span class="hl-0">))</span><br/><span class="hl-0">})</span><br/>
+</code></pre>
+</section></section>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <h3 class="tsd-index-heading uppercase">Index</h3>
