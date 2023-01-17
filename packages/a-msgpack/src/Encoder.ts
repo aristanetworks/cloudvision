@@ -271,6 +271,9 @@ export class Encoder {
     } else if (value < 0) {
       this.writeU8(0xd3);
       this.writeI64(value);
+    } else if (value < 0x100000000) {
+      this.writeU8(0xce);
+      this.writeU32(Number(value))
     } else {
       this.writeU8(0xcf);
       this.writeU64(value);
@@ -288,6 +291,9 @@ export class Encoder {
     } else if (strValue < '0') {
       this.writeU8(0xd3);
       this.writeI64(strValue);
+    } else if (JSBI.LE(value, 0xffffffff)) {
+      this.writeU8(0xce);
+      this.writeU32(JSBI.toNumber(value));
     } else {
       this.writeU8(0xcf);
       this.writeU64(strValue);
