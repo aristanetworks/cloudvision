@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.0.2](https://github.com/aristanetworks/cloudvision/compare/v5.0.1...v5.0.2) (2023-01-18)
+
+
+### Bug Fixes
+
+* **a-msgpack:** write uint32 when appropriate ([#938](https://github.com/aristanetworks/cloudvision/issues/938)) ([aed30eb](https://github.com/aristanetworks/cloudvision/commit/aed30eb459caef97acbd0d57231587e608cb6af3))
+
+
+
+
+
 ## [5.0.1](https://github.com/aristanetworks/cloudvision/compare/v5.0.0...v5.0.1) (2022-07-18)
 
 **Note:** Version bump only for package root
