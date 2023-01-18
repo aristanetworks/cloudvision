@@ -69,6 +69,9 @@ tests:
   - name: min int32 as int64
     i64: '-2147483648'
     out: [210, 128, 0, 0, 0]
+  - name: max uint32 as int64
+    i64: '4294967295'
+    out: [206, 255, 255, 255, 255]
   - name: zero int64
     i64: '0'
     out: [0]
@@ -91,10 +94,10 @@ tests:
     i16: 42
     out: [42]
   - name: int32 42
-    i8: 42
+    i32: 42
     out: [42]
   - name: int64 42
-    i8: 42
+    i64: 42
     out: [42]
   - name: max int16 as int32
     i32: 32767
