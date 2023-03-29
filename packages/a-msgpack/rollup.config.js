@@ -1,5 +1,6 @@
 import commonjs from '@rollup/plugin-commonjs';
-import resolve from '@rollup/plugin-node-resolve';
+import { nodeResolve } from '@rollup/plugin-node-resolve';
+import replace from '@rollup/plugin-replace';
 import typescript from '@rollup/plugin-typescript';
 import { terser } from 'rollup-plugin-terser';
 
@@ -14,7 +15,7 @@ const config = {
       `${warning.message} (${warning.loc.file}):${warning.loc.line}:${warning.loc.column}`,
     );
   },
-  plugins: [resolve(), commonjs(), typescript({ sourceMap: false })],
+  plugins: [typescript({ sourceMap: false })],
 };
 
 const external = Object.keys(packageJson.dependencies);
@@ -34,15 +35,27 @@ if (env === 'es' || env === 'cjs') {
   };
 }
 
+// Replace NODE_ENV variable
 if (env === 'development' || env === 'production') {
   config.external = external;
+  config.plugins.push(nodeResolve());
   config.output = {
     exports: 'named',
     format: 'umd',
-    indent: false,
     globals,
+    indent: false,
     name: 'a-msgpack',
   };
+  config.plugins.push(
+    replace({
+      preventAssignment: true,
+      values: {
+        'process.env.TEXT_ENCODING': JSON.stringify('always'),
+        'process.env.TEXT_DECODER': JSON.stringify('always'),
+      },
+    }),
+    commonjs(),
+  );
 }
 
 if (env === 'production') {
