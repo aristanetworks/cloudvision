@@ -1,5 +1,6 @@
 import commonjs from '@rollup/plugin-commonjs';
 import resolve from '@rollup/plugin-node-resolve';
+import replace from '@rollup/plugin-replace';
 import typescript from '@rollup/plugin-typescript';
 import { terser } from 'rollup-plugin-terser';
 
@@ -43,6 +44,17 @@ if (env === 'development' || env === 'production') {
     globals,
     name: 'a-msgpack',
   };
+  config.plugins.push(
+    replace({
+      preventAssignment: true,
+      values: {
+        'process.env.NODE_ENV': JSON.stringify(env),
+        'process.env.TEXT_ENCODING': JSON.stringify('always'),
+        'process.env.TEXT_DECODER': JSON.stringify('always'),
+      },
+    }),
+    commonjs(),
+  );
 }
 
 if (env === 'production') {
