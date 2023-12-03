@@ -73,7 +73,7 @@
     "@types/uuid": "8.3.4",
     "@typescript-eslint/eslint-plugin": "5.32.0",
     "@typescript-eslint/parser": "5.32.0",
-    "babel-eslint": "10.1.0",
+    "@babel/eslint-parser": "7.11.0",
     "cross-env": "7.0.3",
     "eslint": "8.36.0",
     "eslint-config-arista-js": "2.0.3",
